@@ -1037,7 +1037,7 @@ export const serversconfigPaths: PathsModule = {
 			}
 		}
 	},
-	'/api/servers/{name}/map/proxy/{...path}': {
+	'/api/servers/{name}/map/proxy/{path}': {
 		get: {
 			tags: ['Config'],
 			summary: 'Proxy de assets do mapa',
