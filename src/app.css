@@ -1,0 +1,659 @@
+@import 'tailwindcss';
+
+/* Font oficial do Minecraft (open source rendition by IdreesInc) */
+@font-face {
+  font-family: 'Minecraft';
+  src: url('/fonts/Minecraft.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Minecraft';
+  src: url('/fonts/Minecraft-Bold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  /* Paleta Minecraft Java Edition (exata do menu) */
+  --color-background: #1d1d1f;
+  --color-foreground: #ffffff;
+  --color-card: #2b2b2e;
+  --color-card-foreground: #ffffff;
+  --color-popover: #2b2b2e;
+  --color-popover-foreground: #ffffff;
+
+  --color-primary: #5ba34d;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #3c3c40;
+  --color-secondary-foreground: #ffffff;
+  --color-muted: #353538;
+  --color-muted-foreground: #a8a8a8;
+  --color-accent: #4aedd9;
+  --color-accent-foreground: #0a2a26;
+  --color-destructive: #aa2828;
+  --color-destructive-foreground: #ffffff;
+
+  --color-success: #58cc4d;
+  --color-warning: #f0a526;
+  --color-danger: #d23f3f;
+  --color-info: #5dcfff;
+
+  --color-border: #000000;
+  --color-input: #000000;
+  --color-ring: #ffffff;
+
+  /* Cores autênticas dos blocos MC */
+  --color-iron: #d8d8d8;
+  --color-gold: #fcdf52;
+  --color-diamond: #4aedd9;
+  --color-emerald: #00cc7c;
+  --color-netherite: #443a3a;
+  --color-redstone: #d23f3f;
+  --color-lapis: #3656bf;
+  --color-grass: #79c257;
+  --color-grass-dark: #5e9c41;
+  --color-dirt: #866043;
+  --color-dirt-light: #9a7150;
+  --color-stone: #7e7e7e;
+  --color-cobble: #6b6b6b;
+  --color-bedrock: #2b2b2e;
+  --color-wood-oak: #b08043;
+  --color-xp: #80ff20;
+
+  /* MC GUI cores oficiais */
+  --color-mc-gray: #c6c6c6;
+  --color-mc-text: #ffffff;
+  --color-mc-text-shadow: #3f3f3f;
+  --color-mc-yellow: #ffff55;
+  --color-mc-button: #7a7a7a;
+  --color-mc-button-light: #bcbcbc;
+  --color-mc-button-dark: #3f3f3f;
+  --color-mc-text-yellow-hover: #ffffa0;
+  --color-mc-text-disabled: #a0a0a0;
+  --color-mc-tooltip-bg: #100010;
+  --color-mc-tooltip-border-light: #2d0a52;
+  --color-mc-tooltip-border-dark: #170128;
+
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+
+  --font-sans: 'Minecraft', ui-monospace, monospace;
+  --font-mono: 'Minecraft', ui-monospace, monospace;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+    image-rendering: pixelated;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: none;
+    font-smooth: never;
+  }
+
+  body {
+    font-family: 'Minecraft', ui-monospace, monospace;
+    font-feature-settings: 'liga' 0, 'calt' 0;
+    color: var(--color-foreground);
+    line-height: 1.3;
+    /* Background com textura DIRT REAL do Minecraft, escurecida com overlay */
+    background-color: #1d1d1f;
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+      url('/textures/block/dirt.png');
+    background-size: 100%, 64px 64px;
+    background-attachment: fixed;
+    background-repeat: repeat;
+    image-rendering: pixelated;
+  }
+
+  ::selection {
+    background-color: var(--color-grass);
+    color: white;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    border-radius: 0;
+    font-family: inherit;
+  }
+
+  /* Scrollbar Minecraft */
+  ::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #000000;
+    box-shadow: inset 2px 2px 0 0 rgba(60, 60, 60, 1);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-mc-button);
+    box-shadow:
+      inset 2px 2px 0 0 var(--color-mc-button-light),
+      inset -2px -2px 0 0 var(--color-mc-button-dark);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #8c8c8c;
+  }
+}
+
+@layer components {
+  /* Botão Minecraft autêntico (igual do menu vanilla)
+     Cinza com border-top/left claro + border-bottom/right escuro */
+  .mc-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    background-color: var(--color-mc-button);
+    color: var(--color-mc-text);
+    font-family: 'Minecraft', monospace;
+    font-size: 1rem;
+    line-height: 1.2;
+    text-shadow: 2px 2px 0 var(--color-mc-text-shadow);
+    border: none;
+    outline: 2px solid #000000;
+    outline-offset: -2px;
+    cursor: pointer;
+    position: relative;
+    /* Sombras 2D vanilla MC: top/left light, bottom/right dark */
+    box-shadow:
+      inset 2px 2px 0 0 var(--color-mc-button-light),
+      inset -2px -2px 0 0 var(--color-mc-button-dark);
+    transition: none;
+    user-select: none;
+  }
+  .mc-btn:hover:not(:disabled) {
+    background-color: #8c8c8c;
+    color: var(--color-mc-yellow);
+    outline-color: #ffffff;
+  }
+  .mc-btn:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+  .mc-btn:disabled {
+    background-color: #555555;
+    color: var(--color-mc-text-disabled);
+    text-shadow: 2px 2px 0 #1f1f1f;
+    cursor: not-allowed;
+  }
+
+  .mc-btn-primary {
+    background-color: #5ba34d;
+  }
+  .mc-btn-primary:hover:not(:disabled) {
+    background-color: #6cb45e;
+    color: var(--color-mc-yellow);
+  }
+
+  .mc-btn-destructive {
+    background-color: #aa2828;
+  }
+  .mc-btn-destructive:hover:not(:disabled) {
+    background-color: #c33838;
+    color: var(--color-mc-yellow);
+  }
+
+  .mc-btn-accent {
+    background-color: #2eb3a3;
+    color: #ffffff;
+  }
+
+  /* Input: caixa preta com border pixelado MC */
+  .mc-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background-color: #000000;
+    color: var(--color-mc-text);
+    font-family: 'Minecraft', monospace;
+    font-size: 1rem;
+    line-height: 1.2;
+    border: 2px solid #5a5a5a;
+    outline: none;
+    text-shadow: 2px 2px 0 var(--color-mc-text-shadow);
+  }
+  .mc-input:focus {
+    border-color: #ffffff;
+  }
+  .mc-input::placeholder {
+    color: #707070;
+  }
+
+  /* Card: painel escuro com bordas pretas estilo MC widget */
+  .mc-card {
+    background-color: #2b2b2e;
+    color: var(--color-foreground);
+    padding: 1.25rem;
+    border: 2px solid #000000;
+    box-shadow:
+      inset 2px 2px 0 0 rgba(255, 255, 255, 0.1),
+      inset -2px -2px 0 0 rgba(0, 0, 0, 0.4);
+    position: relative;
+  }
+  .mc-card-hover {
+    transition: background-color 0.05s;
+  }
+  .mc-card-hover:hover {
+    background-color: #353539;
+  }
+
+  /* Painel cinza claro estilo GUI inventory (#c6c6c6) */
+  .mc-panel {
+    background-color: var(--color-mc-gray);
+    color: #404040;
+    padding: 1.25rem;
+    border: 2px solid #000000;
+    box-shadow:
+      inset 2px 2px 0 0 #ffffff,
+      inset -2px -2px 0 0 #555555;
+  }
+
+  /* Slot inventory (item slot escuro com border invertido) */
+  .mc-slot {
+    background-color: #8b8b8b;
+    border: 2px solid #000000;
+    box-shadow:
+      inset 2px 2px 0 0 #373737,
+      inset -2px -2px 0 0 #ffffff;
+    padding: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Pill estilo XP bar */
+  .mc-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.875rem;
+    font-family: 'Minecraft', monospace;
+    text-shadow: 2px 2px 0 var(--color-mc-text-shadow);
+    border: 2px solid #000000;
+    box-shadow:
+      inset 1px 1px 0 0 rgba(255, 255, 255, 0.25),
+      inset -1px -1px 0 0 rgba(0, 0, 0, 0.4);
+  }
+
+  /* Heading MC com text-shadow autêntico */
+  .mc-heading {
+    font-family: 'Minecraft', monospace;
+    text-shadow: 4px 4px 0 var(--color-mc-text-shadow);
+    letter-spacing: 0;
+    color: #ffffff;
+    line-height: 1;
+  }
+
+  /* Header banner com dirt texture (igual menu pause MC) */
+  .mc-banner {
+    background-color: #6b3e1e;
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+      url('/textures/block/dirt.png');
+    background-size: 32px 32px;
+    background-repeat: repeat;
+    border: 2px solid #000000;
+    box-shadow:
+      inset 2px 2px 0 0 rgba(255, 255, 255, 0.1),
+      inset -2px -2px 0 0 rgba(0, 0, 0, 0.4);
+    padding: 1rem 1.5rem;
+    image-rendering: pixelated;
+  }
+
+  /* Tooltip estilo item description */
+  .mc-tooltip {
+    background-color: var(--color-mc-tooltip-bg);
+    background-color: rgba(16, 0, 16, 0.94);
+    color: var(--color-mc-text);
+    padding: 4px 6px;
+    border: 1px solid var(--color-mc-tooltip-border-light);
+    box-shadow:
+      inset 0 0 0 1px var(--color-mc-tooltip-border-dark);
+    font-family: 'Minecraft', monospace;
+    font-size: 0.875rem;
+    text-shadow: 2px 2px 0 var(--color-mc-text-shadow);
+    white-space: nowrap;
+  }
+
+  /* Texturas como background */
+  .mc-bg-dirt {
+    background-image: url('/textures/block/dirt.png');
+    background-size: 32px 32px;
+    background-repeat: repeat;
+    image-rendering: pixelated;
+  }
+  .mc-bg-stone {
+    background-image: url('/textures/block/stone.png');
+    background-size: 32px 32px;
+    background-repeat: repeat;
+    image-rendering: pixelated;
+  }
+  .mc-bg-cobble {
+    background-image: url('/textures/block/cobblestone.png');
+    background-size: 32px 32px;
+    background-repeat: repeat;
+    image-rendering: pixelated;
+  }
+  .mc-bg-planks {
+    background-image: url('/textures/block/oak_planks.png');
+    background-size: 32px 32px;
+    background-repeat: repeat;
+    image-rendering: pixelated;
+  }
+  .mc-bg-bedrock {
+    background-image: url('/textures/block/bedrock.png');
+    background-size: 32px 32px;
+    background-repeat: repeat;
+    image-rendering: pixelated;
+  }
+  .mc-bg-obsidian {
+    background-color: #1a1325;
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
+      url('/textures/block/obsidian.png');
+    background-size: 32px 32px;
+    background-repeat: repeat;
+    image-rendering: pixelated;
+  }
+
+  /* XP bar (progress) */
+  .mc-progress {
+    height: 10px;
+    background-color: #000000;
+    border: 2px solid #000000;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 1px 1px 0 0 rgba(60, 60, 60, 1);
+  }
+  .mc-progress > .mc-progress-bar {
+    height: 100%;
+    background: linear-gradient(to bottom, #80ff20 0%, #80ff20 30%, #50aa10 30%, #50aa10 100%);
+    transition: width 0.2s ease;
+  }
+}
+
+/* Animações Minecraft autênticas */
+@keyframes mc-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.mc-pulse { animation: mc-pulse 1.4s ease-in-out infinite; }
+
+@keyframes mc-torch-flicker {
+  0%, 100% { filter: brightness(1) drop-shadow(0 0 4px rgba(255, 200, 100, 0.4)); }
+  50% { filter: brightness(1.2) drop-shadow(0 0 8px rgba(255, 200, 100, 0.6)); }
+}
+.mc-torch { animation: mc-torch-flicker 0.8s ease-in-out infinite; }
+
+/* Item bounce (igual quando você passa mouse no inventory MC) */
+@keyframes mc-item-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+.mc-slot:hover img {
+  animation: mc-item-bounce 0.4s ease-in-out infinite;
+}
+
+/* Glow no diamante / item enchanted */
+@keyframes mc-enchant-glow {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(170, 80, 255, 0)); }
+  50% { filter: drop-shadow(0 0 6px rgba(170, 80, 255, 0.7)); }
+}
+.mc-enchanted { animation: mc-enchant-glow 2s ease-in-out infinite; }
+
+/* Achievement slide in (igual notificação de conquista MC) */
+@keyframes mc-achievement-in {
+  0% { transform: translateX(120%); }
+  15% { transform: translateX(-8px); }
+  30% { transform: translateX(0); }
+  85% { transform: translateX(0); }
+  100% { transform: translateX(120%); }
+}
+.mc-achievement {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background-color: #100010;
+  border: 2px solid #5500aa;
+  box-shadow:
+    inset 0 0 0 1px #2d0a52,
+    4px 4px 0 rgba(0, 0, 0, 0.5);
+  color: #ffff55;
+  font-family: 'Minecraft', monospace;
+  text-shadow: 2px 2px 0 #3f3f3f;
+  animation: mc-achievement-in 4s ease-out forwards;
+}
+.mc-achievement .title {
+  font-size: 0.875rem;
+  color: #ffff55;
+}
+.mc-achievement .desc {
+  font-size: 0.75rem;
+  color: #ffffff;
+  margin-top: 2px;
+}
+
+/* Screen subtle tilt no banner (igual menu pause MC quando abre) */
+@keyframes mc-banner-tilt {
+  0% { transform: scale(0.98); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.mc-banner { animation: mc-banner-tilt 0.15s ease-out; }
+
+/* XP particle bounce (pra quando algo bem-sucedido) */
+@keyframes mc-xp-orb {
+  0% { transform: translate(0, 0) scale(0); opacity: 1; }
+  60% { transform: translate(20px, -30px) scale(1); opacity: 1; }
+  100% { transform: translate(40px, -60px) scale(0.5); opacity: 0; }
+}
+.mc-xp-orb {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: radial-gradient(circle, #80ff20 0%, #50aa10 100%);
+  border-radius: 50%;
+  position: absolute;
+  pointer-events: none;
+  animation: mc-xp-orb 1.2s ease-out forwards;
+}
+
+/* Damage tilt (shake quando erro) */
+@keyframes mc-damage-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+.mc-shake { animation: mc-damage-shake 0.4s ease-in-out; }
+
+/* Card hover sutil (bloco subindo) */
+.mc-card-hover {
+  transition: transform 0.1s, background-color 0.05s;
+}
+.mc-card-hover:hover {
+  background-color: #353539;
+  transform: translateY(-2px);
+}
+
+/* === SLICE 25 — UX polish === */
+
+/* Tab/page transition (fade + slide pixelado) */
+@keyframes mc-tab-in {
+  0% { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.mc-tab-content { animation: mc-tab-in 0.18s ease-out; }
+
+/* Loading bar pixelada MC (estilo barra de XP carregando) */
+@keyframes mc-loading-bar {
+  0% { background-position: 0 0; }
+  100% { background-position: 32px 0; }
+}
+.mc-loading-bar {
+  height: 8px;
+  background-color: #000000;
+  border: 2px solid #000000;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 1px 1px 0 0 rgba(60, 60, 60, 1);
+}
+.mc-loading-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    90deg,
+    #80ff20 0%, #80ff20 50%,
+    #50aa10 50%, #50aa10 100%
+  );
+  background-size: 32px 8px;
+  animation: mc-loading-bar 0.6s linear infinite;
+}
+
+/* Skeleton (esperando dados) - obsidian shimmer */
+@keyframes mc-skeleton-shimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: 200px 0; }
+}
+.mc-skeleton {
+  background: linear-gradient(
+    90deg,
+    #2b2b2e 0%, #353539 50%, #2b2b2e 100%
+  );
+  background-size: 200px 100%;
+  animation: mc-skeleton-shimmer 1.5s linear infinite;
+  border: 2px solid #000000;
+}
+
+/* Mob spawn animation (item aparecendo em lista) */
+@keyframes mc-mob-spawn {
+  0% { opacity: 0; transform: scale(0.85) translateY(-4px); }
+  60% { opacity: 1; transform: scale(1.02) translateY(0); }
+  100% { transform: scale(1); }
+}
+.mc-spawn-in { animation: mc-mob-spawn 0.22s ease-out; }
+
+/* Heart pulse (status crítico) */
+@keyframes mc-heart-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+.mc-heart-pulse { animation: mc-heart-pulse 0.6s ease-in-out infinite; }
+
+/* Tab hover sutil (igual hotbar slot MC) */
+nav button {
+  transition: transform 0.08s, color 0.08s;
+}
+nav button:hover:not([disabled]) {
+  color: var(--color-mc-yellow);
+}
+
+/* Botão press effect mais notável */
+.mc-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    inset 2px 2px 0 0 var(--color-mc-button-dark),
+    inset -2px -2px 0 0 var(--color-mc-button-light);
+}
+
+/* Input focus glow estilo MC enchanting table */
+.mc-input:focus {
+  border-color: #ffff55;
+  box-shadow: 0 0 0 1px #ffff55, inset 0 0 8px rgba(255, 255, 85, 0.15);
+}
+
+/* Achievement: melhor easing + sound visual hint */
+@keyframes mc-achievement-glow {
+  0%, 100% { box-shadow: inset 0 0 0 1px #2d0a52, 4px 4px 0 rgba(0, 0, 0, 0.5); }
+  50% {
+    box-shadow:
+      inset 0 0 0 1px #ffaa00,
+      0 0 12px rgba(255, 170, 0, 0.4),
+      4px 4px 0 rgba(0, 0, 0, 0.5);
+  }
+}
+.mc-achievement { animation: mc-achievement-in 4s ease-out forwards, mc-achievement-glow 1s ease-in-out 0.3s 2; }
+
+/* Status dot animado */
+@keyframes mc-status-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.mc-status-running {
+  background-color: var(--color-success);
+  box-shadow: 0 0 6px var(--color-success);
+  animation: mc-status-blink 2s ease-in-out infinite;
+}
+.mc-status-stopped {
+  background-color: var(--color-stone);
+}
+.mc-status-error {
+  background-color: var(--color-danger);
+  animation: mc-status-blink 0.6s ease-in-out infinite;
+}
+
+/* Tooltip dinâmico (CSS only, sem JS) */
+.mc-has-tooltip {
+  position: relative;
+}
+.mc-has-tooltip::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  background-color: rgba(16, 0, 16, 0.95);
+  color: #ffff55;
+  font-size: 0.75rem;
+  text-shadow: 2px 2px 0 #3f3f3f;
+  white-space: nowrap;
+  border: 1px solid #2d0a52;
+  box-shadow: inset 0 0 0 1px #170128;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s, transform 0.1s;
+}
+.mc-has-tooltip:hover::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+/* Selo "modificado" pulsando */
+@keyframes mc-modified-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 85, 0.5); }
+  50% { box-shadow: 0 0 0 4px rgba(255, 255, 85, 0); }
+}
+.mc-modified-badge {
+  animation: mc-modified-pulse 1.4s ease-in-out infinite;
+  background-color: #ffff55;
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+}
+
+/* List item hover (estilo lista de mods MC) */
+.mc-list-item {
+  transition: background-color 0.05s, padding-left 0.08s;
+  border-left: 0px solid transparent;
+}
+.mc-list-item:hover {
+  background-color: rgba(255, 255, 85, 0.08) !important;
+  border-left: 3px solid var(--color-mc-yellow);
+  padding-left: calc(0.75rem + 3px);
+}

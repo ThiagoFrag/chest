@@ -1,0 +1,21 @@
+{
+  "slug": "fabric-modded",
+  "name": "Fabric (modpacks modernos)",
+  "description": "Fabric loader pra mods modernos. Drop os mods em /data/mods/. Compatível com Modrinth.",
+  "category": "modded",
+  "icon": "/textures/item/diamond.png",
+  "author": "Chest",
+  "version": "1.0.0",
+  "loader": "FABRIC",
+  "mcVersion": "1.21.1",
+  "defaults": {
+    "memoryGb": 6,
+    "maxPlayers": 20,
+    "difficulty": "normal"
+  },
+  "tags": ["fabric", "mods"],
+  "postCreate": {
+    "documentationUrl": "https://fabricmc.net",
+    "notes": "Use a aba MODS pra instalar via Modrinth com 1 click."
+  }
+}

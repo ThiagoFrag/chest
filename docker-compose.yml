@@ -1,0 +1,61 @@
+services:
+  chest:
+    build: .
+    image: chest:latest
+    container_name: chest
+    restart: unless-stopped
+    networks:
+      - proxy
+      - chest-internal
+    environment:
+      DATABASE_URL: file:/app/data/db.sqlite
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      DOCKER_HOST: tcp://chest-socket-proxy:2375
+      DRASL_BASE_URL: ${DRASL_BASE_URL:-https://drasl.example.com}
+      DRASL_ADMIN_TOKEN: ${DRASL_ADMIN_TOKEN:-}
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
+      RCON_KEY: ${RCON_KEY:-}
+      ORIGIN: ${ORIGIN:-https://chest.example.com}
+      PROTOCOL_HEADER: x-forwarded-proto
+      TZ: ${TZ:-UTC}
+    volumes:
+      - chest-data:/app/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      socket-proxy:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:3000/login"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  socket-proxy:
+    image: tecnativa/docker-socket-proxy:0.3
+    container_name: chest-socket-proxy
+    restart: unless-stopped
+    networks:
+      - chest-internal
+    environment:
+      CONTAINERS: 1
+      POST: 1
+      EXEC: 1
+      LOGS: 1
+      INFO: 1
+      NETWORKS: 1
+      IMAGES: 1
+      VOLUMES: 1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+volumes:
+  chest-data:
+
+networks:
+  proxy:
+    external: true
+  chest-internal:
+    driver: bridge
+    internal: true

@@ -1,0 +1,23 @@
+{
+  "slug": "cobblemon",
+  "name": "Cobblemon (Pokémon)",
+  "description": "Server pré-configurado pra Cobblemon — Pokémon em Minecraft via Fabric. Inclui regras suaves pra capturas.",
+  "category": "modpack",
+  "icon": "/textures/item/emerald.png",
+  "author": "Chest",
+  "version": "1.0.0",
+  "loader": "FABRIC",
+  "mcVersion": "1.21.1",
+  "defaults": {
+    "memoryGb": 8,
+    "maxPlayers": 20,
+    "difficulty": "normal",
+    "motd": "Cobblemon · venha pegar pokémon"
+  },
+  "modrinthProjectId": "MdwFAVRL",
+  "tags": ["cobblemon", "pokemon", "fabric"],
+  "postCreate": {
+    "documentationUrl": "https://gitlab.com/cable-mc/cobblemon",
+    "notes": "O modpack Cobblemon será baixado automaticamente do Modrinth (~150 MB). Aguarde o server iniciar pela 1a vez."
+  }
+}

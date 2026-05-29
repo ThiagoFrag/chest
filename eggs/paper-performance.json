@@ -1,0 +1,24 @@
+{
+  "slug": "paper-performance",
+  "name": "Paper (otimizado)",
+  "description": "Paper com plugins de performance. Suporta plugins Bukkit/Spigot, ótimo pra servers de 10-100 players.",
+  "category": "performance",
+  "icon": "/textures/item/iron_pickaxe.png",
+  "author": "Chest",
+  "version": "1.0.0",
+  "loader": "PAPER",
+  "mcVersion": "1.21.1",
+  "defaults": {
+    "memoryGb": 6,
+    "maxPlayers": 50,
+    "difficulty": "normal"
+  },
+  "envExtras": {
+    "PAPER_VELOCITY_SECRET": ""
+  },
+  "tags": ["paper", "plugins", "performance"],
+  "postCreate": {
+    "documentationUrl": "https://docs.papermc.io/paper",
+    "notes": "Drop plugins .jar em /data/plugins/ e reinicie."
+  }
+}

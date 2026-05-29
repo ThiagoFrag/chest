@@ -1,0 +1,24 @@
+{
+  "slug": "creative-flat",
+  "name": "Creative (mundo plano)",
+  "description": "Mundo plano em modo criativo, ótimo pra building, redstone, esquemas e showrooms.",
+  "category": "creative",
+  "icon": "/textures/item/diamond_pickaxe.png",
+  "author": "Chest",
+  "version": "1.0.0",
+  "loader": "VANILLA",
+  "mcVersion": "1.21.1",
+  "defaults": {
+    "memoryGb": 4,
+    "maxPlayers": 20,
+    "difficulty": "peaceful",
+    "motd": "Creative Flat World"
+  },
+  "envExtras": {
+    "MODE": "creative",
+    "LEVEL_TYPE": "minecraft:flat",
+    "SPAWN_ANIMALS": "FALSE",
+    "SPAWN_MONSTERS": "FALSE"
+  },
+  "tags": ["creative", "flat", "building"]
+}
