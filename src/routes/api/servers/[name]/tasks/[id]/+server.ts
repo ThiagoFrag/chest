@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { eq } from 'drizzle-orm';
 import { db, schema } from '$lib/db';
 import { parseCron, nextRunAt } from '$lib/scheduler/cron';
+import { logAudit } from '$lib/audit';
 import type { RequestHandler } from './$types';
 
 const patchSchema = z.object({
@@ -39,6 +40,18 @@ export const PATCH: RequestHandler = async (event) => {
     .set(updates)
     .where(eq(schema.scheduledTasks.id, params.id));
 
+  await logAudit(event, {
+    action: 'server.task.update',
+    resourceType: 'server',
+    resourceId: params.name,
+    details: {
+      taskId: params.id,
+      ...(parsed.data.cronExpr !== undefined ? { cronExpr: parsed.data.cronExpr } : {}),
+      ...(parsed.data.params !== undefined ? { params: parsed.data.params } : {}),
+      ...(parsed.data.enabled !== undefined ? { enabled: parsed.data.enabled } : {})
+    }
+  });
+
   return json({ ok: true });
 };
 
@@ -47,5 +60,13 @@ export const DELETE: RequestHandler = async (event) => {
   await requireServerPermission(event, params.name!, "manage_scheduled");
   if (!params.id) throw error(400);
   await db().delete(schema.scheduledTasks).where(eq(schema.scheduledTasks.id, params.id));
+
+  await logAudit(event, {
+    action: 'server.task.delete',
+    resourceType: 'server',
+    resourceId: params.name,
+    details: { taskId: params.id }
+  });
+
   return new Response(null, { status: 204 });
 };

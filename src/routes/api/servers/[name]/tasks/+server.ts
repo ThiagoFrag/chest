@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { eq } from 'drizzle-orm';
 import { db, schema } from '$lib/db';
 import { parseCron, nextRunAt } from '$lib/scheduler/cron';
+import { logAudit } from '$lib/audit';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (event) => {
@@ -55,6 +56,13 @@ export const POST: RequestHandler = async (event) => {
       enabled: parsed.data.enabled,
       nextRunAt: next
     });
+
+  await logAudit(event, {
+    action: 'server.task.create',
+    resourceType: 'server',
+    resourceId: params.name,
+    details: { taskId: id, taskType: parsed.data.taskType, cronExpr: parsed.data.cronExpr, enabled: parsed.data.enabled }
+  });
 
   return json({ id, nextRunAt: next }, { status: 201 });
 };

@@ -17,11 +17,42 @@ export const GET: RequestHandler = async (event) => {
 
   const statsStream = (await container.stats({ stream: true })) as unknown as NodeJS.ReadableStream;
 
+  const HEARTBEAT_MS = 20_000;
+  let heartbeat: ReturnType<typeof setInterval> | undefined;
+  let closed = false;
+
+  const destroyStatsStream = () => {
+    try {
+      (statsStream as unknown as { destroy?: () => void }).destroy?.();
+    } catch {
+      /* ignore */
+    }
+  };
+
   const stream = new ReadableStream({
     start(controller) {
       const encoder = new TextEncoder();
       let buf = '';
+
+      const teardown = () => {
+        if (closed) return;
+        closed = true;
+        if (heartbeat) clearInterval(heartbeat);
+        destroyStatsStream();
+      };
+
+      const send = (frame: string): boolean => {
+        try {
+          controller.enqueue(encoder.encode(frame));
+          return true;
+        } catch {
+          teardown();
+          return false;
+        }
+      };
+
       statsStream.on('data', (chunk: Buffer) => {
+        if (closed) return;
         buf += chunk.toString('utf8');
         let nl = buf.indexOf('\n');
         while (nl !== -1) {
@@ -38,7 +69,7 @@ export const GET: RequestHandler = async (event) => {
                 memUsedMb: Math.round(memUsed / 1024 / 1024),
                 memLimitMb: Math.round(memLimit / 1024 / 1024)
               };
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify(payload)}\n\n`));
+              if (!send(`data: ${JSON.stringify(payload)}\n\n`)) return;
             } catch {
               /* skip */
             }
@@ -46,15 +77,32 @@ export const GET: RequestHandler = async (event) => {
           nl = buf.indexOf('\n');
         }
       });
-      statsStream.on('end', () => controller.close());
-      statsStream.on('error', () => controller.close());
+
+      statsStream.on('end', () => {
+        teardown();
+        try {
+          controller.close();
+        } catch {
+          /* ignore */
+        }
+      });
+      statsStream.on('error', () => {
+        teardown();
+        try {
+          controller.close();
+        } catch {
+          /* ignore */
+        }
+      });
+
+      heartbeat = setInterval(() => {
+        send(': ping\n\n');
+      }, HEARTBEAT_MS);
     },
     cancel() {
-      try {
-        (statsStream as unknown as { destroy?: () => void }).destroy?.();
-      } catch {
-        /* ignore */
-      }
+      closed = true;
+      if (heartbeat) clearInterval(heartbeat);
+      destroyStatsStream();
     }
   });
 

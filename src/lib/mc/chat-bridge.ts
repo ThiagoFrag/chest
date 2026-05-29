@@ -20,6 +20,7 @@ interface BridgeState {
 const active = new Map<string, BridgeState>();
 const bridgeLocks = new Map<string, Promise<void>>();
 let started = false;
+let reconciling = false;
 let unsubDiscord: (() => void) | null = null;
 
 const CHAT_REGEX = /\[(?:Server|Async Chat) thread\/INFO\]:?\s*(?:\[Not Secure\]\s*)?<([^>]+)>\s*(.+)$/;
@@ -47,8 +48,15 @@ export function startChatBridge(): void {
     for (const bridge of active.values()) {
       if (bridge.channelId !== channelId) continue;
       try {
-        const escaped = content.replace(/"/g, '\\"').slice(0, 200);
-        const payload = `tellraw @a {"text":"","extra":[{"text":"[Discord] ","color":"aqua","bold":true},{"text":"<${author}> ","color":"white","bold":true},{"text":"${escaped}","color":"white"}]}`;
+        const tellraw = {
+          text: '',
+          extra: [
+            { text: '[Discord] ', color: 'aqua', bold: true },
+            { text: `<${author.slice(0, 64)}> `, color: 'white', bold: true },
+            { text: content.slice(0, 200), color: 'white' }
+          ]
+        };
+        const payload = `tellraw @a ${JSON.stringify(tellraw)}`;
         await sendCommand(bridge.slug, payload);
       } catch {
         /* ignore */
@@ -56,8 +64,16 @@ export function startChatBridge(): void {
     }
   });
 
-  setInterval(() => reconcile().catch(() => undefined), 30_000);
-  setTimeout(() => reconcile().catch(() => undefined), 8_000);
+  setInterval(() => {
+    if (reconciling) return;
+    reconciling = true;
+    reconcile()
+      .catch((e) => console.error('[chat-bridge] reconcile failed:', e))
+      .finally(() => {
+        reconciling = false;
+      });
+  }, 30_000);
+  setTimeout(() => reconcile().catch((e) => console.error('[chat-bridge] reconcile failed:', e)), 8_000);
 }
 
 async function reconcile(): Promise<void> {
@@ -81,7 +97,9 @@ async function reconcile(): Promise<void> {
   for (const row of rows) {
     if (!row.discordChannelId) continue;
     if (active.has(row.containerName)) continue;
-    await startBridge(row.containerName, row.discordChannelId, row.slug).catch(() => undefined);
+    await startBridge(row.containerName, row.discordChannelId, row.slug).catch((e) =>
+      console.error(`[chat-bridge] startBridge failed for ${row.containerName}:`, e)
+    );
   }
 }
 

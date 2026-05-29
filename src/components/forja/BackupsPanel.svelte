@@ -16,6 +16,7 @@
   let loading = $state(true);
   let creating = $state(false);
   let pending = $state<string | null>(null);
+  let restoring = $state<string | null>(null);
   let scope = $state<'world' | 'full'>('world');
 
   async function load() {
@@ -68,6 +69,7 @@
   async function restore(b: Backup) {
     if (!confirm(`Restaurar este backup vai SOBRESCREVER o mundo atual. Continuar?`)) return;
     pending = b.id;
+    restoring = b.id;
     try {
       const res = await fetch(`/api/servers/${containerName}/backups/${b.id}/restore`, {
         method: 'POST'
@@ -76,6 +78,7 @@
       else alert('erro ao restaurar');
     } finally {
       pending = null;
+      restoring = null;
     }
   }
 
@@ -150,7 +153,7 @@
     {:else}
       <ul class="space-y-2">
         {#each backups as b (b.id)}
-          <li class="flex items-center gap-3 px-3 py-3 bg-black/40 border-2 border-black" style="box-shadow: inset 1px 1px 0 0 rgba(60,60,60,1);">
+          <li class="flex flex-wrap items-center gap-3 px-3 py-3 bg-black/40 border-2 border-black" style="box-shadow: inset 1px 1px 0 0 rgba(60,60,60,1);">
             <div class="mc-slot">
               <MCTexture src={b.scope === 'full' ? '/textures/item/netherite_ingot.png' : '/textures/item/emerald.png'} size={24} />
             </div>
@@ -187,6 +190,11 @@
             >
               <Trash2 class="size-3.5" />
             </button>
+            {#if restoring === b.id}
+              <p class="w-full text-xs text-warning" style="text-shadow: 2px 2px 0 #3f3f3f;">
+                restaurando... isso pode levar alguns minutos para backups grandes. não feche a página.
+              </p>
+            {/if}
           </li>
         {/each}
       </ul>

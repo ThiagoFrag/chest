@@ -1,5 +1,6 @@
 import { docker } from '$lib/docker/client';
 import { readContainerFile, writeContainerFile } from './files';
+import { withLock } from './locks';
 
 const ALLOWED_ROOT = '/data';
 const MAX_FILE_SIZE = 1024 * 1024; // 1MB
@@ -18,6 +19,16 @@ export interface DirEntry {
   type: 'file' | 'dir' | 'link';
   size: number;
   modified: string | null;
+}
+
+/**
+ * Lock key for serializing writes to a container's filesystem. Granularity is
+ * per-container so writes to different servers never block each other, while
+ * concurrent writes to the same container are serialized to prevent lost
+ * updates / interleaving (e.g. two writers racing on server.properties).
+ */
+function fileLockKey(containerName: string): string {
+  return `file:${containerName}`;
 }
 
 export function isSafePath(path: string): boolean {
@@ -120,5 +131,35 @@ export async function writeFile(containerName: string, path: string, content: st
   if (!isSafePath(path)) throw new Error('path inválido');
   if (!isTextFile(path)) throw new Error('arquivo binário, não pode ser editado aqui');
   if (content.length > MAX_FILE_SIZE) throw new Error('arquivo muito grande (>1MB)');
-  await writeContainerFile(containerName, path, content);
+  await withLock(fileLockKey(containerName), () => writeContainerFile(containerName, path, content));
+}
+
+/**
+ * Serialized read-modify-write of a single file inside a container. The whole
+ * read → transform → write cycle runs under one per-container lock, so two
+ * concurrent edits to the same file (e.g. the server.properties endpoint) can
+ * never interleave or lose an update. Returns the content that was written.
+ *
+ * `transform` receives the current file content (empty string if the file does
+ * not exist yet) and returns the new content to persist.
+ */
+export async function readModifyWrite(
+  containerName: string,
+  path: string,
+  transform: (current: string) => string | Promise<string>
+): Promise<string> {
+  if (!isSafePath(path)) throw new Error('path inválido');
+  if (!isTextFile(path)) throw new Error('arquivo binário, não pode ser editado aqui');
+  return withLock(fileLockKey(containerName), async () => {
+    let current = '';
+    try {
+      current = await readContainerFile(containerName, path);
+    } catch {
+      current = '';
+    }
+    const next = await transform(current);
+    if (next.length > MAX_FILE_SIZE) throw new Error('arquivo muito grande (>1MB)');
+    await writeContainerFile(containerName, path, next);
+    return next;
+  });
 }

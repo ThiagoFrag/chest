@@ -17,12 +17,18 @@
   } = $props();
 
   let copied = $state<string | null>(null);
+  let copyFailed = $state<string | null>(null);
 
-  function copy(text: string, key: string) {
-    navigator.clipboard.writeText(text).then(() => {
+  async function copy(text: string, key: string) {
+    copyFailed = null;
+    try {
+      await navigator.clipboard.writeText(text);
       copied = key;
       setTimeout(() => (copied = null), 1500);
-    });
+    } catch {
+      copyFailed = key;
+      setTimeout(() => (copyFailed = null), 2500);
+    }
   }
 
   function formatAddress(host: string | null, port: number | null): string {
@@ -64,9 +70,9 @@
           type="button"
           onclick={() => copy(mcVersion ?? '', 'version')}
           class="mc-btn text-xs px-2"
-          title="copiar versão"
+          title={copyFailed === 'version' ? 'falha ao copiar — copie manualmente' : 'copiar versão'}
         >
-          {#if copied === 'version'}<Check class="size-3 text-success" />{:else}<Copy class="size-3" />{/if}
+          {#if copied === 'version'}<Check class="size-3 text-success" />{:else if copyFailed === 'version'}<AlertCircle class="size-3 text-warning" />{:else}<Copy class="size-3" />{/if}
         </button>
       </div>
     {/if}
@@ -87,11 +93,17 @@
               type="button"
               onclick={() => copy(localAddress, 'local')}
               class="mc-btn text-xs px-2"
-              title="copiar"
+              title={copyFailed === 'local' ? 'falha ao copiar — selecione e copie manualmente' : 'copiar'}
             >
-              {#if copied === 'local'}<Check class="size-3 text-success" />{:else}<Copy class="size-3" />{/if}
+              {#if copied === 'local'}<Check class="size-3 text-success" />{:else if copyFailed === 'local'}<AlertCircle class="size-3 text-warning" />{:else}<Copy class="size-3" />{/if}
             </button>
           </div>
+          {#if copyFailed === 'local'}
+            <p class="text-[10px] text-warning mt-2 flex items-center gap-1" style="text-shadow: 2px 2px 0 #3f3f3f;">
+              <AlertCircle class="size-3 shrink-0" />
+              não consegui copiar (clipboard bloqueado) — selecione o endereço acima e copie manualmente
+            </p>
+          {/if}
           <p class="text-[10px] text-white/50 mt-2" style="text-shadow: 2px 2px 0 #3f3f3f;">
             cole no Minecraft → Multiplayer → Add Server
           </p>
@@ -127,11 +139,17 @@
               type="button"
               onclick={() => copy(publicUrl ?? '', 'public')}
               class="mc-btn text-xs px-2"
-              title="copiar"
+              title={copyFailed === 'public' ? 'falha ao copiar — selecione e copie manualmente' : 'copiar'}
             >
-              {#if copied === 'public'}<Check class="size-3 text-success" />{:else}<Copy class="size-3" />{/if}
+              {#if copied === 'public'}<Check class="size-3 text-success" />{:else if copyFailed === 'public'}<AlertCircle class="size-3 text-warning" />{:else}<Copy class="size-3" />{/if}
             </button>
           </div>
+          {#if copyFailed === 'public'}
+            <p class="text-[10px] text-warning mt-2 flex items-center gap-1" style="text-shadow: 2px 2px 0 #3f3f3f;">
+              <AlertCircle class="size-3 shrink-0" />
+              não consegui copiar (clipboard bloqueado) — selecione o endereço acima e copie manualmente
+            </p>
+          {/if}
           <p class="text-[10px] text-white/50 mt-2" style="text-shadow: 2px 2px 0 #3f3f3f;">
             funciona em qualquer lugar do mundo
           </p>

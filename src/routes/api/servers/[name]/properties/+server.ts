@@ -1,12 +1,8 @@
 import { requireServerPermission } from "$lib/auth/require-server-permission";
 import { json, error } from '@sveltejs/kit';
 import { z } from 'zod';
-import {
-  readContainerFile,
-  writeContainerFile,
-  parseProperties,
-  mergeProperties
-} from '$lib/mc/files';
+import { readContainerFile, parseProperties, mergeProperties } from '$lib/mc/files';
+import { readModifyWrite } from '$lib/mc/file-browser';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (event) => {
@@ -36,14 +32,9 @@ export const PUT: RequestHandler = async (event) => {
   if (!parsed.success) throw error(400, 'body inválido');
 
   try {
-    let original = '';
-    try {
-      original = await readContainerFile(params.name, '/data/server.properties');
-    } catch {
-      /* server may not have written it yet — fall back to empty */
-    }
-    const content = mergeProperties(original, parsed.data.properties);
-    await writeContainerFile(params.name, '/data/server.properties', content);
+    await readModifyWrite(params.name, '/data/server.properties', (original) =>
+      mergeProperties(original, parsed.data.properties)
+    );
     return json({ ok: true, restartNeeded: true });
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'falha';
