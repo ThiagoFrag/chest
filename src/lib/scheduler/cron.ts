@@ -3,6 +3,9 @@
  * Suporta sintaxe básica: minute hour day month dayOfWeek
  * Suporta: *, números, ranges (a-b), lists (a,b,c), steps (* /n)
  * Ignora day-of-week se day-of-month for setado (semantic POSIX).
+ *
+ * Matching opera em UTC (getUTC*). Datas passadas pro matcher/nextRunAt
+ * são interpretadas em UTC, consistente com o resto do scheduler.
  */
 
 export interface ParsedCron {
@@ -61,11 +64,11 @@ function parseField(s: string, min: number, max: number): Set<number> {
 }
 
 export function matches(cron: ParsedCron, date: Date): boolean {
-  const minute = date.getMinutes();
-  const hour = date.getHours();
-  const dom = date.getDate();
-  const month = date.getMonth() + 1;
-  const dow = date.getDay();
+  const minute = date.getUTCMinutes();
+  const hour = date.getUTCHours();
+  const dom = date.getUTCDate();
+  const month = date.getUTCMonth() + 1;
+  const dow = date.getUTCDay();
 
   if (!cron.minute.has(minute)) return false;
   if (!cron.hour.has(hour)) return false;
@@ -86,11 +89,11 @@ export function matches(cron: ParsedCron, date: Date): boolean {
 export function nextRunAt(expr: string, from: Date = new Date()): Date | null {
   const cron = parseCron(expr);
   const next = new Date(from);
-  next.setSeconds(0, 0);
-  next.setMinutes(next.getMinutes() + 1);
+  next.setUTCSeconds(0, 0);
+  next.setUTCMinutes(next.getUTCMinutes() + 1);
   for (let i = 0; i < 366 * 24 * 60; i++) {
     if (matches(cron, next)) return next;
-    next.setMinutes(next.getMinutes() + 1);
+    next.setUTCMinutes(next.getUTCMinutes() + 1);
   }
   return null;
 }

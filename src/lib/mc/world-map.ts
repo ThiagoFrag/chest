@@ -15,10 +15,17 @@ import {
 export type { MapType, LoaderType, MapStatus } from './world-map-types';
 export { loaderSupportsBlueMap } from './world-map-types';
 
+// Container dirs we list are fixed constants (see callers), but guard anyway so
+// no shell metacharacter can ever reach `exec`. We pass an exec array (no shell)
+// instead of `sh -c "... ${dir} ..."`, which would let backtick/$() in `dir`
+// execute. The old `2>/dev/null || true` is handled by try/catch + filtering.
+const SAFE_PATH = /^\/[A-Za-z0-9._/-]*$/;
+
 async function execList(containerName: string, dir: string): Promise<string[]> {
+  if (!SAFE_PATH.test(dir)) return [];
   try {
     const exec = await docker().getContainer(containerName).exec({
-      Cmd: ['sh', '-c', `ls -1 "${dir}" 2>/dev/null || true`],
+      Cmd: ['ls', '-1', dir],
       AttachStdout: true,
       AttachStderr: true
     });
