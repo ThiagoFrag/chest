@@ -114,10 +114,17 @@
     if (!confirm(`Remover ${mod.filename}?`)) return;
     pending = mod.filename;
     try {
-      await fetch(`/api/servers/${containerName}/mods/${encodeURIComponent(mod.filename)}`, {
+      const res = await fetch(`/api/servers/${containerName}/mods/${encodeURIComponent(mod.filename)}`, {
         method: 'DELETE'
       });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        alert(`erro: ${err.message ?? res.status}`);
+        return;
+      }
       mods = mods.filter((m) => m.filename !== mod.filename);
+    } catch {
+      alert('erro de rede ao remover o mod');
     } finally {
       pending = null;
     }

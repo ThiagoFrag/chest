@@ -1,13 +1,13 @@
-import { requireRole } from "$lib/auth/permissions";
 import { requireServerPermission } from "$lib/auth/require-server-permission";
 import { json, error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { getWorldInfo, setSeed, resetWorld } from '$lib/mc/world';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async ({ params, locals }) => {
-  requireRole(locals.user, 'viewer');
+export const GET: RequestHandler = async (event) => {
+  const { params } = event;
   if (!params.name) throw error(400);
+  await requireServerPermission(event, params.name, 'view_logs');
   try {
     const info = await getWorldInfo(params.name);
     return json(info);

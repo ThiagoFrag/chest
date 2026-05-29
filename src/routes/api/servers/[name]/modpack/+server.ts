@@ -1,4 +1,4 @@
-import { requireRole } from "$lib/auth/permissions";
+import { requireServerPermission } from '$lib/auth/require-server-permission';
 import { json, error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { installModrinthModpack } from '$lib/mc/modpack';
@@ -8,9 +8,10 @@ const schema = z.object({
   projectId: z.string().min(1)
 });
 
-export const POST: RequestHandler = async ({ params, request, locals }) => {
-  requireRole(locals.user, "operator");
+export const POST: RequestHandler = async (event) => {
+  const { params, request } = event;
   if (!params.name) throw error(400);
+  await requireServerPermission(event, params.name, 'manage_files');
 
   const body = await request.json().catch(() => null);
   const parsed = schema.safeParse(body);

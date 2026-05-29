@@ -71,13 +71,22 @@ export async function installMod(
   await container.putArchive(makeSingleFileTar(filename, content), { path: '/data/mods' });
 }
 
+const SAFE_MOD_FILENAME = /^[A-Za-z0-9._-]+$/;
+
+function assertSafeModFilename(filename: string): void {
+  if (filename.includes('/') || filename.includes('..')) {
+    throw new Error('path traversal');
+  }
+  if (!SAFE_MOD_FILENAME.test(filename)) {
+    throw new Error('filename inválido: apenas A-Z a-z 0-9 . _ - permitidos');
+  }
+}
+
 export async function removeMod(containerName: string, filename: string): Promise<void> {
   if (!filename.endsWith('.jar') && !filename.endsWith('.jar.disabled')) {
     throw new Error('filename inválido');
   }
-  if (filename.includes('/') || filename.includes('..')) {
-    throw new Error('path traversal');
-  }
+  assertSafeModFilename(filename);
   const container = docker().getContainer(containerName);
   const exec = await container.exec({
     Cmd: ['rm', '-f', `/data/mods/${filename}`, `/data/mods/${filename}.disabled`],
@@ -99,25 +108,27 @@ export async function toggleMod(
   filename: string,
   enabled: boolean
 ): Promise<void> {
-  if (filename.includes('/') || filename.includes('..')) {
-    throw new Error('path traversal');
-  }
+  assertSafeModFilename(filename);
   const container = docker().getContainer(containerName);
   const current = enabled ? `/data/mods/${filename}.disabled` : `/data/mods/${filename}`;
   const target = enabled ? `/data/mods/${filename}` : `/data/mods/${filename}.disabled`;
   const exec = await container.exec({
-    Cmd: ['sh', '-c', `mv -f "${current}" "${target}" 2>/dev/null || true`],
+    Cmd: ['mv', '-f', current, target],
     AttachStdout: true,
     AttachStderr: true
   });
-  await new Promise<void>((resolve, reject) => {
-    exec.start({}, (err: Error | null, stream) => {
-      if (err) return reject(err);
-      if (!stream) return resolve();
-      stream.on('end', () => resolve());
-      stream.on('error', reject);
+  try {
+    await new Promise<void>((resolve, reject) => {
+      exec.start({}, (err: Error | null, stream) => {
+        if (err) return reject(err);
+        if (!stream) return resolve();
+        stream.on('end', () => resolve());
+        stream.on('error', reject);
+      });
     });
-  });
+  } catch {
+    // mv falha se o arquivo de origem não existir (toggle já aplicado); ignorar como o `|| true` anterior fazia
+  }
 }
 
 export async function getServerMcInfo(slug: string): Promise<{ mcVersion: string; loader: string }> {

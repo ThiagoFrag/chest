@@ -1,7 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
-import { requireRole } from '$lib/auth/permissions';
+import { requireServerPermission } from '$lib/auth/require-server-permission';
 import { db, schema } from '$lib/db';
 import { docker } from '$lib/docker/client';
 import {
@@ -25,9 +25,10 @@ function sanitizeSlug(name: string): string {
   return name.replace(/[^a-z0-9-]/gi, '-').toLowerCase();
 }
 
-export const GET: RequestHandler = async ({ params, locals }) => {
-  requireRole(locals.user, 'viewer');
+export const GET: RequestHandler = async (event) => {
+  const { params } = event;
   if (!params.name) throw error(400);
+  await requireServerPermission(event, params.name, 'view_logs');
 
   const mcHost = await getSetting('forja.mc_host_address');
   try {
@@ -47,9 +48,9 @@ const postSchema = z
   .default({ mode: 'auto' });
 
 export const POST: RequestHandler = async (event) => {
-  const { params, locals } = event;
-  requireRole(locals.user, 'operator');
+  const { params } = event;
   if (!params.name) throw error(400);
+  await requireServerPermission(event, params.name, 'manage_files');
 
   const body = await event.request.json().catch(() => ({}));
   const parsed = postSchema.safeParse(body);
@@ -160,9 +161,9 @@ export const POST: RequestHandler = async (event) => {
 };
 
 export const DELETE: RequestHandler = async (event) => {
-  const { params, locals, url } = event;
-  requireRole(locals.user, 'operator');
+  const { params, url } = event;
   if (!params.name) throw error(400);
+  await requireServerPermission(event, params.name, 'manage_files');
 
   const wipe = url.searchParams.get('wipe') === '1';
   const row = await db()

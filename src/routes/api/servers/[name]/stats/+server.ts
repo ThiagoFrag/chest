@@ -1,11 +1,12 @@
-import { requireRole } from "$lib/auth/permissions";
+import { requireServerPermission } from '$lib/auth/require-server-permission';
 import { error } from '@sveltejs/kit';
 import { docker } from '$lib/docker/client';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async ({ params, locals }) => {
-  requireRole(locals.user, "viewer");
+export const GET: RequestHandler = async (event) => {
+  const { params } = event;
   if (!params.name) throw error(400);
+  await requireServerPermission(event, params.name, 'view_logs');
 
   const container = docker().getContainer(params.name);
   try {

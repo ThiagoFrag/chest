@@ -51,8 +51,15 @@
     if (!confirm(`Deletar backup de ${formatDate(b.createdAt)}?`)) return;
     pending = b.id;
     try {
-      await fetch(`/api/servers/${containerName}/backups/${b.id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/servers/${containerName}/backups/${b.id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        alert(`erro: ${err.message ?? res.status}`);
+        return;
+      }
       backups = backups.filter((x) => x.id !== b.id);
+    } catch {
+      alert('erro de rede ao deletar o backup');
     } finally {
       pending = null;
     }

@@ -1,12 +1,13 @@
-import { requireRole } from '$lib/auth/permissions';
+import { requireServerPermission } from '$lib/auth/require-server-permission';
 import { json, error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { detectAuthMode, setAuthMode } from '$lib/mc/auth-mode';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async ({ params, locals }) => {
-  requireRole(locals.user, 'viewer');
+export const GET: RequestHandler = async (event) => {
+  const { params } = event;
   if (!params.name) throw error(400);
+  await requireServerPermission(event, params.name, 'view_logs');
   try {
     const status = await detectAuthMode(params.name);
     return json(status);
@@ -21,9 +22,10 @@ const postSchema = z.object({
   draslUrl: z.string().url().optional()
 });
 
-export const POST: RequestHandler = async ({ params, request, locals }) => {
-  requireRole(locals.user, 'operator');
+export const POST: RequestHandler = async (event) => {
+  const { params, request } = event;
   if (!params.name) throw error(400);
+  await requireServerPermission(event, params.name, 'edit_config');
 
   const body = await request.json().catch(() => null);
   const parsed = postSchema.safeParse(body);

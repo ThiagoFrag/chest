@@ -24,10 +24,10 @@ export const invites = sqliteTable('invites', {
     .notNull()
     .default('viewer'),
   note: text('note'),
-  createdBy: text('created_by').notNull(),
+  createdBy: text('created_by').references(() => users.id, { onDelete: 'set null' }),
   expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
   usedAt: integer('used_at', { mode: 'timestamp' }),
-  usedBy: text('used_by'),
+  usedBy: text('used_by').references(() => users.id, { onDelete: 'set null' }),
   createdAt: integer('created_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`)
@@ -178,7 +178,7 @@ export const serverUsers = sqliteTable('server_users', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   permissions: text('permissions').notNull().default('[]'),
-  addedBy: text('added_by').notNull(),
+  addedBy: text('added_by').references(() => users.id, { onDelete: 'set null' }),
   createdAt: integer('created_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`)
@@ -195,7 +195,7 @@ export const webhookEndpoints = sqliteTable('webhook_endpoints', {
   eventsJson: text('events_json').notNull().default('["*"]'),
   serverId: text('server_id').references(() => servers.id, { onDelete: 'cascade' }),
   enabled: integer('enabled', { mode: 'boolean' }).notNull().default(true),
-  createdBy: text('created_by').notNull(),
+  createdBy: text('created_by').references(() => users.id, { onDelete: 'set null' }),
   createdAt: integer('created_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`),

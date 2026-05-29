@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import { requireRole } from '$lib/auth/permissions';
+import { requireServerPermission } from '$lib/auth/require-server-permission';
 import { proxyToMap } from '$lib/mc/map-proxy';
 import type { RequestHandler } from './$types';
 
@@ -7,7 +7,7 @@ import type { RequestHandler } from './$types';
 export const trailingSlash = 'ignore';
 
 export const GET: RequestHandler = async (event) => {
-  requireRole(event.locals.user, 'viewer');
   if (!event.params.name) throw error(400);
+  await requireServerPermission(event, event.params.name, 'view_logs');
   return proxyToMap(event, event.params.name, event.params.path ?? '');
 };

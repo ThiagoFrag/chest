@@ -2,6 +2,7 @@ import { docker } from '$lib/docker/client';
 import { db, schema } from '$lib/db';
 import { eq } from 'drizzle-orm';
 import { allocatePorts, slugify } from './port-allocator';
+import { withLock, SERVER_CREATE_LOCK } from './locks';
 import { encrypt, generateRconPassword } from './crypto';
 import { getSetting } from '$lib/settings';
 import { ensureAuthlibInjector, buildJvmOpts } from './authlib';
@@ -50,6 +51,19 @@ export async function ensureImage(): Promise<void> {
 }
 
 export async function createServer(input: CreateServerInput): Promise<{
+  id: string;
+  slug: string;
+  containerName: string;
+  hostPort: number;
+}> {
+  // Serialize the whole critical section (slug uniqueness + port allocation +
+  // DB insert + container creation) under one global lock. Server creation is
+  // rare, so global serialization is acceptable and eliminates both the port
+  // allocation race and the slug TOCTOU at once.
+  return withLock(SERVER_CREATE_LOCK, () => createServerLocked(input));
+}
+
+async function createServerLocked(input: CreateServerInput): Promise<{
   id: string;
   slug: string;
   containerName: string;

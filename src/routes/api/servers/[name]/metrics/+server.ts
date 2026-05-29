@@ -1,4 +1,4 @@
-import { requireRole } from "$lib/auth/permissions";
+import { requireServerPermission } from '$lib/auth/require-server-permission';
 import { json, error } from '@sveltejs/kit';
 import { eq, and, gte } from 'drizzle-orm';
 import { db, schema } from '$lib/db';
@@ -12,9 +12,10 @@ const RANGES: Record<string, number> = {
   '30d': 30 * 24 * 60 * 60 * 1000
 };
 
-export const GET: RequestHandler = async ({ params, url, locals }) => {
-  requireRole(locals.user, "viewer");
+export const GET: RequestHandler = async (event) => {
+  const { params, url } = event;
   if (!params.name) throw error(400);
+  await requireServerPermission(event, params.name, 'view_logs');
 
   const range = url.searchParams.get('range') ?? '1h';
   const windowMs = RANGES[range] ?? RANGES['1h'];
