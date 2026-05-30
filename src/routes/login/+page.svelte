@@ -2,6 +2,7 @@
   import { enhance } from '$app/forms';
   import { t } from '$lib/i18n';
   import Logo from '$components/mc-icons/Logo.svelte';
+  import ParallaxBackground from '$components/forja/ParallaxBackground.svelte';
   import type { ActionData, PageData } from './$types';
 
   let { form, data }: { form: ActionData; data: PageData } = $props();
@@ -12,7 +13,9 @@
   <title>{t('auth.login.pageTitle')}</title>
 </svelte:head>
 
-<main class="flex min-h-svh items-center justify-center px-4">
+<ParallaxBackground />
+
+<main class="relative z-10 flex min-h-svh items-center justify-center px-4">
   <div class="w-full max-w-md">
     <div class="mb-10 text-center">
       <div class="flex justify-center">

@@ -6,6 +6,8 @@
   import Logo from '$components/mc-icons/Logo.svelte';
   import { t, getLocale, setLocale, LOCALES, LOCALE_LABELS, type Locale } from '$lib/i18n';
   import { getTheme, setTheme, THEMES, THEME_LABELS, type Theme } from '$lib/theme';
+  import { getMotion, setMotion } from '$lib/fx';
+  import ParallaxBackground from '$components/forja/ParallaxBackground.svelte';
 
   let { children, data } = $props();
 
@@ -40,7 +42,9 @@
   }
 </script>
 
-<div class="flex min-h-svh">
+<ParallaxBackground />
+
+<div class="relative z-10 flex min-h-svh">
   <aside class="flex w-64 shrink-0 flex-col mc-bg-obsidian" style="border-right: 2px solid #000000; box-shadow: inset -2px 0 0 0 rgba(0,0,0,0.4);">
     <a href="/dashboard" class="flex items-center px-5 py-5" style="border-bottom: 2px solid #000000; background: rgba(0,0,0,0.4);">
       <Logo size={0.75} />
@@ -104,6 +108,25 @@
             <option value={th}>{THEME_LABELS[th]}</option>
           {/each}
         </select>
+      </div>
+
+      <div class="px-3 pb-1">
+        <button
+          type="button"
+          role="switch"
+          aria-checked={getMotion()}
+          onclick={() => setMotion(!getMotion())}
+          class="flex w-full items-center justify-between gap-3 bg-input px-2 py-1.5 text-sm text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          style="border: 2px solid #000000; box-shadow: inset 2px 2px 0 0 rgba(0,0,0,0.4); text-shadow: 2px 2px 0 #3f3f3f;"
+        >
+          <span>{t('nav.motion')}</span>
+          <span
+            class="px-2 py-0.5 text-xs {getMotion() ? 'bg-primary text-white' : 'text-white/50'}"
+            style="border: 2px solid #000000; box-shadow: inset 1px 1px 0 0 rgba(255,255,255,0.2), inset -1px -1px 0 0 rgba(0,0,0,0.4);"
+          >
+            {getMotion() ? t('nav.motionOn') : t('nav.motionOff')}
+          </span>
+        </button>
       </div>
 
       <form method="POST" action="/logout">

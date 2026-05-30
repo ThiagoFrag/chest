@@ -7,6 +7,7 @@ import { startCrashWatcher } from '$lib/mc/crash-watcher';
 import { startChatBridge } from '$lib/mc/chat-bridge';
 import { pickLocale } from '$lib/i18n/detect';
 import { pickTheme } from '$lib/theme/detect';
+import { pickMotion } from '$lib/fx/detect';
 
 const SESSION_COOKIE = 'forja_session';
 const TWO_FA_BYPASS_PATHS = ['/login/2fa', '/logout', '/api/auth/totp/verify'];
@@ -32,6 +33,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     event.request.headers.get('accept-language')
   );
   event.locals.theme = pickTheme(event.cookies.get('theme'));
+  event.locals.motion = pickMotion(event.cookies.get('fx_motion'));
   const sessionId = event.cookies.get(SESSION_COOKIE) ?? null;
   event.locals.sessionId = sessionId;
   event.locals.user = null;
