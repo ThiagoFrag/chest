@@ -4,13 +4,16 @@ import { integer, real, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 export const users = sqliteTable('users', {
   id: text('id').primaryKey(),
   username: text('username').notNull().unique(),
-  passwordHash: text('password_hash').notNull(),
+  passwordHash: text('password_hash'),
   role: text('role', { enum: ['admin', 'operator', 'viewer'] })
     .notNull()
     .default('admin'),
   totpSecret: text('totp_secret'),
   totpEnabledAt: integer('totp_enabled_at', { mode: 'timestamp' }),
   backupCodesJson: text('backup_codes_json'),
+  discordId: text('discord_id').unique(),
+  discordUsername: text('discord_username'),
+  discordAvatar: text('discord_avatar'),
   createdAt: integer('created_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`),

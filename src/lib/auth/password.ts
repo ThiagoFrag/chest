@@ -12,9 +12,10 @@ export async function hashPassword(plain: string): Promise<string> {
 }
 
 export async function verifyPassword(
-  hashStr: string,
+  hashStr: string | null | undefined,
   plain: string
 ): Promise<boolean> {
+  if (!hashStr) return false;
   try {
     return await verify(hashStr, plain, ARGON2_OPTS);
   } catch {

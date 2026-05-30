@@ -8,7 +8,24 @@ import {
   generateSessionToken
 } from '$lib/auth/session';
 import { logAudit } from '$lib/audit';
+import { getSetting } from '$lib/settings';
 import type { Actions, PageServerLoad } from './$types';
+
+const DISCORD_ERROR_MESSAGES: Record<string, string> = {
+  denied: 'autorização cancelada',
+  invalid_state: 'sessão expirou, tente de novo',
+  no_code: 'resposta inválida do Discord',
+  token: 'falha ao trocar o token de acesso',
+  no_account: 'nenhuma conta vinculada a esse Discord',
+  not_in_guild: 'você não faz parte do servidor exigido',
+  '2fa_required': 'confirme o segundo fator pra continuar',
+  disabled: 'login com Discord está desativado'
+};
+
+function describeDiscordError(reason: string | null): string {
+  if (!reason) return 'tente novamente';
+  return DISCORD_ERROR_MESSAGES[reason] ?? 'erro inesperado';
+}
 
 const SESSION_COOKIE = 'forja_session';
 
@@ -17,9 +34,14 @@ const loginSchema = z.object({
   password: z.string().min(1, 'senha obrigatória')
 });
 
-export const load: PageServerLoad = ({ locals }) => {
+export const load: PageServerLoad = async ({ locals, url }) => {
   if (locals.user) throw redirect(303, '/servers');
-  return {};
+  const discordEnabled = !!(await getSetting('discord.oauth_client_id'));
+  const discordError =
+    url.searchParams.get('error') === 'discord'
+      ? describeDiscordError(url.searchParams.get('reason'))
+      : null;
+  return { discordEnabled, discordError };
 };
 
 export const actions: Actions = {

@@ -1,12 +1,17 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { enhance } from '$app/forms';
   import { invalidateAll } from '$app/navigation';
-  import { Shield, Loader2, Check, X, Copy, RefreshCw, AlertCircle } from 'lucide-svelte';
+  import { Shield, Loader2, Check, X, Copy, RefreshCw, AlertCircle, Link2, Link2Off } from 'lucide-svelte';
+
+  let { data, form } = $props();
 
   interface Status {
     enabled: boolean;
     enabledAt: string | null;
   }
+
+  let unlinking = $state(false);
 
   let status = $state<Status | null>(null);
   let loading = $state(true);
@@ -248,4 +253,84 @@
       {/if}
     {/if}
   </section>
+
+  {#if data.discordEnabled}
+    <section class="mc-card space-y-4 mt-6">
+      <header>
+        <h2 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">CONEXÕES</h2>
+        <p class="text-xs text-white/60 mt-1" style="text-shadow: 2px 2px 0 #3f3f3f;">
+          vincule contas externas pra entrar mais rápido
+        </p>
+      </header>
+
+      {#if form?.unlink}
+        <div class="p-3 bg-destructive/20 border-2 border-destructive flex items-start gap-2" role="alert">
+          <AlertCircle class="size-4 text-destructive shrink-0 mt-0.5" />
+          <p class="text-sm text-destructive" style="text-shadow: 2px 2px 0 #3f3f3f;">{form.unlink}</p>
+        </div>
+      {/if}
+
+      <div class="border-t-2 border-black pt-4 flex items-center justify-between gap-4 flex-wrap">
+        {#if data.discord}
+          <div class="flex items-center gap-3 min-w-0">
+            {#if data.discord.avatar}
+              <img
+                src={`https://cdn.discordapp.com/avatars/${data.discord.id}/${data.discord.avatar}.png`}
+                alt="avatar do Discord de {data.discord.username}"
+                class="size-10 shrink-0 border-2 border-black"
+                width="40"
+                height="40"
+              />
+            {:else}
+              <div class="size-10 shrink-0 border-2 border-black bg-primary/40 flex items-center justify-center" aria-hidden="true">
+                <Link2 class="size-5 text-white/70" />
+              </div>
+            {/if}
+            <div class="min-w-0">
+              <p class="text-xs text-white/50" style="text-shadow: 2px 2px 0 #3f3f3f;">Discord</p>
+              <p class="text-sm truncate" style="text-shadow: 2px 2px 0 #3f3f3f;">
+                conectado como <strong class="text-mc-yellow">{data.discord.username ?? data.discord.id}</strong>
+              </p>
+            </div>
+          </div>
+
+          <form
+            method="POST"
+            action="?/unlinkDiscord"
+            use:enhance={() => {
+              unlinking = true;
+              return async ({ update }) => {
+                await update();
+                unlinking = false;
+                await invalidateAll();
+              };
+            }}
+          >
+            <button type="submit" disabled={unlinking} class="mc-btn mc-btn-destructive">
+              {#if unlinking}<Loader2 class="size-4 animate-spin" />{:else}<Link2Off class="size-4" />{/if}
+              desvincular
+            </button>
+          </form>
+        {:else}
+          <div class="flex items-center gap-3">
+            <div class="size-10 shrink-0 border-2 border-black bg-black/40 flex items-center justify-center" aria-hidden="true">
+              <Link2 class="size-5 text-white/50" />
+            </div>
+            <p class="text-sm text-white/70" style="text-shadow: 2px 2px 0 #3f3f3f;">
+              vincule seu Discord pra entrar com um clique
+            </p>
+          </div>
+
+          <a
+            href="/login/discord?mode=link"
+            data-sveltekit-reload
+            class="mc-btn mc-btn-primary inline-flex items-center gap-2"
+          >
+            <Link2 class="size-4" />
+            conectar Discord
+          </a>
+        {/if}
+      </div>
+    </section>
+  {/if}
 </div>

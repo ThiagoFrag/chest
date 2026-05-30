@@ -20,6 +20,9 @@ const VALID_KEYS = [
   'discord.webhook_url',
   'discord.bot_token',
   'discord.admin_user_id',
+  'discord.oauth_client_id',
+  'discord.oauth_client_secret',
+  'discord.oauth_guild_id',
   'forja.public_base_url',
   'forja.mc_host_address',
   'mods.modrinth_user_agent'

@@ -46,6 +46,12 @@
   let { data } = $props();
   const current = $derived(data.settings);
 
+  let origin = $state('<sua-origin>');
+  onMount(() => {
+    origin = window.location.origin;
+  });
+  const discordRedirectUri = $derived(`${origin}/login/discord/callback`);
+
   interface Section {
     title: string;
     icon: string;
@@ -148,6 +154,27 @@
           placeholder: '123456789012345678',
           type: 'text',
           help: 'pra receber DM quando algum server crashar. Ative Developer Mode no Discord → clique direito no seu nick → Copy User ID.'
+        },
+        {
+          key: 'discord.oauth_client_id',
+          label: 'OAuth Client ID (login com Discord)',
+          placeholder: '123456789012345678',
+          type: 'text',
+          help: 'discord.com/developers/applications → sua app → OAuth2 → Client ID. Habilita "entrar com Discord" e vínculo de conta.'
+        },
+        {
+          key: 'discord.oauth_client_secret',
+          label: 'OAuth Client Secret',
+          placeholder: 'xxxxxxxx...',
+          type: 'secret',
+          help: 'OAuth2 → Client Secret. Mantém em segredo — fica criptografado no banco.'
+        },
+        {
+          key: 'discord.oauth_guild_id',
+          label: 'OAuth Guild ID (opcional)',
+          placeholder: '123456789012345678',
+          type: 'text',
+          help: 'Opcional. Se preenchido, membros deste servidor Discord podem criar conta automaticamente (como viewer). Vazio = somente vínculo manual.'
         }
       ]
     },
@@ -331,6 +358,18 @@
               {/if}
             </div>
           {/each}
+
+          {#if section.title === 'DISCORD'}
+            <div class="border-2 border-mc-yellow/40 bg-black/40 px-3 py-3 space-y-1" style="box-shadow: inset 1px 1px 0 0 rgba(60,60,60,1);">
+              <p class="text-xs text-mc-yellow" style="text-shadow: 2px 2px 0 #3f3f3f;">
+                ℹ Redirect URI (registre no Discord Developer Portal)
+              </p>
+              <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">
+                Em OAuth2 → Redirects, adicione exatamente:
+              </p>
+              <code class="block break-all font-mono text-xs text-white bg-input border-2 border-black px-2 py-1">{discordRedirectUri}</code>
+            </div>
+          {/if}
 
           {#if section.title === 'DISCORD' && current['discord.webhook_url']}
             <div class="border-t-2 border-black pt-4 mt-2">

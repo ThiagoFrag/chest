@@ -11,6 +11,9 @@ export type SettingKey =
   | 'discord.webhook_url'
   | 'discord.bot_token'
   | 'discord.admin_user_id'
+  | 'discord.oauth_client_id'
+  | 'discord.oauth_client_secret'
+  | 'discord.oauth_guild_id'
   | 'forja.public_base_url'
   | 'forja.mc_host_address'
   | 'mods.modrinth_user_agent'
@@ -30,6 +33,7 @@ const SECRET_KEYS = new Set<SettingKey>([
   'playit.secret_key',
   'discord.webhook_url',
   'discord.bot_token',
+  'discord.oauth_client_secret',
   'chest.storage.s3.access_key',
   'chest.storage.s3.secret_key'
 ]);
