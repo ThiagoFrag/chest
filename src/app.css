@@ -97,7 +97,9 @@
 
   body {
     font-family: 'Minecraft', ui-monospace, monospace;
-    font-feature-settings: 'liga' 0, 'calt' 0;
+    font-feature-settings:
+      'liga' 0,
+      'calt' 0;
     color: var(--color-foreground);
     line-height: 1.3;
     /* Background com textura DIRT REAL do Minecraft, escurecida com overlay */
@@ -105,7 +107,9 @@
     background-image:
       linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
       url('/textures/block/dirt.png');
-    background-size: 100%, 64px 64px;
+    background-size:
+      100%,
+      64px 64px;
     background-attachment: fixed;
     background-repeat: repeat;
     image-rendering: pixelated;
@@ -316,8 +320,7 @@
     color: var(--color-mc-text);
     padding: 4px 6px;
     border: 1px solid var(--color-mc-tooltip-border-light);
-    box-shadow:
-      inset 0 0 0 1px var(--color-mc-tooltip-border-dark);
+    box-shadow: inset 0 0 0 1px var(--color-mc-tooltip-border-dark);
     font-family: 'Minecraft', monospace;
     font-size: 0.875rem;
     text-shadow: 2px 2px 0 var(--color-mc-text-shadow);
@@ -376,28 +379,294 @@
   }
   .mc-progress > .mc-progress-bar {
     height: 100%;
-    background: linear-gradient(to bottom, #80ff20 0%, #80ff20 30%, #50aa10 30%, #50aa10 100%);
+    background: linear-gradient(
+      to bottom,
+      #80ff20 0%,
+      #80ff20 30%,
+      #50aa10 30%,
+      #50aa10 100%
+    );
     transition: width 0.2s ease;
   }
 }
 
+/* ============================================================================
+   TEMAS — dirigidos por data-theme no <html> (setado no SSR via hooks.server.ts)
+   ----------------------------------------------------------------------------
+   O bloco @theme acima define o tema DEFAULT (grass): no Tailwind v4 cada token
+   vira uma CSS custom property em :root. Aqui cada [data-theme="x"] sobrescreve
+   esse mesmo conjunto de vars em runtime — sem rebuild.
+
+   Como parte do component layer hardcoda hex (body bg, .mc-card, .mc-btn-primary,
+   .mc-input:focus, ::selection via --color-grass), cada tema tambem recolore
+   essas superficies load-bearing pra a troca realmente aparecer. Contraste de
+   texto sobre fundo/card mantido em nivel AA.
+   ========================================================================== */
+
+[data-theme='grass'] {
+  /* identico ao @theme default — explicito por simetria */
+  --color-background: #1d1d1f;
+  --color-foreground: #ffffff;
+  --color-card: #2b2b2e;
+  --color-card-foreground: #ffffff;
+  --color-popover: #2b2b2e;
+  --color-popover-foreground: #ffffff;
+  --color-primary: #5ba34d;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #3c3c40;
+  --color-secondary-foreground: #ffffff;
+  --color-muted: #353538;
+  --color-muted-foreground: #a8a8a8;
+  --color-accent: #4aedd9;
+  --color-accent-foreground: #0a2a26;
+  --color-grass: #79c257;
+  --color-mc-yellow: #ffff55;
+}
+
+[data-theme='nether'] {
+  --color-background: #190b0b;
+  --color-foreground: #ffece6;
+  --color-card: #2a1311;
+  --color-card-foreground: #ffece6;
+  --color-popover: #2a1311;
+  --color-popover-foreground: #ffece6;
+  --color-primary: #b3271f;
+  --color-primary-foreground: #fff4f0;
+  --color-secondary: #3a1815;
+  --color-secondary-foreground: #ffd9cc;
+  --color-muted: #301513;
+  --color-muted-foreground: #cf9f93;
+  --color-accent: #ff7a18;
+  --color-accent-foreground: #2a0f00;
+  --color-grass: #ff7a18;
+  --color-mc-yellow: #ffb347;
+  --color-border: #000000;
+}
+
+[data-theme='end'] {
+  --color-background: #0d0a14;
+  --color-foreground: #f3eedd;
+  --color-card: #181226;
+  --color-card-foreground: #f3eedd;
+  --color-popover: #181226;
+  --color-popover-foreground: #f3eedd;
+  --color-primary: #7a4fb0;
+  --color-primary-foreground: #f6f0ff;
+  --color-secondary: #241a36;
+  --color-secondary-foreground: #e6dcf5;
+  --color-muted: #1f1730;
+  --color-muted-foreground: #b3a6cc;
+  --color-accent: #e85fd8;
+  --color-accent-foreground: #2a0a26;
+  --color-grass: #e85fd8;
+  --color-mc-yellow: #e9e1ad;
+  --color-border: #000000;
+}
+
+[data-theme='diamond'] {
+  --color-background: #0a1c20;
+  --color-foreground: #eafcff;
+  --color-card: #102a30;
+  --color-card-foreground: #eafcff;
+  --color-popover: #102a30;
+  --color-popover-foreground: #eafcff;
+  --color-primary: #2ec6c6;
+  --color-primary-foreground: #04221f;
+  --color-secondary: #163238;
+  --color-secondary-foreground: #d7f7fb;
+  --color-muted: #122a30;
+  --color-muted-foreground: #8fc6cf;
+  --color-accent: #4aedd9;
+  --color-accent-foreground: #04221f;
+  --color-grass: #4aedd9;
+  --color-mc-yellow: #9fe9ff;
+  --color-border: #000000;
+}
+
+[data-theme='gold'] {
+  --color-background: #1f1408;
+  --color-foreground: #fff6df;
+  --color-card: #2c1d0c;
+  --color-card-foreground: #fff6df;
+  --color-popover: #2c1d0c;
+  --color-popover-foreground: #fff6df;
+  --color-primary: #d99a1f;
+  --color-primary-foreground: #2a1a02;
+  --color-secondary: #3a2710;
+  --color-secondary-foreground: #ffe9bf;
+  --color-muted: #33220e;
+  --color-muted-foreground: #cdac76;
+  --color-accent: #ffcf4d;
+  --color-accent-foreground: #2a1a02;
+  --color-grass: #ffcf4d;
+  --color-mc-yellow: #ffe08a;
+  --color-border: #000000;
+}
+
+[data-theme='deep-dark'] {
+  --color-background: #05090b;
+  --color-foreground: #cfe9ec;
+  --color-card: #0c1417;
+  --color-card-foreground: #cfe9ec;
+  --color-popover: #0c1417;
+  --color-popover-foreground: #cfe9ec;
+  --color-primary: #1aa3a3;
+  --color-primary-foreground: #02201f;
+  --color-secondary: #112024;
+  --color-secondary-foreground: #b6dde0;
+  --color-muted: #0e1a1d;
+  --color-muted-foreground: #7fa9ad;
+  --color-accent: #3ad7d7;
+  --color-accent-foreground: #02201f;
+  --color-grass: #3ad7d7;
+  --color-mc-yellow: #5fe3e3;
+  --color-border: #000000;
+}
+
+[data-theme='redstone'] {
+  --color-background: #161213;
+  --color-foreground: #ffeceb;
+  --color-card: #221b1c;
+  --color-card-foreground: #ffeceb;
+  --color-popover: #221b1c;
+  --color-popover-foreground: #ffeceb;
+  --color-primary: #d23f3f;
+  --color-primary-foreground: #fff3f2;
+  --color-secondary: #2e2526;
+  --color-secondary-foreground: #f0d4d3;
+  --color-muted: #271f20;
+  --color-muted-foreground: #b89c9b;
+  --color-accent: #ff5a4d;
+  --color-accent-foreground: #2a0806;
+  --color-grass: #ff5a4d;
+  --color-mc-yellow: #ff8a7a;
+  --color-border: #000000;
+}
+
+[data-theme='ocean'] {
+  --color-background: #08131f;
+  --color-foreground: #e6f4ff;
+  --color-card: #0e2030;
+  --color-card-foreground: #e6f4ff;
+  --color-popover: #0e2030;
+  --color-popover-foreground: #e6f4ff;
+  --color-primary: #2a7fd6;
+  --color-primary-foreground: #f0f8ff;
+  --color-secondary: #15324a;
+  --color-secondary-foreground: #cfe7fb;
+  --color-muted: #102a3e;
+  --color-muted-foreground: #8fb6d6;
+  --color-accent: #4ec3ff;
+  --color-accent-foreground: #03192a;
+  --color-grass: #4ec3ff;
+  --color-mc-yellow: #8fd6ff;
+  --color-border: #000000;
+}
+
+/* Recolore as superficies hardcoded do component layer por tema. grass nao
+   precisa (= valores ja hardcoded no layer). Usa as vars do bloco acima. */
+[data-theme='nether'] body,
+[data-theme='end'] body,
+[data-theme='diamond'] body,
+[data-theme='gold'] body,
+[data-theme='deep-dark'] body,
+[data-theme='redstone'] body,
+[data-theme='ocean'] body {
+  background-color: var(--color-background);
+}
+
+[data-theme='nether'] .mc-card,
+[data-theme='end'] .mc-card,
+[data-theme='diamond'] .mc-card,
+[data-theme='gold'] .mc-card,
+[data-theme='deep-dark'] .mc-card,
+[data-theme='redstone'] .mc-card,
+[data-theme='ocean'] .mc-card {
+  background-color: var(--color-card);
+  color: var(--color-card-foreground);
+}
+
+[data-theme='nether'] .mc-card-hover:hover,
+[data-theme='end'] .mc-card-hover:hover,
+[data-theme='diamond'] .mc-card-hover:hover,
+[data-theme='gold'] .mc-card-hover:hover,
+[data-theme='deep-dark'] .mc-card-hover:hover,
+[data-theme='redstone'] .mc-card-hover:hover,
+[data-theme='ocean'] .mc-card-hover:hover {
+  background-color: var(--color-secondary);
+}
+
+[data-theme='nether'] .mc-btn-primary,
+[data-theme='end'] .mc-btn-primary,
+[data-theme='diamond'] .mc-btn-primary,
+[data-theme='gold'] .mc-btn-primary,
+[data-theme='deep-dark'] .mc-btn-primary,
+[data-theme='redstone'] .mc-btn-primary,
+[data-theme='ocean'] .mc-btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+}
+
+[data-theme='nether'] .mc-btn-primary:hover:not(:disabled),
+[data-theme='end'] .mc-btn-primary:hover:not(:disabled),
+[data-theme='diamond'] .mc-btn-primary:hover:not(:disabled),
+[data-theme='gold'] .mc-btn-primary:hover:not(:disabled),
+[data-theme='deep-dark'] .mc-btn-primary:hover:not(:disabled),
+[data-theme='redstone'] .mc-btn-primary:hover:not(:disabled),
+[data-theme='ocean'] .mc-btn-primary:hover:not(:disabled) {
+  background-color: var(--color-accent);
+  color: var(--color-accent-foreground);
+}
+
+[data-theme='nether'] .mc-input:focus,
+[data-theme='end'] .mc-input:focus,
+[data-theme='diamond'] .mc-input:focus,
+[data-theme='gold'] .mc-input:focus,
+[data-theme='deep-dark'] .mc-input:focus,
+[data-theme='redstone'] .mc-input:focus,
+[data-theme='ocean'] .mc-input:focus {
+  border-color: var(--color-accent);
+  box-shadow:
+    0 0 0 1px var(--color-accent),
+    inset 0 0 8px color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
+
 /* Animações Minecraft autênticas */
 @keyframes mc-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
 }
-.mc-pulse { animation: mc-pulse 1.4s ease-in-out infinite; }
+.mc-pulse {
+  animation: mc-pulse 1.4s ease-in-out infinite;
+}
 
 @keyframes mc-torch-flicker {
-  0%, 100% { filter: brightness(1) drop-shadow(0 0 4px rgba(255, 200, 100, 0.4)); }
-  50% { filter: brightness(1.2) drop-shadow(0 0 8px rgba(255, 200, 100, 0.6)); }
+  0%,
+  100% {
+    filter: brightness(1) drop-shadow(0 0 4px rgba(255, 200, 100, 0.4));
+  }
+  50% {
+    filter: brightness(1.2) drop-shadow(0 0 8px rgba(255, 200, 100, 0.6));
+  }
 }
-.mc-torch { animation: mc-torch-flicker 0.8s ease-in-out infinite; }
+.mc-torch {
+  animation: mc-torch-flicker 0.8s ease-in-out infinite;
+}
 
 /* Item bounce (igual quando você passa mouse no inventory MC) */
 @keyframes mc-item-bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
 }
 .mc-slot:hover img {
   animation: mc-item-bounce 0.4s ease-in-out infinite;
@@ -405,18 +674,35 @@
 
 /* Glow no diamante / item enchanted */
 @keyframes mc-enchant-glow {
-  0%, 100% { filter: drop-shadow(0 0 0 rgba(170, 80, 255, 0)); }
-  50% { filter: drop-shadow(0 0 6px rgba(170, 80, 255, 0.7)); }
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(170, 80, 255, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 6px rgba(170, 80, 255, 0.7));
+  }
 }
-.mc-enchanted { animation: mc-enchant-glow 2s ease-in-out infinite; }
+.mc-enchanted {
+  animation: mc-enchant-glow 2s ease-in-out infinite;
+}
 
 /* Achievement slide in (igual notificação de conquista MC) */
 @keyframes mc-achievement-in {
-  0% { transform: translateX(120%); }
-  15% { transform: translateX(-8px); }
-  30% { transform: translateX(0); }
-  85% { transform: translateX(0); }
-  100% { transform: translateX(120%); }
+  0% {
+    transform: translateX(120%);
+  }
+  15% {
+    transform: translateX(-8px);
+  }
+  30% {
+    transform: translateX(0);
+  }
+  85% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(120%);
+  }
 }
 .mc-achievement {
   position: fixed;
@@ -449,16 +735,33 @@
 
 /* Screen subtle tilt no banner (igual menu pause MC quando abre) */
 @keyframes mc-banner-tilt {
-  0% { transform: scale(0.98); opacity: 0.7; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(0.98);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
-.mc-banner { animation: mc-banner-tilt 0.15s ease-out; }
+.mc-banner {
+  animation: mc-banner-tilt 0.15s ease-out;
+}
 
 /* XP particle bounce (pra quando algo bem-sucedido) */
 @keyframes mc-xp-orb {
-  0% { transform: translate(0, 0) scale(0); opacity: 1; }
-  60% { transform: translate(20px, -30px) scale(1); opacity: 1; }
-  100% { transform: translate(40px, -60px) scale(0.5); opacity: 0; }
+  0% {
+    transform: translate(0, 0) scale(0);
+    opacity: 1;
+  }
+  60% {
+    transform: translate(20px, -30px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(40px, -60px) scale(0.5);
+    opacity: 0;
+  }
 }
 .mc-xp-orb {
   display: inline-block;
@@ -473,17 +776,32 @@
 
 /* Damage tilt (shake quando erro) */
 @keyframes mc-damage-shake {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-4px); }
-  40% { transform: translateX(4px); }
-  60% { transform: translateX(-3px); }
-  80% { transform: translateX(3px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-4px);
+  }
+  40% {
+    transform: translateX(4px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
 }
-.mc-shake { animation: mc-damage-shake 0.4s ease-in-out; }
+.mc-shake {
+  animation: mc-damage-shake 0.4s ease-in-out;
+}
 
 /* Card hover sutil (bloco subindo) */
 .mc-card-hover {
-  transition: transform 0.1s, background-color 0.05s;
+  transition:
+    transform 0.1s,
+    background-color 0.05s;
 }
 .mc-card-hover:hover {
   background-color: #353539;
@@ -494,15 +812,27 @@
 
 /* Tab/page transition (fade + slide pixelado) */
 @keyframes mc-tab-in {
-  0% { opacity: 0; transform: translateY(4px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.mc-tab-content { animation: mc-tab-in 0.18s ease-out; }
+.mc-tab-content {
+  animation: mc-tab-in 0.18s ease-out;
+}
 
 /* Loading bar pixelada MC (estilo barra de XP carregando) */
 @keyframes mc-loading-bar {
-  0% { background-position: 0 0; }
-  100% { background-position: 32px 0; }
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 32px 0;
+  }
 }
 .mc-loading-bar {
   height: 8px;
@@ -518,8 +848,10 @@
   inset: 0;
   background-image: linear-gradient(
     90deg,
-    #80ff20 0%, #80ff20 50%,
-    #50aa10 50%, #50aa10 100%
+    #80ff20 0%,
+    #80ff20 50%,
+    #50aa10 50%,
+    #50aa10 100%
   );
   background-size: 32px 8px;
   animation: mc-loading-bar 0.6s linear infinite;
@@ -527,14 +859,15 @@
 
 /* Skeleton (esperando dados) - obsidian shimmer */
 @keyframes mc-skeleton-shimmer {
-  0% { background-position: -200px 0; }
-  100% { background-position: 200px 0; }
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: 200px 0;
+  }
 }
 .mc-skeleton {
-  background: linear-gradient(
-    90deg,
-    #2b2b2e 0%, #353539 50%, #2b2b2e 100%
-  );
+  background: linear-gradient(90deg, #2b2b2e 0%, #353539 50%, #2b2b2e 100%);
   background-size: 200px 100%;
   animation: mc-skeleton-shimmer 1.5s linear infinite;
   border: 2px solid #000000;
@@ -542,22 +875,41 @@
 
 /* Mob spawn animation (item aparecendo em lista) */
 @keyframes mc-mob-spawn {
-  0% { opacity: 0; transform: scale(0.85) translateY(-4px); }
-  60% { opacity: 1; transform: scale(1.02) translateY(0); }
-  100% { transform: scale(1); }
+  0% {
+    opacity: 0;
+    transform: scale(0.85) translateY(-4px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.02) translateY(0);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
-.mc-spawn-in { animation: mc-mob-spawn 0.22s ease-out; }
+.mc-spawn-in {
+  animation: mc-mob-spawn 0.22s ease-out;
+}
 
 /* Heart pulse (status crítico) */
 @keyframes mc-heart-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.15); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
 }
-.mc-heart-pulse { animation: mc-heart-pulse 0.6s ease-in-out infinite; }
+.mc-heart-pulse {
+  animation: mc-heart-pulse 0.6s ease-in-out infinite;
+}
 
 /* Tab hover sutil (igual hotbar slot MC) */
 nav button {
-  transition: transform 0.08s, color 0.08s;
+  transition:
+    transform 0.08s,
+    color 0.08s;
 }
 nav button:hover:not([disabled]) {
   color: var(--color-mc-yellow);
@@ -574,12 +926,19 @@ nav button:hover:not([disabled]) {
 /* Input focus glow estilo MC enchanting table */
 .mc-input:focus {
   border-color: #ffff55;
-  box-shadow: 0 0 0 1px #ffff55, inset 0 0 8px rgba(255, 255, 85, 0.15);
+  box-shadow:
+    0 0 0 1px #ffff55,
+    inset 0 0 8px rgba(255, 255, 85, 0.15);
 }
 
 /* Achievement: melhor easing + sound visual hint */
 @keyframes mc-achievement-glow {
-  0%, 100% { box-shadow: inset 0 0 0 1px #2d0a52, 4px 4px 0 rgba(0, 0, 0, 0.5); }
+  0%,
+  100% {
+    box-shadow:
+      inset 0 0 0 1px #2d0a52,
+      4px 4px 0 rgba(0, 0, 0, 0.5);
+  }
   50% {
     box-shadow:
       inset 0 0 0 1px #ffaa00,
@@ -587,12 +946,21 @@ nav button:hover:not([disabled]) {
       4px 4px 0 rgba(0, 0, 0, 0.5);
   }
 }
-.mc-achievement { animation: mc-achievement-in 4s ease-out forwards, mc-achievement-glow 1s ease-in-out 0.3s 2; }
+.mc-achievement {
+  animation:
+    mc-achievement-in 4s ease-out forwards,
+    mc-achievement-glow 1s ease-in-out 0.3s 2;
+}
 
 /* Status dot animado */
 @keyframes mc-status-blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 .mc-status-running {
   background-color: var(--color-success);
@@ -627,7 +995,9 @@ nav button:hover:not([disabled]) {
   box-shadow: inset 0 0 0 1px #170128;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.1s, transform 0.1s;
+  transition:
+    opacity 0.1s,
+    transform 0.1s;
 }
 .mc-has-tooltip:hover::before {
   opacity: 1;
@@ -636,8 +1006,13 @@ nav button:hover:not([disabled]) {
 
 /* Selo "modificado" pulsando */
 @keyframes mc-modified-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 85, 0.5); }
-  50% { box-shadow: 0 0 0 4px rgba(255, 255, 85, 0); }
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 85, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(255, 255, 85, 0);
+  }
 }
 .mc-modified-badge {
   animation: mc-modified-pulse 1.4s ease-in-out infinite;
@@ -649,7 +1024,9 @@ nav button:hover:not([disabled]) {
 
 /* List item hover (estilo lista de mods MC) */
 .mc-list-item {
-  transition: background-color 0.05s, padding-left 0.08s;
+  transition:
+    background-color 0.05s,
+    padding-left 0.08s;
   border-left: 0px solid transparent;
 }
 .mc-list-item:hover {

@@ -6,13 +6,10 @@ import { startScheduler } from '$lib/scheduler/runner';
 import { startCrashWatcher } from '$lib/mc/crash-watcher';
 import { startChatBridge } from '$lib/mc/chat-bridge';
 import { pickLocale } from '$lib/i18n/detect';
+import { pickTheme } from '$lib/theme/detect';
 
 const SESSION_COOKIE = 'forja_session';
-const TWO_FA_BYPASS_PATHS = [
-  '/login/2fa',
-  '/logout',
-  '/api/auth/totp/verify'
-];
+const TWO_FA_BYPASS_PATHS = ['/login/2fa', '/logout', '/api/auth/totp/verify'];
 
 declare global {
   var __chestBooted: boolean | undefined;
@@ -34,6 +31,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     event.cookies.get('locale'),
     event.request.headers.get('accept-language')
   );
+  event.locals.theme = pickTheme(event.cookies.get('theme'));
   const sessionId = event.cookies.get(SESSION_COOKIE) ?? null;
   event.locals.sessionId = sessionId;
   event.locals.user = null;
@@ -68,5 +66,10 @@ export const handle: Handle = async ({ event, resolve }) => {
     throw redirect(303, '/login/2fa');
   }
 
-  return resolve(event);
+  return resolve(event, {
+    transformPageChunk: ({ html }) =>
+      html
+        .replace('<html', `<html data-theme="${event.locals.theme}"`)
+        .replace('lang="pt-BR"', `lang="${event.locals.locale}"`)
+  });
 };

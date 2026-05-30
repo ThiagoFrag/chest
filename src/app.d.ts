@@ -7,6 +7,7 @@ declare global {
       sessionId: string | null;
       passed2fa: boolean;
       locale: import('$lib/i18n/types').Locale;
+      theme: import('$lib/theme/types').Theme;
     }
   }
 }

@@ -495,5 +495,135 @@ export const serversdataPaths: PathsModule = {
         }
       }
     }
+  },
+  '/api/servers/{name}/players/skin': {
+    get: {
+      tags: ['Players'],
+      summary: 'Proxy da cabeça/skin do jogador (resolvida via Drasl)',
+      description:
+        'Resolve a skin do jogador pelo próprio Drasl (protocolo Yggdrasil) e devolve o PNG da skin inteira (`image/png`), para que o painel não dependa de serviço externo no modo drasl. O cliente recorta a face (8x8 em x=8,y=8) e compõe o overlay (x=40,y=8) num `<canvas>`. Requer a permissão `view_logs` sobre o servidor.',
+      operationId: 'getServerPlayerSkin',
+      security: defaultSecurity,
+      parameters: [
+        {
+          name: 'name',
+          in: 'path',
+          required: true,
+          description: 'containerName do servidor.',
+          schema: { type: 'string' }
+        },
+        {
+          name: 'uuid',
+          in: 'query',
+          required: true,
+          description: 'UUID do jogador (com ou sem hifens).',
+          schema: { type: 'string' }
+        },
+        {
+          name: 'name',
+          in: 'query',
+          required: false,
+          description: 'Nome do jogador (usado apenas como rótulo/fallback).',
+          schema: { type: 'string' }
+        },
+        {
+          name: 'size',
+          in: 'query',
+          required: false,
+          description: 'Tamanho desejado da renderização da cabeça no cliente.',
+          schema: { type: 'integer' }
+        }
+      ],
+      responses: {
+        '200': {
+          description: 'PNG da skin do jogador.',
+          content: { 'image/png': { schema: { type: 'string', format: 'binary' } } }
+        },
+        '400': {
+          description: 'uuid ausente.',
+          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+        },
+        '401': {
+          description: 'Não autenticado.',
+          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+        },
+        '403': {
+          description: 'Sem permissão `view_logs`.',
+          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+        },
+        '404': {
+          description: 'Skin indisponível (o cliente cai para o steve local).',
+          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+        }
+      }
+    }
+  },
+  '/api/servers/{name}/players/profile': {
+    get: {
+      tags: ['Players'],
+      summary: 'Conquistas e estatísticas de um jogador',
+      description:
+        'Retorna o progresso de conquistas agrupado por árvore (story, nether, end, adventure, husbandry) e estatísticas resumidas de um jogador, lidos dos arquivos `advancements/<uuid>.json` e `stats/<uuid>.json` do mundo. Requer a permissão `view_logs` sobre o servidor.',
+      operationId: 'getServerPlayerProfile',
+      security: defaultSecurity,
+      parameters: [
+        {
+          name: 'name',
+          in: 'path',
+          required: true,
+          description: 'containerName do servidor.',
+          schema: { type: 'string' }
+        },
+        {
+          name: 'uuid',
+          in: 'query',
+          required: true,
+          description: 'UUID canônico (com hifens) do jogador.',
+          schema: { type: 'string' }
+        }
+      ],
+      responses: {
+        '200': {
+          description: 'Conquistas agrupadas por árvore e estatísticas resumidas.',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['advancements', 'stats', 'hasData'],
+                properties: {
+                  advancements: {
+                    type: 'object',
+                    properties: {
+                      trees: { type: 'array', items: { type: 'object' } },
+                      totalDone: { type: 'integer' },
+                      totalAll: { type: 'integer' },
+                      recent: { type: 'array', items: { type: 'object' } }
+                    }
+                  },
+                  stats: { type: 'object' },
+                  hasData: { type: 'boolean' }
+                }
+              }
+            }
+          }
+        },
+        '400': {
+          description: 'uuid ausente ou inválido.',
+          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+        },
+        '401': {
+          description: 'Não autenticado.',
+          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+        },
+        '403': {
+          description: 'Sem permissão `view_logs`.',
+          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+        },
+        '404': {
+          description: 'Servidor não encontrado.',
+          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+        }
+      }
+    }
   }
 };

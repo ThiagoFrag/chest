@@ -5,6 +5,7 @@
   import MCTexture from '$components/mc-icons/MCTexture.svelte';
   import Logo from '$components/mc-icons/Logo.svelte';
   import { t, getLocale, setLocale, LOCALES, LOCALE_LABELS, type Locale } from '$lib/i18n';
+  import { getTheme, setTheme, THEMES, THEME_LABELS, type Theme } from '$lib/theme';
 
   let { children, data } = $props();
 
@@ -30,6 +31,11 @@
 
   async function changeLocale(value: string) {
     setLocale(value as Locale);
+    await invalidateAll();
+  }
+
+  async function changeTheme(value: string) {
+    setTheme(value as Theme);
     await invalidateAll();
   }
 </script>
@@ -79,6 +85,23 @@
         >
           {#each LOCALES as l}
             <option value={l}>{LOCALE_LABELS[l]}</option>
+          {/each}
+        </select>
+      </div>
+
+      <div class="px-3 pb-1">
+        <label for="theme-select" class="block text-xs text-white/60 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">
+          {t('nav.theme')}
+        </label>
+        <select
+          id="theme-select"
+          class="w-full bg-input text-white text-sm px-2 py-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          style="border: 2px solid #000000; box-shadow: inset 2px 2px 0 0 rgba(0,0,0,0.4);"
+          value={getTheme()}
+          onchange={(e) => changeTheme(e.currentTarget.value)}
+        >
+          {#each THEMES as th}
+            <option value={th}>{THEME_LABELS[th]}</option>
           {/each}
         </select>
       </div>

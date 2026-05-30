@@ -13,5 +13,6 @@ export const navMessages: Dict = {
   'nav.settings': 'ajustes',
   'nav.loggedAs': 'conectado',
   'nav.role': 'rol',
+  'nav.theme': 'tema',
   'nav.logout': 'salir'
 };
