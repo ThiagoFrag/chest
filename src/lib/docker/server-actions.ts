@@ -77,6 +77,14 @@ export interface ManagedServer {
 
 const MANAGED_LABEL = 'forja.managed';
 const DISPLAY_LABEL = 'forja.display';
+// BlueMap sidecars are also forja.managed=true (so the workers manage them),
+// but they are NOT Minecraft servers and have no `servers` table row. They must
+// never show up in the server list nor resolve as a server.
+const SIDECAR_LABEL = 'forja.bluemap';
+
+export function isSidecar(c: Pick<ContainerInfo, 'Labels'>): boolean {
+  return c.Labels?.[SIDECAR_LABEL] === 'true';
+}
 
 /**
  * Lists managed containers across every enabled host in parallel. A host that
@@ -93,7 +101,7 @@ export async function listManagedServersAllHosts(): Promise<ManagedServer[]> {
         all: true,
         filters: { label: [`${MANAGED_LABEL}=true`] }
       });
-      return containers.map((c) => toManagedServer(c, h.id));
+      return containers.filter((c) => !isSidecar(c)).map((c) => toManagedServer(c, h.id));
     })
   );
 
@@ -128,7 +136,10 @@ export async function getServer(
     filters: { name: [containerName] }
   });
   const found = containers.find(
-    (c) => c.Labels?.[MANAGED_LABEL] === 'true' && c.Names.includes(`/${containerName}`)
+    (c) =>
+      c.Labels?.[MANAGED_LABEL] === 'true' &&
+      !isSidecar(c) &&
+      c.Names.includes(`/${containerName}`)
   );
   return found ? toManagedServer(found) : null;
 }
