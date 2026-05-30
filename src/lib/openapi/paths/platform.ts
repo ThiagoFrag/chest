@@ -508,6 +508,52 @@ export const platformPaths: PathsModule = {
     }
   },
 
+  '/api/discord/validate-token': {
+    post: {
+      tags: ['Platform'],
+      summary: 'Valida um bot token do Discord',
+      description:
+        'Valida um bot token contra a API do Discord sem persistir nada; retorna o nome do bot e a URL de convite. Requer role `admin`.',
+      operationId: 'validateDiscordToken',
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['token'],
+              properties: { token: { type: 'string' } }
+            }
+          }
+        }
+      },
+      responses: {
+        '200': {
+          description: 'Resultado da validação (campo valid true/false).',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['valid'],
+                properties: {
+                  valid: { type: 'boolean' },
+                  reason: { type: 'string' },
+                  applicationId: { type: 'string' },
+                  botUsername: { type: 'string' },
+                  inviteUrl: { type: 'string' },
+                  permissionsHint: { type: 'string' }
+                }
+              }
+            }
+          }
+        },
+        '400': { description: 'Corpo inválido.', content: errorJson },
+        '401': { description: 'Não autenticado.', content: errorJson },
+        '403': { description: 'Sem permissão (requer role admin).', content: errorJson }
+      }
+    }
+  },
+
   '/api/discord/status': {
     get: {
       tags: ['Platform'],
