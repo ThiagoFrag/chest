@@ -1,0 +1,41 @@
+import type { Dict } from '../../types';
+
+export const authMessages: Dict = {
+  'auth.login.pageTitle': 'Chest · Entrar',
+  'auth.login.tagline': 'panel de servidores minecraft',
+  'auth.login.edition': 'community edition · v0.1.0',
+  'auth.login.username': 'usuario',
+  'auth.login.password': 'contraseña',
+  'auth.login.submit': 'entrar al juego',
+  'auth.login.submitting': 'entrando...',
+  'auth.login.discordError': 'No se pudo entrar con Discord: {error}',
+  'auth.login.or': 'o',
+  'auth.login.discordAria': 'Continuar con Discord',
+  'auth.login.discordButton': 'continuar con Discord',
+  'auth.login.footer': 'open source · AGPL-3.0',
+
+  'auth.twofa.pageTitle': 'Chest · 2FA',
+  'auth.twofa.heading': 'verificación 2FA',
+  'auth.twofa.codeLabel': 'código del autenticador',
+  'auth.twofa.placeholder': '123456 o backup',
+  'auth.twofa.hintBefore': 'ingresa el código de 6 dígitos de la app (Google Authenticator, Authy, Aegis) o un código de backup (formato',
+  'auth.twofa.hintAfter': ').',
+  'auth.twofa.submit': 'verificar',
+  'auth.twofa.logout': 'salir e intentar con otra cuenta',
+  'auth.twofa.invalidCode': 'código inválido',
+  'auth.twofa.genericError': 'falló',
+  'auth.twofa.backupUsed': 'código de backup consumido. recuerda generar nuevos si los necesitas.',
+
+  'auth.invite.pageTitle': 'Chest · Invitación',
+  'auth.invite.invited': '¡has sido invitado!',
+  'auth.invite.roleLabel': 'role:',
+  'auth.invite.noteLabel': 'nota: {note}',
+  'auth.invite.createHeading': 'crear cuenta',
+  'auth.invite.username': 'usuario',
+  'auth.invite.usernameHint': '3-32 caracteres, solo letras/números/_/-',
+  'auth.invite.password': 'contraseña',
+  'auth.invite.passwordHint': 'mínimo 8 caracteres',
+  'auth.invite.submit': 'crear cuenta y entrar',
+  'auth.invite.submitting': 'creando...',
+  'auth.invite.footer': 'open source · AGPL-3.0'
+};

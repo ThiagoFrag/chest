@@ -5,6 +5,7 @@ import { startMetricsCollector } from '$lib/mc/metrics-collector';
 import { startScheduler } from '$lib/scheduler/runner';
 import { startCrashWatcher } from '$lib/mc/crash-watcher';
 import { startChatBridge } from '$lib/mc/chat-bridge';
+import { pickLocale } from '$lib/i18n/detect';
 
 const SESSION_COOKIE = 'forja_session';
 const TWO_FA_BYPASS_PATHS = [
@@ -29,6 +30,10 @@ function boot() {
 
 export const handle: Handle = async ({ event, resolve }) => {
   boot();
+  event.locals.locale = pickLocale(
+    event.cookies.get('locale'),
+    event.request.headers.get('accept-language')
+  );
   const sessionId = event.cookies.get(SESSION_COOKIE) ?? null;
   event.locals.sessionId = sessionId;
   event.locals.user = null;

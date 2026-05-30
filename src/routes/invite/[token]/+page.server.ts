@@ -4,21 +4,22 @@ import { z } from 'zod';
 import { db, schema } from '$lib/db';
 import { hashPassword } from '$lib/auth/password';
 import { createSession, generateSessionToken } from '$lib/auth/session';
+import { tServer } from '$lib/i18n/server';
 import type { Actions, PageServerLoad } from './$types';
 
 const SESSION_COOKIE = 'forja_session';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, locals }) => {
   const inv = await db()
     .select()
     .from(schema.invites)
     .where(eq(schema.invites.token, params.token!))
     .get();
 
-  if (!inv) throw error(404, 'convite não encontrado');
+  if (!inv) throw error(404, tServer(locals.locale, 'serverrors.invite.notFound'));
   const expired = (inv.expiresAt instanceof Date ? inv.expiresAt.getTime() : Number(inv.expiresAt) * 1000) < Date.now();
-  if (inv.usedAt) throw error(410, 'convite já foi usado');
-  if (expired) throw error(410, 'convite expirado');
+  if (inv.usedAt) throw error(410, tServer(locals.locale, 'serverrors.invite.alreadyUsed'));
+  if (expired) throw error(410, tServer(locals.locale, 'serverrors.invite.expired'));
 
   return {
     role: inv.role,
@@ -33,15 +34,15 @@ const formSchema = z.object({
 });
 
 export const actions: Actions = {
-  default: async ({ params, request, cookies, url }) => {
+  default: async ({ params, request, cookies, url, locals }) => {
     const inv = await db()
       .select()
       .from(schema.invites)
       .where(eq(schema.invites.token, params.token!))
       .get();
-    if (!inv) return fail(404, { error: 'convite inválido' });
+    if (!inv) return fail(404, { error: tServer(locals.locale, 'serverrors.invite.invalid') });
     const expired = (inv.expiresAt instanceof Date ? inv.expiresAt.getTime() : Number(inv.expiresAt) * 1000) < Date.now();
-    if (inv.usedAt || expired) return fail(410, { error: 'convite indisponível' });
+    if (inv.usedAt || expired) return fail(410, { error: tServer(locals.locale, 'serverrors.invite.unavailable') });
 
     const form = await request.formData();
     const parsed = formSchema.safeParse({
@@ -49,7 +50,7 @@ export const actions: Actions = {
       password: form.get('password')
     });
     if (!parsed.success) {
-      return fail(400, { error: parsed.error.issues[0]?.message ?? 'inválido' });
+      return fail(400, { error: tServer(locals.locale, 'serverrors.invite.invalidData') });
     }
 
     const existing = await db()
@@ -57,7 +58,7 @@ export const actions: Actions = {
       .from(schema.users)
       .where(eq(schema.users.username, parsed.data.username))
       .get();
-    if (existing) return fail(409, { error: 'usuário já existe' });
+    if (existing) return fail(409, { error: tServer(locals.locale, 'serverrors.invite.userExists') });
 
     const passwordHash = await hashPassword(parsed.data.password);
     const userId = crypto.randomUUID();

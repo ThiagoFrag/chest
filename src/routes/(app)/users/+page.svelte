@@ -3,6 +3,7 @@
   import MCTexture from '$components/mc-icons/MCTexture.svelte';
   import PlayerHead from '$components/mc-icons/PlayerHead.svelte';
   import { invalidateAll } from '$app/navigation';
+  import { t, formatDate } from '$lib/i18n';
 
   let { data } = $props();
 
@@ -27,7 +28,7 @@
         await invalidateAll();
       } else {
         const err = await res.json().catch(() => ({}));
-        alert(`erro: ${err.message ?? res.status}`);
+        alert(t('admin.users.error', { message: err.message ?? res.status }));
       }
     } finally {
       creating = false;
@@ -35,7 +36,7 @@
   }
 
   async function deleteInvite(id: string) {
-    if (!confirm('Apagar este convite?')) return;
+    if (!confirm(t('admin.users.confirmDeleteInvite'))) return;
     pending = id;
     try {
       await fetch(`/api/invites/${id}`, { method: 'DELETE' });
@@ -60,7 +61,7 @@
   }
 
   async function deleteUser(userId: string, username: string) {
-    if (!confirm(`Deletar usuário ${username}?`)) return;
+    if (!confirm(t('admin.users.confirmDeleteUser', { username }))) return;
     pending = userId;
     try {
       await fetch(`/api/users/${userId}`, { method: 'DELETE' });
@@ -80,7 +81,7 @@
   function fmtDate(d: Date | string | null | number): string {
     if (!d) return '—';
     const ms = typeof d === 'number' ? d * 1000 : new Date(d).getTime();
-    return new Date(ms).toLocaleString('pt-BR');
+    return formatDate(new Date(ms), { dateStyle: 'short', timeStyle: 'short' });
   }
 
   function roleColor(role: string): string {
@@ -95,22 +96,22 @@
     return Eye;
   }
 
-  const roleDescriptions = {
-    admin: 'tudo: criar/deletar servers, settings, usuários',
-    operator: 'gerenciar servers existentes (start/stop, console, mods, backups)',
-    viewer: 'só visualização (overview, console read, métricas)'
-  };
+  const roleDescriptions = $derived({
+    admin: t('admin.users.role.adminDesc'),
+    operator: t('admin.users.role.operatorDesc'),
+    viewer: t('admin.users.role.viewerDesc')
+  });
 </script>
 
-<svelte:head><title>Chest · Usuários</title></svelte:head>
+<svelte:head><title>{t('admin.users.head')}</title></svelte:head>
 
 <div class="px-8 py-6">
   <div class="mc-banner mb-6 flex items-center gap-4">
     <Users class="size-10 text-mc-yellow" />
     <div>
-      <h1 class="mc-heading text-3xl">USUÁRIOS</h1>
+      <h1 class="mc-heading text-3xl">{t('admin.users.title')}</h1>
       <p class="mt-1 text-xs text-white/80" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        gerenciar contas + roles + convites
+        {t('admin.users.subtitle')}
       </p>
     </div>
   </div>
@@ -120,9 +121,9 @@
       <div class="flex items-center gap-3">
         <div class="mc-slot"><MCTexture src="/textures/item/iron_pickaxe.png" size={24} /></div>
         <div>
-          <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">CONTAS</h3>
+          <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('admin.users.accounts.title')}</h3>
           <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            {data.users.length} usuário{data.users.length === 1 ? '' : 's'}
+            {data.users.length === 1 ? t('admin.users.accounts.countOne', { n: data.users.length }) : t('admin.users.accounts.countOther', { n: data.users.length })}
           </p>
         </div>
       </div>
@@ -138,12 +139,12 @@
           <div class="flex-1 min-w-0">
             <p class="text-sm text-white" style="text-shadow: 2px 2px 0 #3f3f3f;">{u.username}</p>
             <p class="text-xs text-white/50">
-              criado: {fmtDate(u.createdAt as unknown as number)} · último login: {fmtDate(u.lastLoginAt as unknown as number)}
+              {t('admin.users.row.created', { created: fmtDate(u.createdAt as unknown as number), lastLogin: fmtDate(u.lastLoginAt as unknown as number) })}
             </p>
           </div>
           {#if data.user.id === u.id}
             <span class="text-xs px-2 py-1 bg-primary/40 border-2 border-black {roleColor(u.role)}" style="text-shadow: 2px 2px 0 #3f3f3f;">
-              <Icon class="size-3 inline" /> {u.role} (você)
+              <Icon class="size-3 inline" /> {u.role} {t('admin.users.row.you')}
             </span>
           {:else}
             <select
@@ -152,11 +153,11 @@
               disabled={pending === u.id}
               class="mc-input text-xs px-2 py-1 w-32"
             >
-              <option value="admin">admin</option>
-              <option value="operator">operator</option>
-              <option value="viewer">viewer</option>
+              <option value="admin">{t('admin.users.role.admin')}</option>
+              <option value="operator">{t('admin.users.role.operator')}</option>
+              <option value="viewer">{t('admin.users.role.viewer')}</option>
             </select>
-            <button type="button" onclick={() => deleteUser(u.id, u.username)} disabled={pending === u.id} class="text-destructive hover:text-mc-yellow" title="deletar">
+            <button type="button" onclick={() => deleteUser(u.id, u.username)} disabled={pending === u.id} class="text-destructive hover:text-mc-yellow" title={t('admin.users.deleteUser')}>
               {#if pending === u.id}<Loader2 class="size-4 animate-spin" />{:else}<Trash2 class="size-4" />{/if}
             </button>
           {/if}
@@ -170,14 +171,14 @@
       <div class="flex items-center gap-3">
         <div class="mc-slot"><MCTexture src="/textures/item/ender_eye.png" size={24} /></div>
         <div>
-          <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">CONVITES</h3>
+          <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('admin.users.invites.title')}</h3>
           <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            links de signup com role pré-definida
+            {t('admin.users.invites.subtitle')}
           </p>
         </div>
       </div>
       <button type="button" onclick={() => (showCreate = true)} class="mc-btn mc-btn-primary text-xs py-1.5 px-3">
-        <Plus class="size-3.5" /> novo convite
+        <Plus class="size-3.5" /> {t('admin.users.invites.new')}
       </button>
     </header>
 
@@ -185,27 +186,27 @@
       <div class="mb-4 p-4 bg-black/40 border-2 border-black" style="box-shadow: inset 1px 1px 0 0 rgba(60,60,60,1);">
         <div class="space-y-3">
           <div>
-            <span class="block text-xs text-white/70 mb-2" style="text-shadow: 2px 2px 0 #3f3f3f;">role</span>
+            <span class="block text-xs text-white/70 mb-2" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('admin.users.invites.roleLabel')}</span>
             <div class="grid grid-cols-3 gap-1">
               {#each ['viewer', 'operator', 'admin'] as r}
                 <button type="button" onclick={() => (newRole = r as typeof newRole)}
                   class="px-2 py-2 text-xs flex flex-col items-start {newRole === r ? 'bg-primary text-white' : 'bg-secondary text-white'}"
                   style="border: 2px solid #000; box-shadow: inset 1px 1px 0 0 rgba(255,255,255,0.15), inset -1px -1px 0 0 rgba(0,0,0,0.4); text-shadow: 2px 2px 0 #3f3f3f;">
-                  <span class="text-sm">{r}</span>
+                  <span class="text-sm">{t(`admin.users.role.${r}`)}</span>
                   <span class="text-xs opacity-75 text-left mt-0.5">{roleDescriptions[r as 'admin' | 'operator' | 'viewer']}</span>
                 </button>
               {/each}
             </div>
           </div>
           <div>
-            <label for="inv-note" class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">nota (opcional)</label>
-            <input id="inv-note" type="text" bind:value={newNote} placeholder="pra quem? ex: amigo João" class="mc-input" />
+            <label for="inv-note" class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('admin.users.invites.noteLabel')}</label>
+            <input id="inv-note" type="text" bind:value={newNote} placeholder={t('admin.users.invites.notePlaceholder')} class="mc-input" />
           </div>
           <div class="flex gap-2">
-            <button type="button" onclick={() => (showCreate = false)} class="mc-btn flex-1">cancelar</button>
+            <button type="button" onclick={() => (showCreate = false)} class="mc-btn flex-1">{t('admin.users.invites.cancel')}</button>
             <button type="button" onclick={createInvite} disabled={creating} class="mc-btn mc-btn-primary flex-1">
               {#if creating}<Loader2 class="size-4 animate-spin" />{:else}<Plus class="size-4" />{/if}
-              gerar link
+              {t('admin.users.invites.generate')}
             </button>
           </div>
         </div>
@@ -214,7 +215,7 @@
 
     {#if data.invites.length === 0}
       <p class="text-sm text-white/60 text-center py-6" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        nenhum convite ainda
+        {t('admin.users.invites.empty')}
       </p>
     {:else}
       <ul class="space-y-2">

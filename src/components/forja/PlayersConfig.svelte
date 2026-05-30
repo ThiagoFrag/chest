@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Loader2, UserPlus, UserX, Shield, Ban, RefreshCw, Plus, Crown } from 'lucide-svelte';
+  import { t } from '$lib/i18n';
 
   let { containerName, onlinePlayers = [] }: {
     containerName: string;
@@ -33,7 +34,7 @@
       const res = await fetch(`/api/servers/${containerName}/players-config`);
       if (!res.ok) {
         const e = await res.json().catch(() => ({}));
-        throw new Error(e.message ?? `erro ${res.status}`);
+        throw new Error(e.message ?? t('serverconfig.error.status', { status: res.status }));
       }
       const d = await res.json();
       whitelist = d.whitelist ?? [];
@@ -41,7 +42,7 @@
       bans = d.bans ?? [];
       banIps = d.banIps ?? [];
     } catch (e) {
-      error = e instanceof Error ? e.message : 'falha';
+      error = e instanceof Error ? e.message : t('serverconfig.error.fail');
     } finally {
       loading = false;
     }
@@ -58,14 +59,14 @@
       });
       if (!res.ok) {
         const e = await res.json().catch(() => ({}));
-        throw new Error(e.message ?? `erro ${res.status}`);
+        throw new Error(e.message ?? t('serverconfig.error.status', { status: res.status }));
       }
       await load();
       addInput = '';
       addReason = '';
       addIp = '';
     } catch (e) {
-      error = e instanceof Error ? e.message : 'falha';
+      error = e instanceof Error ? e.message : t('serverconfig.error.fail');
     } finally {
       mutating = null;
     }
@@ -77,33 +78,33 @@
 
   load();
 
-  const tabs: Array<{ id: ListKey; label: string; icon: typeof UserPlus; count: () => number }> = [
-    { id: 'online', label: 'online', icon: UserPlus, count: () => onlinePlayers.length },
-    { id: 'whitelist', label: 'whitelist', icon: Shield, count: () => whitelist.length },
-    { id: 'ops', label: 'operadores', icon: Crown, count: () => ops.length },
-    { id: 'bans', label: 'banidos', icon: Ban, count: () => bans.length },
-    { id: 'banIps', label: 'IPs banidos', icon: UserX, count: () => banIps.length }
+  const tabs: Array<{ id: ListKey; labelKey: string; icon: typeof UserPlus; count: () => number }> = [
+    { id: 'online', labelKey: 'serverconfig.players.tab.online', icon: UserPlus, count: () => onlinePlayers.length },
+    { id: 'whitelist', labelKey: 'serverconfig.players.tab.whitelist', icon: Shield, count: () => whitelist.length },
+    { id: 'ops', labelKey: 'serverconfig.players.tab.ops', icon: Crown, count: () => ops.length },
+    { id: 'bans', labelKey: 'serverconfig.players.tab.bans', icon: Ban, count: () => bans.length },
+    { id: 'banIps', labelKey: 'serverconfig.players.tab.banIps', icon: UserX, count: () => banIps.length }
   ];
 </script>
 
 <div class="space-y-4">
   <!-- Tabs -->
   <nav class="flex flex-wrap gap-1">
-    {#each tabs as t}
+    {#each tabs as tab}
       <button
         type="button"
-        onclick={() => (activeTab = t.id)}
-        class="px-3 py-2 text-xs flex items-center gap-2 {activeTab === t.id ? 'bg-primary text-white' : 'bg-secondary text-white/70 hover:bg-stone'}"
+        onclick={() => (activeTab = tab.id)}
+        class="px-3 py-2 text-xs flex items-center gap-2 {activeTab === tab.id ? 'bg-primary text-white' : 'bg-secondary text-white/70 hover:bg-stone'}"
         style="border: 2px solid #000000; box-shadow: inset 2px 2px 0 0 rgba(255,255,255,0.15), inset -2px -2px 0 0 rgba(0,0,0,0.4); text-shadow: 2px 2px 0 #3f3f3f;"
       >
-        <t.icon class="size-3.5" />
-        {t.label}
-        <span class="bg-black/40 px-1.5 py-0.5 text-[10px]">{t.count()}</span>
+        <tab.icon class="size-3.5" />
+        {t(tab.labelKey)}
+        <span class="bg-black/40 px-1.5 py-0.5 text-[10px]">{tab.count()}</span>
       </button>
     {/each}
     <button type="button" onclick={load} disabled={loading} class="mc-btn text-xs ml-auto">
       {#if loading}<Loader2 class="size-3 animate-spin" />{:else}<RefreshCw class="size-3" />{/if}
-      refresh
+      {t('serverconfig.players.refresh')}
     </button>
   </nav>
 
@@ -116,10 +117,10 @@
   <!-- Conteúdo de cada tab -->
   {#if activeTab === 'online'}
     <div class="mc-card">
-      <h3 class="text-lg mb-3" style="text-shadow: 2px 2px 0 #3f3f3f;">PLAYERS ONLINE</h3>
+      <h3 class="text-lg mb-3" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('serverconfig.players.online.title')}</h3>
       {#if onlinePlayers.length === 0}
         <p class="text-sm text-white/60 text-center py-6" style="text-shadow: 2px 2px 0 #3f3f3f;">
-          ninguém jogando agora
+          {t('serverconfig.players.online.empty')}
         </p>
       {:else}
         <ul class="space-y-2">
@@ -132,7 +133,7 @@
                 onclick={() => mutate({ list: 'whitelist', action: 'add', player: p }, `wl-${p}`)}
                 disabled={mutating === `wl-${p}`}
                 class="mc-btn text-xs"
-                title="adicionar à whitelist"
+                title={t('serverconfig.players.online.addWhitelist')}
               >
                 <Shield class="size-3" />
               </button>
@@ -141,7 +142,7 @@
                 onclick={() => mutate({ list: 'ops', action: 'add', player: p }, `op-${p}`)}
                 disabled={mutating === `op-${p}`}
                 class="mc-btn text-xs"
-                title="dar OP"
+                title={t('serverconfig.players.online.giveOp')}
               >
                 <Crown class="size-3" />
               </button>
@@ -150,7 +151,7 @@
                 onclick={() => mutate({ list: 'bans', action: 'add', player: p, reason: 'banned by Chest' }, `ban-${p}`)}
                 disabled={mutating === `ban-${p}`}
                 class="mc-btn mc-btn-destructive text-xs"
-                title="banir"
+                title={t('serverconfig.players.online.ban')}
               >
                 <Ban class="size-3" />
               </button>
@@ -164,7 +165,7 @@
       <div class="flex items-center gap-2 mb-4">
         <input
           type="text"
-          placeholder="nome do player"
+          placeholder={t('serverconfig.players.namePlaceholder')}
           bind:value={addInput}
           onkeydown={(e) => { if (e.key === 'Enter' && addInput.trim()) mutate({ list: 'whitelist', action: 'add', player: addInput.trim() }, 'wl-add'); }}
           class="mc-input flex-1"
@@ -176,11 +177,11 @@
           class="mc-btn mc-btn-primary"
         >
           {#if mutating === 'wl-add'}<Loader2 class="size-4 animate-spin" />{:else}<Plus class="size-4" />{/if}
-          adicionar
+          {t('serverconfig.players.add')}
         </button>
       </div>
       {#if whitelist.length === 0}
-        <p class="text-sm text-white/60 text-center py-6" style="text-shadow: 2px 2px 0 #3f3f3f;">whitelist vazia</p>
+        <p class="text-sm text-white/60 text-center py-6" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('serverconfig.players.whitelist.empty')}</p>
       {:else}
         <ul class="space-y-2">
           {#each whitelist as e}
@@ -197,7 +198,7 @@
                 class="mc-btn mc-btn-destructive text-xs"
               >
                 {#if mutating === `wl-rm-${e.name}`}<Loader2 class="size-3 animate-spin" />{:else}<UserX class="size-3" />{/if}
-                remover
+                {t('serverconfig.players.remove')}
               </button>
             </li>
           {/each}
@@ -209,7 +210,7 @@
       <div class="flex items-center gap-2 mb-4">
         <input
           type="text"
-          placeholder="nome do player"
+          placeholder={t('serverconfig.players.namePlaceholder')}
           bind:value={addInput}
           onkeydown={(e) => { if (e.key === 'Enter' && addInput.trim()) mutate({ list: 'ops', action: 'add', player: addInput.trim() }, 'op-add'); }}
           class="mc-input flex-1"
@@ -221,11 +222,11 @@
           class="mc-btn mc-btn-primary"
         >
           {#if mutating === 'op-add'}<Loader2 class="size-4 animate-spin" />{:else}<Crown class="size-4" />{/if}
-          dar OP
+          {t('serverconfig.players.ops.give')}
         </button>
       </div>
       {#if ops.length === 0}
-        <p class="text-sm text-white/60 text-center py-6" style="text-shadow: 2px 2px 0 #3f3f3f;">nenhum operador</p>
+        <p class="text-sm text-white/60 text-center py-6" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('serverconfig.players.ops.empty')}</p>
       {:else}
         <ul class="space-y-2">
           {#each ops as e}
@@ -234,7 +235,7 @@
               <div class="flex-1">
                 <p class="text-sm flex items-center gap-2" style="text-shadow: 2px 2px 0 #3f3f3f;">
                   {e.name}
-                  <span class="text-xs text-mc-yellow">lv {e.level}</span>
+                  <span class="text-xs text-mc-yellow">{t('serverconfig.players.ops.level', { level: e.level })}</span>
                 </p>
                 {#if e.uuid}<p class="text-[10px] text-white/40 font-mono">{e.uuid}</p>{/if}
               </div>
@@ -245,7 +246,7 @@
                 class="mc-btn mc-btn-destructive text-xs"
               >
                 {#if mutating === `op-rm-${e.name}`}<Loader2 class="size-3 animate-spin" />{:else}<UserX class="size-3" />{/if}
-                deop
+                {t('serverconfig.players.ops.deop')}
               </button>
             </li>
           {/each}
@@ -256,8 +257,8 @@
     <div class="mc-card">
       <div class="flex flex-col gap-2 mb-4">
         <div class="flex items-center gap-2">
-          <input type="text" placeholder="nome do player" bind:value={addInput} class="mc-input flex-1" />
-          <input type="text" placeholder="motivo (opcional)" bind:value={addReason} class="mc-input flex-1" />
+          <input type="text" placeholder={t('serverconfig.players.namePlaceholder')} bind:value={addInput} class="mc-input flex-1" />
+          <input type="text" placeholder={t('serverconfig.players.bans.reasonPlaceholder')} bind:value={addReason} class="mc-input flex-1" />
         </div>
         <button
           type="button"
@@ -266,11 +267,11 @@
           class="mc-btn mc-btn-destructive w-full"
         >
           {#if mutating === 'ban-add'}<Loader2 class="size-4 animate-spin" />{:else}<Ban class="size-4" />{/if}
-          banir player
+          {t('serverconfig.players.bans.ban')}
         </button>
       </div>
       {#if bans.length === 0}
-        <p class="text-sm text-white/60 text-center py-6" style="text-shadow: 2px 2px 0 #3f3f3f;">ninguém banido</p>
+        <p class="text-sm text-white/60 text-center py-6" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('serverconfig.players.bans.empty')}</p>
       {:else}
         <ul class="space-y-2">
           {#each bans as e}
@@ -279,7 +280,7 @@
               <div class="flex-1 min-w-0">
                 <p class="text-sm" style="text-shadow: 2px 2px 0 #3f3f3f;">{e.name ?? '?'}</p>
                 {#if e.reason}<p class="text-xs text-white/60 truncate" style="text-shadow: 2px 2px 0 #3f3f3f;">"{e.reason}"</p>{/if}
-                <p class="text-[10px] text-white/40">expira: {e.expires ?? 'permanente'}</p>
+                <p class="text-[10px] text-white/40">{t('serverconfig.players.bans.expires', { date: e.expires ?? t('serverconfig.players.bans.permanent') })}</p>
               </div>
               <button
                 type="button"
@@ -288,7 +289,7 @@
                 class="mc-btn text-xs"
               >
                 {#if mutating === `ban-rm-${e.name}`}<Loader2 class="size-3 animate-spin" />{:else}<UserPlus class="size-3" />{/if}
-                desbanir
+                {t('serverconfig.players.bans.unban')}
               </button>
             </li>
           {/each}
@@ -299,8 +300,8 @@
     <div class="mc-card">
       <div class="flex flex-col gap-2 mb-4">
         <div class="flex items-center gap-2">
-          <input type="text" placeholder="IP (ex: 192.168.1.50)" bind:value={addIp} class="mc-input flex-1" />
-          <input type="text" placeholder="motivo (opcional)" bind:value={addReason} class="mc-input flex-1" />
+          <input type="text" placeholder={t('serverconfig.players.banIps.ipPlaceholder')} bind:value={addIp} class="mc-input flex-1" />
+          <input type="text" placeholder={t('serverconfig.players.bans.reasonPlaceholder')} bind:value={addReason} class="mc-input flex-1" />
         </div>
         <button
           type="button"
@@ -309,11 +310,11 @@
           class="mc-btn mc-btn-destructive w-full"
         >
           {#if mutating === 'banip-add'}<Loader2 class="size-4 animate-spin" />{:else}<Ban class="size-4" />{/if}
-          banir IP
+          {t('serverconfig.players.banIps.ban')}
         </button>
       </div>
       {#if banIps.length === 0}
-        <p class="text-sm text-white/60 text-center py-6" style="text-shadow: 2px 2px 0 #3f3f3f;">nenhum IP banido</p>
+        <p class="text-sm text-white/60 text-center py-6" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('serverconfig.players.banIps.empty')}</p>
       {:else}
         <ul class="space-y-2">
           {#each banIps as e}
@@ -329,7 +330,7 @@
                 class="mc-btn text-xs"
               >
                 {#if mutating === `banip-rm-${e.ip}`}<Loader2 class="size-3 animate-spin" />{:else}<UserPlus class="size-3" />{/if}
-                desbanir
+                {t('serverconfig.players.bans.unban')}
               </button>
             </li>
           {/each}

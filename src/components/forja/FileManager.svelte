@@ -3,6 +3,7 @@
     Folder, FolderOpen, FileText, FileCode, FileJson, File as FileIcon,
     ArrowLeft, Loader2, Save, RefreshCw, AlertTriangle, ChevronRight, Home
   } from 'lucide-svelte';
+  import { t } from '$lib/i18n';
 
   let { containerName }: { containerName: string } = $props();
 
@@ -34,7 +35,7 @@
       const res = await fetch(`/api/servers/${containerName}/files?path=${encodeURIComponent(path)}&mode=list`);
       if (!res.ok) {
         const e = await res.json().catch(() => ({}));
-        throw new Error(e.message ?? `erro ${res.status}`);
+        throw new Error(e.message ?? t('content.files.error.generic', { status: res.status }));
       }
       const data = await res.json();
       entries = data.entries ?? [];
@@ -43,7 +44,7 @@
       fileContent = '';
       originalContent = '';
     } catch (e) {
-      error = e instanceof Error ? e.message : 'falha';
+      error = e instanceof Error ? e.message : t('content.files.error.failed');
     } finally {
       loading = false;
     }
@@ -59,14 +60,14 @@
       const res = await fetch(`/api/servers/${containerName}/files?path=${encodeURIComponent(e.path)}&mode=read`);
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        throw new Error(err.message ?? `erro ${res.status}`);
+        throw new Error(err.message ?? t('content.files.error.generic', { status: res.status }));
       }
       const data = await res.json();
       fileContent = data.content ?? '';
       originalContent = fileContent;
       truncated = !!data.truncated;
     } catch (err) {
-      error = err instanceof Error ? err.message : 'falha';
+      error = err instanceof Error ? err.message : t('content.files.error.failed');
       selectedFile = null;
     } finally {
       loadingFile = false;
@@ -85,13 +86,13 @@
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        throw new Error(err.message ?? `erro ${res.status}`);
+        throw new Error(err.message ?? t('content.files.error.generic', { status: res.status }));
       }
       originalContent = fileContent;
       savedFlash = true;
       setTimeout(() => (savedFlash = false), 2000);
     } catch (err) {
-      error = err instanceof Error ? err.message : 'falha';
+      error = err instanceof Error ? err.message : t('content.files.error.failed');
     } finally {
       savingFile = false;
     }
@@ -145,7 +146,7 @@
   <section class="mc-card flex flex-col">
     <header class="mb-3 space-y-2">
       <div class="flex items-center gap-1 flex-wrap text-xs">
-        <button type="button" onclick={goRoot} class="p-1 hover:text-mc-yellow" title="raiz (/data)">
+        <button type="button" onclick={goRoot} class="p-1 hover:text-mc-yellow" title={t('content.files.browser.root')}>
           <Home class="size-3.5" />
         </button>
         <span class="text-white/40">/data</span>
@@ -160,7 +161,7 @@
 
       <div class="flex gap-1">
         <button type="button" onclick={goUp} disabled={currentPath === '/data'} class="mc-btn text-xs flex-1">
-          <ArrowLeft class="size-3" /> voltar
+          <ArrowLeft class="size-3" /> {t('content.files.browser.back')}
         </button>
         <button type="button" onclick={() => loadDir(currentPath)} disabled={loading} class="mc-btn text-xs">
           {#if loading}<Loader2 class="size-3 animate-spin" />{:else}<RefreshCw class="size-3" />{/if}
@@ -180,7 +181,7 @@
         </div>
       </div>
     {:else if entries.length === 0}
-      <p class="text-sm text-white/50 text-center py-12" style="text-shadow: 2px 2px 0 #3f3f3f;">pasta vazia</p>
+      <p class="text-sm text-white/50 text-center py-12" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('content.files.browser.empty')}</p>
     {:else}
       <ul class="space-y-0.5 overflow-y-auto flex-1">
         {#each entries as e}
@@ -210,8 +211,8 @@
       <div class="flex-1 flex items-center justify-center text-center text-white/40">
         <div>
           <FolderOpen class="size-12 mx-auto opacity-50" />
-          <p class="text-sm mt-3" style="text-shadow: 2px 2px 0 #3f3f3f;">selecione um arquivo na lista</p>
-          <p class="text-xs mt-1" style="text-shadow: 2px 2px 0 #3f3f3f;">só arquivos de texto podem ser editados</p>
+          <p class="text-sm mt-3" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('content.files.editor.noSelection')}</p>
+          <p class="text-xs mt-1" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('content.files.editor.noSelectionHint')}</p>
         </div>
       </div>
     {:else if loadingFile}
@@ -229,7 +230,7 @@
         </div>
         <div class="flex items-center gap-2">
           {#if savedFlash}
-            <span class="text-xs text-success" style="text-shadow: 2px 2px 0 #3f3f3f;">✓ salvo</span>
+            <span class="text-xs text-success" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('content.files.editor.saved')}</span>
           {/if}
           <button
             type="button"
@@ -238,14 +239,14 @@
             class="mc-btn mc-btn-primary text-xs"
           >
             {#if savingFile}<Loader2 class="size-3 animate-spin" />{:else}<Save class="size-3" />{/if}
-            salvar
+            {t('content.files.editor.save')}
           </button>
         </div>
       </header>
 
       {#if truncated}
         <p class="text-xs text-warning mb-2" style="text-shadow: 2px 2px 0 #3f3f3f;">
-          ⚠ arquivo grande (truncado em 1MB). salvar vai sobrescrever só o que está aqui.
+          {t('content.files.editor.truncated')}
         </p>
       {/if}
 
@@ -261,7 +262,7 @@
       ></textarea>
 
       <div class="text-[10px] text-white/40 mt-2 flex justify-between" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        <span>{fileContent.length} chars · {fileContent.split('\n').length} linhas</span>
+        <span>{t('content.files.editor.stats', { chars: fileContent.length, lines: fileContent.split('\n').length })}</span>
         <span>UTF-8</span>
       </div>
     {/if}

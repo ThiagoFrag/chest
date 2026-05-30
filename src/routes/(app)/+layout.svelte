@@ -1,8 +1,10 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import { invalidateAll } from '$app/navigation';
   import { LayoutGrid, ServerCog, LogOut, Settings, Users, ShieldAlert, Shield, Egg, Webhook } from 'lucide-svelte';
   import MCTexture from '$components/mc-icons/MCTexture.svelte';
   import Logo from '$components/mc-icons/Logo.svelte';
+  import { t, getLocale, setLocale, LOCALES, LOCALE_LABELS, type Locale } from '$lib/i18n';
 
   let { children, data } = $props();
 
@@ -10,19 +12,24 @@
 
   const nav = $derived(
     [
-      { href: '/dashboard', label: 'dashboard', icon: LayoutGrid, show: true },
-      { href: '/servers', label: 'servers', icon: ServerCog, show: true },
-      { href: '/eggs', label: 'eggs', icon: Egg, show: true },
-      { href: '/users', label: 'usuários', icon: Users, show: isAdmin },
-      { href: '/audit', label: 'audit log', icon: ShieldAlert, show: isAdmin },
-      { href: '/webhooks', label: 'webhooks', icon: Webhook, show: isAdmin },
-      { href: '/security', label: 'segurança 2FA', icon: Shield, show: true },
-      { href: '/settings', label: 'configurações', icon: Settings, show: isAdmin }
+      { href: '/dashboard', label: t('nav.dashboard'), icon: LayoutGrid, show: true },
+      { href: '/servers', label: t('nav.servers'), icon: ServerCog, show: true },
+      { href: '/eggs', label: t('nav.eggs'), icon: Egg, show: true },
+      { href: '/users', label: t('nav.users'), icon: Users, show: isAdmin },
+      { href: '/audit', label: t('nav.audit'), icon: ShieldAlert, show: isAdmin },
+      { href: '/webhooks', label: t('nav.webhooks'), icon: Webhook, show: isAdmin },
+      { href: '/security', label: t('nav.security'), icon: Shield, show: true },
+      { href: '/settings', label: t('nav.settings'), icon: Settings, show: isAdmin }
     ].filter((i) => i.show)
   );
 
   function isActive(href: string) {
     return page.url.pathname === href || page.url.pathname.startsWith(href + '/');
+  }
+
+  async function changeLocale(value: string) {
+    setLocale(value as Locale);
+    await invalidateAll();
   }
 </script>
 
@@ -52,11 +59,29 @@
 
     <div class="p-3 space-y-2" style="border-top: 2px solid #000000; background: rgba(0,0,0,0.3);">
       <div class="px-3 pb-2 text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        logado: <span class="text-primary">{data.user.username}</span>
+        {t('nav.loggedAs')}: <span class="text-primary">{data.user.username}</span>
         <div class="text-white/40 text-xs mt-0.5">
-          role: <span class="{data.user.role === 'admin' ? 'text-warning' : data.user.role === 'operator' ? 'text-diamond' : 'text-white/60'}">{data.user.role}</span>
+          {t('nav.role')}: <span class="{data.user.role === 'admin' ? 'text-warning' : data.user.role === 'operator' ? 'text-diamond' : 'text-white/60'}">{data.user.role}</span>
         </div>
       </div>
+
+      <div class="px-3 pb-1">
+        <label for="locale-select" class="block text-xs text-white/60 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">
+          {t('nav.language')}
+        </label>
+        <select
+          id="locale-select"
+          class="w-full bg-input text-white text-sm px-2 py-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          style="border: 2px solid #000000; box-shadow: inset 2px 2px 0 0 rgba(0,0,0,0.4);"
+          value={getLocale()}
+          onchange={(e) => changeLocale(e.currentTarget.value)}
+        >
+          {#each LOCALES as l}
+            <option value={l}>{LOCALE_LABELS[l]}</option>
+          {/each}
+        </select>
+      </div>
+
       <form method="POST" action="/logout">
         <button
           type="submit"
@@ -64,7 +89,7 @@
           style="text-shadow: 2px 2px 0 #3f3f3f;"
         >
           <LogOut class="size-4" />
-          sair
+          {t('nav.logout')}
         </button>
       </form>
     </div>

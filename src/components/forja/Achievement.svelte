@@ -1,7 +1,8 @@
 <script lang="ts">
   import MCTexture from '$components/mc-icons/MCTexture.svelte';
+  import { t } from '$lib/i18n';
   let {
-    title = 'Conquista feita!',
+    title = t('integrations.achievement.defaultTitle'),
     desc = '',
     icon = '/textures/item/diamond.png',
     duration = 4000,

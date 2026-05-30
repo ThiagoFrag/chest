@@ -4,12 +4,13 @@ import { getServer } from '$lib/docker/server-actions';
 import { getStatus } from '$lib/mc/monitor';
 import { db, schema } from '$lib/db';
 import { getSetting } from '$lib/settings';
+import { tServer } from '$lib/i18n/server';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, locals }) => {
   if (!params.name) throw error(400);
   const server = await getServer(params.name);
-  if (!server) throw error(404, 'server não encontrado');
+  if (!server) throw error(404, tServer(locals.locale, 'serverrors.servers.notFound'));
 
   let mc = null;
   if (server.state === 'running' && server.hostPort) {

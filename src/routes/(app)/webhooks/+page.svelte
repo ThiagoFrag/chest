@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { Webhook, Plus, Loader2, Trash2, Send, Check, X, AlertCircle, Copy } from 'lucide-svelte';
+  import { t, formatDate } from '$lib/i18n';
 
   let { data } = $props();
 
@@ -36,12 +37,12 @@
       const res = await fetch('/api/webhooks');
       if (!res.ok) {
         const e = await res.json().catch(() => ({}));
-        throw new Error(e.message ?? `erro ${res.status}`);
+        throw new Error(e.message ?? t('admin.webhooks.errorStatus', { status: res.status }));
       }
       const d = await res.json();
       webhooks = d.webhooks ?? [];
     } catch (e) {
-      error = e instanceof Error ? e.message : 'falha';
+      error = e instanceof Error ? e.message : t('admin.webhooks.errorGeneric');
     } finally {
       loading = false;
     }
@@ -63,7 +64,7 @@
       });
       if (!res.ok) {
         const e = await res.json().catch(() => ({}));
-        throw new Error(e.message ?? 'falha');
+        throw new Error(e.message ?? t('admin.webhooks.errorGeneric'));
       }
       const d = await res.json();
       copiedSecret = d.secret;
@@ -72,7 +73,7 @@
       newEvents = new Set(['*']);
       await load();
     } catch (e) {
-      error = e instanceof Error ? e.message : 'falha';
+      error = e instanceof Error ? e.message : t('admin.webhooks.errorGeneric');
     } finally {
       busy = null;
     }
@@ -98,17 +99,17 @@
     try {
       const res = await fetch(`/api/webhooks/${id}/test`, { method: 'POST' });
       const d = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(d.message ?? `erro ${res.status}`);
+      if (!res.ok) throw new Error(d.message ?? t('admin.webhooks.errorStatus', { status: res.status }));
       await load();
     } catch (e) {
-      error = e instanceof Error ? e.message : 'falha';
+      error = e instanceof Error ? e.message : t('admin.webhooks.errorGeneric');
     } finally {
       busy = null;
     }
   }
 
   async function remove(id: string, name: string) {
-    if (!confirm(`Remover webhook "${name}"?`)) return;
+    if (!confirm(t('admin.webhooks.row.confirmRemove', { name }))) return;
     busy = `del-${id}`;
     try {
       await fetch(`/api/webhooks/${id}`, { method: 'DELETE' });
@@ -129,20 +130,26 @@
     navigator.clipboard.writeText(text);
   }
 
+  const eventsHelpHtml = $derived(
+    t('admin.webhooks.create.eventsHelp')
+      .replace('{star}', '<code class="text-mc-yellow">*</code>')
+      .replace('{group}', '<code class="text-mc-yellow">server.*</code>')
+  );
+
   onMount(() => {
     load();
   });
 </script>
 
-<svelte:head><title>Chest · Webhooks</title></svelte:head>
+<svelte:head><title>{t('admin.webhooks.head')}</title></svelte:head>
 
 <div class="px-8 py-6 max-w-4xl">
   <div class="mc-banner mb-6 flex items-center gap-4">
     <Webhook class="size-10 text-mc-yellow" />
     <div>
-      <h1 class="mc-heading text-3xl">WEBHOOKS</h1>
+      <h1 class="mc-heading text-3xl">{t('admin.webhooks.title')}</h1>
       <p class="mt-1 text-xs text-white/80" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        notifique sistemas externos quando eventos acontecem (Slack, n8n, Zapier, etc)
+        {t('admin.webhooks.subtitle')}
       </p>
     </div>
   </div>
@@ -150,17 +157,17 @@
   {#if copiedSecret}
     <div class="mc-card mb-4 border-2 border-mc-yellow bg-mc-yellow/10">
       <p class="text-sm text-mc-yellow mb-2" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        ✓ webhook criado! Guarde o secret — será mostrado apenas uma vez:
+        {t('admin.webhooks.secretCreated')}
       </p>
       <div class="flex items-center gap-2">
         <code class="flex-1 px-3 py-2 bg-black/40 font-mono text-xs break-all">{copiedSecret}</code>
         <button type="button" onclick={() => copy(copiedSecret!)} class="mc-btn text-xs">
-          <Copy class="size-3" /> copiar
+          <Copy class="size-3" /> {t('admin.webhooks.copy')}
         </button>
-        <button type="button" onclick={() => (copiedSecret = null)} class="mc-btn text-xs">já anotei</button>
+        <button type="button" onclick={() => (copiedSecret = null)} class="mc-btn text-xs">{t('admin.webhooks.noted')}</button>
       </div>
       <p class="text-[10px] text-white/70 mt-2" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        seu endpoint deve verificar header <code class="text-mc-yellow">x-chest-signature: sha256=&lt;hmac&gt;</code>.
+        {t('admin.webhooks.verifyHeader')} <code class="text-mc-yellow">x-chest-signature: sha256=&lt;hmac&gt;</code>.
       </p>
     </div>
   {/if}
@@ -173,22 +180,22 @@
   {/if}
 
   <section class="mc-card mb-6 space-y-3">
-    <h2 class="text-lg mb-2" style="text-shadow: 2px 2px 0 #3f3f3f;">CRIAR WEBHOOK</h2>
+    <h2 class="text-lg mb-2" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('admin.webhooks.create.title')}</h2>
 
     <div class="grid sm:grid-cols-2 gap-3">
       <div>
-        <label for="wh-name" class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">nome</label>
-        <input id="wh-name" type="text" bind:value={newName} placeholder="Slack #ops" class="mc-input" />
+        <label for="wh-name" class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('admin.webhooks.create.nameLabel')}</label>
+        <input id="wh-name" type="text" bind:value={newName} placeholder={t('admin.webhooks.create.namePlaceholder')} class="mc-input" />
       </div>
       <div>
-        <label for="wh-url" class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">URL</label>
-        <input id="wh-url" type="url" bind:value={newUrl} placeholder="https://hooks.slack.com/..." class="mc-input" />
+        <label for="wh-url" class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('admin.webhooks.create.urlLabel')}</label>
+        <input id="wh-url" type="url" bind:value={newUrl} placeholder={t('admin.webhooks.create.urlPlaceholder')} class="mc-input" />
       </div>
     </div>
 
     <div>
       <span class="block text-xs text-white/70 mb-2" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        eventos (use <code class="text-mc-yellow">*</code> pra todos ou <code class="text-mc-yellow">server.*</code> pra grupos)
+        {@html eventsHelpHtml}
       </span>
       <div class="flex flex-wrap gap-1">
         <button type="button" onclick={() => toggleEvent('*')}
@@ -213,20 +220,20 @@
       class="mc-btn mc-btn-primary w-full"
     >
       {#if busy === 'create'}<Loader2 class="size-4 animate-spin" />{:else}<Plus class="size-4" />{/if}
-      criar webhook
+      {t('admin.webhooks.create.button')}
     </button>
   </section>
 
   <section>
     <h2 class="text-lg mb-3" style="text-shadow: 2px 2px 0 #3f3f3f;">
-      WEBHOOKS CONFIGURADOS {#if !loading}({webhooks.length}){/if}
+      {t('admin.webhooks.list.title')} {#if !loading}({webhooks.length}){/if}
     </h2>
 
     {#if loading}
       <div class="text-center py-8"><Loader2 class="size-6 animate-spin mx-auto text-white/50" /></div>
     {:else if webhooks.length === 0}
       <p class="text-sm text-white/60 text-center py-8" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        nenhum webhook ainda. crie o primeiro acima.
+        {t('admin.webhooks.list.empty')}
       </p>
     {:else}
       <div class="space-y-3">
@@ -236,18 +243,18 @@
               <div class="min-w-0 flex-1">
                 <h3 class="text-sm" style="text-shadow: 2px 2px 0 #3f3f3f;">
                   {wh.name}
-                  {#if !wh.enabled}<span class="text-xs text-destructive ml-2">desativado</span>{/if}
-                  {#if wh.consecutiveFailures >= 5}<span class="text-xs text-warning ml-2">⚠ {wh.consecutiveFailures} falhas</span>{/if}
+                  {#if !wh.enabled}<span class="text-xs text-destructive ml-2">{t('admin.webhooks.row.disabled')}</span>{/if}
+                  {#if wh.consecutiveFailures >= 5}<span class="text-xs text-warning ml-2">{t('admin.webhooks.row.failures', { n: wh.consecutiveFailures })}</span>{/if}
                 </h3>
                 <p class="text-xs text-white/60 font-mono truncate" style="text-shadow: 2px 2px 0 #3f3f3f;">{wh.url}</p>
               </div>
               <div class="flex gap-1">
                 <button type="button" onclick={() => test(wh.id)} disabled={busy === `test-${wh.id}`} class="mc-btn text-xs">
                   {#if busy === `test-${wh.id}`}<Loader2 class="size-3 animate-spin" />{:else}<Send class="size-3" />{/if}
-                  testar
+                  {t('admin.webhooks.row.test')}
                 </button>
                 <button type="button" onclick={() => toggle(wh.id, wh.enabled)} disabled={busy === `toggle-${wh.id}`} class="mc-btn text-xs">
-                  {wh.enabled ? 'pausar' : 'ativar'}
+                  {wh.enabled ? t('admin.webhooks.row.pause') : t('admin.webhooks.row.activate')}
                 </button>
                 <button type="button" onclick={() => remove(wh.id, wh.name)} disabled={busy === `del-${wh.id}`} class="mc-btn mc-btn-destructive text-xs">
                   {#if busy === `del-${wh.id}`}<Loader2 class="size-3 animate-spin" />{:else}<Trash2 class="size-3" />{/if}
@@ -262,13 +269,13 @@
             </div>
 
             <p class="text-[10px] text-white/40" style="text-shadow: 2px 2px 0 #3f3f3f;">
-              secret: <code class="font-mono">{wh.secret}</code>
+              {t('admin.webhooks.row.secret')} <code class="font-mono">{wh.secret}</code>
             </p>
 
             {#if wh.lastDeliveryAt}
               <div class="mt-2 text-[10px] {wh.lastDeliveryStatus === 'ok' ? 'text-success' : 'text-destructive'}" style="text-shadow: 2px 2px 0 #3f3f3f;">
                 {#if wh.lastDeliveryStatus === 'ok'}<Check class="size-2.5 inline" />{:else}<X class="size-2.5 inline" />{/if}
-                última entrega: {new Date(wh.lastDeliveryAt).toLocaleString('pt-BR')}
+                {t('admin.webhooks.row.lastDelivery', { when: formatDate(new Date(wh.lastDeliveryAt), { dateStyle: 'short', timeStyle: 'short' }) })}
                 {#if wh.lastDeliveryMessage}— {wh.lastDeliveryMessage}{/if}
               </div>
             {/if}
@@ -279,11 +286,11 @@
   </section>
 
   <details class="mt-6 mc-card">
-    <summary class="text-sm cursor-pointer" style="text-shadow: 2px 2px 0 #3f3f3f;">📖 como verificar a assinatura (HMAC SHA-256)</summary>
+    <summary class="text-sm cursor-pointer" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('admin.webhooks.docs.summary')}</summary>
     <div class="mt-3 text-xs text-white/70 space-y-2" style="text-shadow: 2px 2px 0 #3f3f3f;">
-      <p>cada request POST tem o header:</p>
+      <p>{t('admin.webhooks.docs.eachRequest')}</p>
       <code class="block bg-black/40 p-2 font-mono">x-chest-signature: sha256=&lt;hex&gt;</code>
-      <p>compare com HMAC SHA-256 do raw body usando o secret:</p>
+      <p>{t('admin.webhooks.docs.compare')}</p>
       <pre class="bg-black/40 p-2 font-mono text-[10px] overflow-x-auto">{`// Node.js
 const crypto = require('crypto');
 const expected = 'sha256=' + crypto

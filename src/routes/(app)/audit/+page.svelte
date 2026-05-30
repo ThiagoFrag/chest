@@ -3,6 +3,7 @@
   import { page } from '$app/state';
   import { ShieldAlert, Check, X, RefreshCw, ChevronLeft, ChevronRight, User as UserIcon } from 'lucide-svelte';
   import MCTexture from '$components/mc-icons/MCTexture.svelte';
+  import { t, formatNumber, formatDate } from '$lib/i18n';
 
   let { data } = $props();
 
@@ -38,7 +39,7 @@
 
   function formatTimestamp(ts: Date | string | number): string {
     const d = typeof ts === 'object' ? ts : new Date(ts);
-    return d.toLocaleString('pt-BR', { hour12: false });
+    return formatDate(d, { dateStyle: 'short', timeStyle: 'medium', hour12: false });
   }
 
   function actionColor(action: string): string {
@@ -49,15 +50,15 @@
   }
 </script>
 
-<svelte:head><title>Chest · Audit log</title></svelte:head>
+<svelte:head><title>{t('admin.audit.head')}</title></svelte:head>
 
 <div class="px-8 py-6">
   <div class="mc-banner mb-6 flex items-center gap-4">
     <ShieldAlert class="size-10 text-mc-yellow" />
     <div>
-      <h1 class="mc-heading text-3xl">AUDIT LOG</h1>
+      <h1 class="mc-heading text-3xl">{t('admin.audit.title')}</h1>
       <p class="mt-1 text-xs text-white/80" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        {total.toLocaleString('pt-BR')} eventos registrados · {pageNum}/{pages || 1}
+        {t('admin.audit.subtitle', { count: formatNumber(total), page: pageNum, pages: pages || 1 })}
       </p>
     </div>
   </div>
@@ -65,13 +66,13 @@
   <section class="mc-card mb-4">
     <div class="grid gap-3 sm:grid-cols-4 items-end">
       <div>
-        <label for="audit-action" class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">ação</label>
+        <label for="audit-action" class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('admin.audit.filter.actionLabel')}</label>
         <input
           id="audit-action"
           type="text"
           list="action-list"
           bind:value={actionFilter}
-          placeholder="server.start"
+          placeholder={t('admin.audit.filter.actionPlaceholder')}
           class="mc-input text-sm"
           onkeydown={(e) => e.key === 'Enter' && applyFilters()}
         />
@@ -82,30 +83,30 @@
         </datalist>
       </div>
       <div>
-        <label for="audit-user" class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">usuário</label>
+        <label for="audit-user" class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('admin.audit.filter.userLabel')}</label>
         <input
           id="audit-user"
           type="text"
           bind:value={usernameFilter}
-          placeholder="admin"
+          placeholder={t('admin.audit.filter.userPlaceholder')}
           class="mc-input text-sm"
           onkeydown={(e) => e.key === 'Enter' && applyFilters()}
         />
       </div>
       <div>
-        <label for="audit-status" class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">status</label>
+        <label for="audit-status" class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('admin.audit.filter.statusLabel')}</label>
         <select id="audit-status" bind:value={statusFilter} class="mc-input text-sm">
-          <option value="">todos</option>
+          <option value="">{t('admin.audit.filter.statusAll')}</option>
           <option value="ok">ok</option>
           <option value="fail">fail</option>
         </select>
       </div>
       <div class="flex gap-2">
         <button type="button" onclick={applyFilters} class="mc-btn mc-btn-primary flex-1">
-          filtrar
+          {t('admin.audit.filter.apply')}
         </button>
         <button type="button" onclick={clearFilters} class="mc-btn">
-          limpar
+          {t('admin.audit.filter.clear')}
         </button>
       </div>
     </div>
@@ -115,7 +116,7 @@
     <div class="mc-card text-center py-12">
       <RefreshCw class="size-8 text-white/30 mx-auto" />
       <p class="text-sm text-white/60 mt-3" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        nenhum evento encontrado com esses filtros
+        {t('admin.audit.empty')}
       </p>
     </div>
   {:else}
@@ -123,12 +124,12 @@
       <table class="w-full text-xs">
         <thead>
           <tr class="text-left text-white/60 border-b-2 border-black">
-            <th class="pb-2 pr-3" style="text-shadow: 2px 2px 0 #3f3f3f;">quando</th>
-            <th class="pb-2 pr-3" style="text-shadow: 2px 2px 0 #3f3f3f;">quem</th>
-            <th class="pb-2 pr-3" style="text-shadow: 2px 2px 0 #3f3f3f;">ação</th>
-            <th class="pb-2 pr-3" style="text-shadow: 2px 2px 0 #3f3f3f;">recurso</th>
-            <th class="pb-2 pr-3" style="text-shadow: 2px 2px 0 #3f3f3f;">IP</th>
-            <th class="pb-2" style="text-shadow: 2px 2px 0 #3f3f3f;">status</th>
+            <th class="pb-2 pr-3" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('admin.audit.col.when')}</th>
+            <th class="pb-2 pr-3" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('admin.audit.col.who')}</th>
+            <th class="pb-2 pr-3" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('admin.audit.col.action')}</th>
+            <th class="pb-2 pr-3" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('admin.audit.col.resource')}</th>
+            <th class="pb-2 pr-3" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('admin.audit.col.ip')}</th>
+            <th class="pb-2" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('admin.audit.col.status')}</th>
           </tr>
         </thead>
         <tbody>
@@ -186,10 +187,10 @@
           disabled={pageNum <= 1}
           class="mc-btn text-xs"
         >
-          <ChevronLeft class="size-3" /> anterior
+          <ChevronLeft class="size-3" /> {t('admin.audit.page.prev')}
         </button>
         <span class="text-xs text-white/70" style="text-shadow: 2px 2px 0 #3f3f3f;">
-          página {pageNum} de {pages}
+          {t('admin.audit.page.info', { page: pageNum, pages })}
         </span>
         <button
           type="button"
@@ -197,7 +198,7 @@
           disabled={pageNum >= pages}
           class="mc-btn text-xs"
         >
-          próxima <ChevronRight class="size-3" />
+          {t('admin.audit.page.next')} <ChevronRight class="size-3" />
         </button>
       </nav>
     {/if}

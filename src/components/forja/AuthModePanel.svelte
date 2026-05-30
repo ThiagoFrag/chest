@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Loader2, ShieldCheck, ShieldOff, Key, Check, AlertCircle, RefreshCw } from 'lucide-svelte';
   import { invalidateAll } from '$app/navigation';
+  import { t } from '$lib/i18n';
 
   let { containerName }: { containerName: string } = $props();
 
@@ -26,11 +27,11 @@
       const res = await fetch(`/api/servers/${containerName}/auth-mode`);
       if (!res.ok) {
         const e = await res.json().catch(() => ({}));
-        throw new Error(e.message ?? `erro ${res.status}`);
+        throw new Error(e.message ?? t('integrations.auth.error.generic', { status: res.status }));
       }
       status = await res.json();
     } catch (e) {
-      error = e instanceof Error ? e.message : 'falha';
+      error = e instanceof Error ? e.message : t('integrations.auth.error.fail');
     } finally {
       loading = false;
     }
@@ -38,7 +39,7 @@
 
   async function switchTo(mode: AuthMode) {
     if (status?.mode === mode) return;
-    if (!confirm(`Mudar pra modo "${mode}"? O server vai ser recriado (volume preservado, vai parar e voltar em ~30s).`)) return;
+    if (!confirm(t('integrations.auth.confirm.switch', { mode }))) return;
 
     switching = mode;
     error = null;
@@ -51,14 +52,14 @@
       });
       if (!res.ok) {
         const e = await res.json().catch(() => ({}));
-        throw new Error(e.message ?? `erro ${res.status}`);
+        throw new Error(e.message ?? t('integrations.auth.error.generic', { status: res.status }));
       }
       saved = true;
       setTimeout(() => (saved = false), 3000);
       await load();
       await invalidateAll();
     } catch (e) {
-      error = e instanceof Error ? e.message : 'falha';
+      error = e instanceof Error ? e.message : t('integrations.auth.error.fail');
     } finally {
       switching = null;
     }
@@ -66,7 +67,7 @@
 
   load();
 
-  const modes: Array<{
+  const modes: () => Array<{
     id: AuthMode;
     label: string;
     desc: string;
@@ -74,35 +75,43 @@
     color: string;
     pros: string[];
     cons: string[];
-  }> = [
+  }> = $derived(() => [
     {
       id: 'mojang',
-      label: 'Mojang/Microsoft',
-      desc: 'auth oficial. só players com conta paga entram.',
+      label: t('integrations.auth.mode.mojang.label'),
+      desc: t('integrations.auth.mode.mojang.desc'),
       icon: ShieldCheck,
       color: 'success',
-      pros: ['+ seguro contra impostor', '+ skins/capas oficiais', '+ padrão'],
-      cons: ['- só conta paga', '- launchers crackados não funcionam']
+      pros: [
+        t('integrations.auth.mode.mojang.pro1'),
+        t('integrations.auth.mode.mojang.pro2'),
+        t('integrations.auth.mode.mojang.pro3')
+      ],
+      cons: [t('integrations.auth.mode.mojang.con1'), t('integrations.auth.mode.mojang.con2')]
     },
     {
       id: 'drasl',
-      label: 'Drasl (self-hosted)',
-      desc: 'auth via seu próprio Drasl. compatível com Prism Launcher, FjordLauncher, HMCL.',
+      label: t('integrations.auth.mode.drasl.label'),
+      desc: t('integrations.auth.mode.drasl.desc'),
       icon: Key,
       color: 'mc-yellow',
-      pros: ['+ amigos sem Microsoft entram', '+ você controla as contas', '+ skins via Drasl'],
-      cons: ['- players precisam launcher compatível com authlib-injector']
+      pros: [
+        t('integrations.auth.mode.drasl.pro1'),
+        t('integrations.auth.mode.drasl.pro2'),
+        t('integrations.auth.mode.drasl.pro3')
+      ],
+      cons: [t('integrations.auth.mode.drasl.con1')]
     },
     {
       id: 'offline',
-      label: 'Offline (cracked)',
-      desc: 'qualquer username conecta sem auth. server totalmente aberto.',
+      label: t('integrations.auth.mode.offline.label'),
+      desc: t('integrations.auth.mode.offline.desc'),
       icon: ShieldOff,
       color: 'destructive',
-      pros: ['+ qualquer launcher funciona', '+ máxima compatibilidade'],
-      cons: ['- impostor pode entrar como qualquer nick', '- sem proteção alguma']
+      pros: [t('integrations.auth.mode.offline.pro1'), t('integrations.auth.mode.offline.pro2')],
+      cons: [t('integrations.auth.mode.offline.con1'), t('integrations.auth.mode.offline.con2')]
     }
-  ];
+  ]);
 </script>
 
 <section class="mc-card space-y-4">
@@ -110,9 +119,9 @@
     <div class="flex items-center gap-2">
       <ShieldCheck class="size-5 text-mc-yellow" />
       <div>
-        <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">MODO DE AUTENTICAÇÃO</h3>
+        <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.auth.header.title')}</h3>
         <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">
-          como o server valida quem é o player que conecta
+          {t('integrations.auth.header.subtitle')}
         </p>
       </div>
     </div>
@@ -132,7 +141,7 @@
     {#if saved}
       <div class="p-3 bg-success/20 border-2 border-success">
         <p class="text-sm text-success" style="text-shadow: 2px 2px 0 #3f3f3f;">
-          ✓ modo trocado! container recriado. espere ~30s pro server voltar.
+          {t('integrations.auth.saved')}
         </p>
       </div>
     {/if}
@@ -144,7 +153,7 @@
     {/if}
 
     <div class="grid gap-3 lg:grid-cols-3">
-      {#each modes as m}
+      {#each modes() as m}
         {@const active = status.mode === m.id}
         {@const isSwitching = switching === m.id}
         <div
@@ -156,7 +165,7 @@
             <div class="flex-1">
               <p class="text-sm" style="text-shadow: 2px 2px 0 #3f3f3f;">
                 {m.label}
-                {#if active}<span class="text-success text-xs ml-2">✓ ATIVO</span>{/if}
+                {#if active}<span class="text-success text-xs ml-2">{t('integrations.auth.active')}</span>{/if}
               </p>
               <p class="text-xs text-white/70 mt-1" style="text-shadow: 2px 2px 0 #3f3f3f;">{m.desc}</p>
             </div>
@@ -178,11 +187,11 @@
             class="mc-btn {active ? '' : 'mc-btn-primary'} w-full mt-3 text-xs"
           >
             {#if isSwitching}
-              <Loader2 class="size-3 animate-spin" /> recriando...
+              <Loader2 class="size-3 animate-spin" /> {t('integrations.auth.recreating')}
             {:else if active}
-              <Check class="size-3" /> ativo
+              <Check class="size-3" /> {t('integrations.auth.activeBtn')}
             {:else}
-              ativar
+              {t('integrations.auth.activate')}
             {/if}
           </button>
         </div>
@@ -191,13 +200,13 @@
 
     {#if status.draslUrl}
       <p class="text-xs text-white/50" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        Drasl URL atual: <code class="text-diamond">{status.draslUrl}</code>
+        {t('integrations.auth.draslUrlBefore')} <code class="text-diamond">{status.draslUrl}</code>
       </p>
     {/if}
 
     <p class="text-[10px] text-white/40" style="text-shadow: 2px 2px 0 #3f3f3f;">
-      trocar de modo <strong>recria o container</strong> (volume preservado, world e mods intactos).
-      o server fica fora do ar por ~30 segundos durante a troca.
+      {t('integrations.auth.footerBefore')} <strong>{t('integrations.auth.footerRecreate')}</strong>
+      {t('integrations.auth.footerAfter')}
     </p>
   {/if}
 </section>

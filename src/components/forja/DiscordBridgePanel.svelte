@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Loader2, MessageSquare, AlertCircle, Check, X, ExternalLink, Plus } from 'lucide-svelte';
   import MCTexture from '$components/mc-icons/MCTexture.svelte';
+  import { t, plural } from '$lib/i18n';
 
   let { containerName }: { containerName: string } = $props();
 
@@ -85,7 +86,7 @@
         setTimeout(() => (saved = false), 2000);
       } else {
         const e = await res.json().catch(() => ({}));
-        alert(`erro: ${e.message ?? res.status}`);
+        alert(t('integrations.discord.alert.saveError', { error: e.message ?? res.status }));
       }
     } finally {
       saving = false;
@@ -102,8 +103,8 @@
     <header class="mb-4 flex items-center gap-3">
       <div class="mc-slot"><MCTexture src="/textures/item/ender_eye.png" size={24} /></div>
       <div>
-        <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">BOT STATUS</h3>
-        <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">discord.js v14 bridge</p>
+        <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.discord.botStatus.title')}</h3>
+        <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.discord.botStatus.subtitle')}</p>
       </div>
     </header>
 
@@ -114,11 +115,12 @@
         <div class="flex items-start gap-2">
           <AlertCircle class="size-5 text-warning mt-0.5 shrink-0" />
           <div>
-            <p class="text-sm text-white" style="text-shadow: 2px 2px 0 #3f3f3f;">bot não configurado</p>
+            <p class="text-sm text-white" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.discord.botStatus.notConfigured')}</p>
             <p class="text-xs text-white/60 mt-1" style="text-shadow: 2px 2px 0 #3f3f3f;">
-              Configure <span class="text-mc-yellow">discord.bot_token</span> em
-              <a href="/settings" class="text-mc-yellow underline">Settings</a>
-              pra liberar chat bridge.
+              {t('integrations.discord.botStatus.notConfiguredHintBefore')} <span class="text-mc-yellow">discord.bot_token</span>
+              {t('integrations.discord.botStatus.notConfiguredHintMid')}
+              <a href="/settings" class="text-mc-yellow underline">{t('integrations.discord.botStatus.settings')}</a>
+              {t('integrations.discord.botStatus.notConfiguredHintAfter')}
             </p>
           </div>
         </div>
@@ -127,20 +129,23 @@
       <div class="p-3 bg-black/40 border-2 border-destructive">
         <div class="flex items-center gap-2 text-destructive">
           <X class="size-5" />
-          <span class="text-sm" style="text-shadow: 2px 2px 0 #3f3f3f;">bot configurado mas não conectado</span>
+          <span class="text-sm" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.discord.botStatus.notConnected')}</span>
         </div>
         <p class="text-xs text-white/60 mt-2" style="text-shadow: 2px 2px 0 #3f3f3f;">
-          token inválido ou falha de rede. verifique nas Settings.
+          {t('integrations.discord.botStatus.notConnectedHint')}
         </p>
       </div>
     {:else}
       <div class="space-y-3">
         <div class="flex items-center gap-2 text-success">
           <Check class="size-5" />
-          <span class="text-sm" style="text-shadow: 2px 2px 0 #3f3f3f;">conectado como {botStatus.username}</span>
+          <span class="text-sm" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.discord.botStatus.connectedAs', { username: botStatus.username ?? '' })}</span>
         </div>
         <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">
-          {botStatus.guilds.length} servidor{botStatus.guilds.length === 1 ? '' : 'es'} acessível{botStatus.guilds.length === 1 ? '' : 's'}
+          {plural(botStatus.guilds.length, {
+            one: t('integrations.discord.botStatus.guildsCount.one'),
+            other: t('integrations.discord.botStatus.guildsCount.other')
+          })}
         </p>
 
         {#if botStatus.inviteUrl}
@@ -151,11 +156,11 @@
             class="mc-btn mc-btn-primary w-full inline-flex items-center justify-center gap-2"
           >
             <Plus class="size-4" />
-            adicionar bot a um servidor
+            {t('integrations.discord.botStatus.addBot')}
             <ExternalLink class="size-3" />
           </a>
           <p class="text-[10px] text-white/50 text-center" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            abre OAuth do Discord. precisa ser admin do server.
+            {t('integrations.discord.botStatus.addBotHint')}
           </p>
         {/if}
       </div>
@@ -167,8 +172,8 @@
     <header class="mb-4 flex items-center gap-3">
       <div class="mc-slot"><MessageSquare class="size-5 text-diamond" /></div>
       <div>
-        <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">CANAL BRIDGE</h3>
-        <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">MC ⇄ Discord bidirecional</p>
+        <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.discord.channel.title')}</h3>
+        <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.discord.channel.subtitle')}</p>
       </div>
     </header>
 
@@ -178,25 +183,25 @@
       <div class="space-y-3">
         <div class="p-3 bg-black/40 border-2 border-success" style="box-shadow: inset 1px 1px 0 0 rgba(60,60,60,1);">
           <p class="text-sm text-success" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            ✓ bridge ativa
+            {t('integrations.discord.channel.bridgeActive')}
           </p>
-          <p class="text-xs text-white/60 font-mono mt-1">channel: {currentChannelId}</p>
+          <p class="text-xs text-white/60 font-mono mt-1">{t('integrations.discord.channel.channelLabel', { id: currentChannelId })}</p>
         </div>
         <button type="button" onclick={() => saveChannel(null)} disabled={saving} class="mc-btn mc-btn-destructive w-full">
           {#if saving}<Loader2 class="size-4 animate-spin" />{:else}<X class="size-4" />{/if}
-          desconectar
+          {t('integrations.discord.channel.disconnect')}
         </button>
       </div>
     {:else if !botStatus?.connected}
       <p class="text-sm text-white/60 text-center py-6" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        conecte o bot primeiro
+        {t('integrations.discord.channel.connectBotFirst')}
       </p>
     {:else}
       <div class="space-y-3">
         <div>
-          <label for="dbp-guild" class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">servidor Discord</label>
+          <label for="dbp-guild" class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.discord.channel.serverLabel')}</label>
           <select id="dbp-guild" bind:value={selectedGuildId} class="mc-input">
-            <option value="">selecione...</option>
+            <option value="">{t('integrations.discord.channel.serverPlaceholder')}</option>
             {#each botStatus.guilds as g}
               <option value={g.id}>{g.name}</option>
             {/each}
@@ -205,12 +210,12 @@
 
         {#if selectedGuildId}
           <div>
-            <span class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">canal de texto</span>
+            <span class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.discord.channel.textChannelLabel')}</span>
             {#if loadingChannels}
               <div class="text-center py-3"><Loader2 class="size-4 animate-spin mx-auto text-white/50" /></div>
             {:else if channels.length === 0}
               <p class="text-xs text-warning" style="text-shadow: 2px 2px 0 #3f3f3f;">
-                nenhum canal acessível. o bot precisa permissão "View Channel" + "Send Messages" + "Manage Webhooks".
+                {t('integrations.discord.channel.noChannels')}
               </p>
             {:else}
               <div class="space-y-1 max-h-64 overflow-y-auto">
@@ -235,22 +240,22 @@
 
   <!-- Como funciona -->
   <section class="mc-card lg:col-span-2">
-    <h3 class="text-lg mb-3" style="text-shadow: 2px 2px 0 #3f3f3f;">COMO FUNCIONA</h3>
+    <h3 class="text-lg mb-3" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.discord.howItWorks.title')}</h3>
     <div class="grid gap-4 md:grid-cols-2 text-sm">
       <div>
-        <p class="text-mc-yellow mb-2" style="text-shadow: 2px 2px 0 #3f3f3f;">MC → Discord</p>
+        <p class="text-mc-yellow mb-2" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.discord.howItWorks.mcToDiscord')}</p>
         <ul class="text-xs text-white/70 space-y-1" style="text-shadow: 2px 2px 0 #3f3f3f;">
-          <li>• chat in-game (com avatar skin do player)</li>
-          <li>• join/leave events</li>
-          <li>• morte (estilo embed com emoji 💀)</li>
+          <li>• {t('integrations.discord.howItWorks.mcToDiscord.chat')}</li>
+          <li>• {t('integrations.discord.howItWorks.mcToDiscord.events')}</li>
+          <li>• {t('integrations.discord.howItWorks.mcToDiscord.death')}</li>
         </ul>
       </div>
       <div>
-        <p class="text-diamond mb-2" style="text-shadow: 2px 2px 0 #3f3f3f;">Discord → MC</p>
+        <p class="text-diamond mb-2" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.discord.howItWorks.discordToMc')}</p>
         <ul class="text-xs text-white/70 space-y-1" style="text-shadow: 2px 2px 0 #3f3f3f;">
-          <li>• mensagens viram <code class="text-mc-yellow">[Discord] &lt;user&gt; msg</code> no chat</li>
-          <li>• via RCON tellraw (colorido)</li>
-          <li>• apenas canal selecionado, outros ignorados</li>
+          <li>• {t('integrations.discord.howItWorks.discordToMc.messages')} <code class="text-mc-yellow">[Discord] &lt;user&gt; msg</code> {t('integrations.discord.howItWorks.discordToMc.messagesSuffix')}</li>
+          <li>• {t('integrations.discord.howItWorks.discordToMc.rcon')}</li>
+          <li>• {t('integrations.discord.howItWorks.discordToMc.selectedOnly')}</li>
         </ul>
       </div>
     </div>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Save, Download, Trash2, Loader2, Upload, Loader, RefreshCw } from 'lucide-svelte';
   import MCTexture from '$components/mc-icons/MCTexture.svelte';
+  import { t, plural } from '$lib/i18n';
 
   let { containerName }: { containerName: string } = $props();
 
@@ -41,7 +42,7 @@
       if (res.ok) await load();
       else {
         const err = await res.json().catch(() => ({}));
-        alert(`erro: ${err.message ?? res.status}`);
+        alert(t('content.backups.error', { message: err.message ?? res.status }));
       }
     } finally {
       creating = false;
@@ -49,33 +50,33 @@
   }
 
   async function remove(b: Backup) {
-    if (!confirm(`Deletar backup de ${formatDate(b.createdAt)}?`)) return;
+    if (!confirm(t('content.backups.confirmDelete', { date: formatDate(b.createdAt) }))) return;
     pending = b.id;
     try {
       const res = await fetch(`/api/servers/${containerName}/backups/${b.id}`, { method: 'DELETE' });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        alert(`erro: ${err.message ?? res.status}`);
+        alert(t('content.backups.error', { message: err.message ?? res.status }));
         return;
       }
       backups = backups.filter((x) => x.id !== b.id);
     } catch {
-      alert('erro de rede ao deletar o backup');
+      alert(t('content.backups.deleteNetworkError'));
     } finally {
       pending = null;
     }
   }
 
   async function restore(b: Backup) {
-    if (!confirm(`Restaurar este backup vai SOBRESCREVER o mundo atual. Continuar?`)) return;
+    if (!confirm(t('content.backups.confirmRestore'))) return;
     pending = b.id;
     restoring = b.id;
     try {
       const res = await fetch(`/api/servers/${containerName}/backups/${b.id}/restore`, {
         method: 'POST'
       });
-      if (res.ok) alert('mundo restaurado! server reiniciando.');
-      else alert('erro ao restaurar');
+      if (res.ok) alert(t('content.backups.restored'));
+      else alert(t('content.backups.restoreError'));
     } finally {
       pending = null;
       restoring = null;
@@ -102,8 +103,8 @@
       <div class="flex items-center gap-3">
         <div class="mc-slot"><MCTexture src="/textures/item/ender_eye.png" size={24} /></div>
         <div>
-          <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">CRIAR BACKUP</h3>
-          <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">snapshot do mundo ou /data inteiro</p>
+          <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('content.backups.create.title')}</h3>
+          <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('content.backups.create.subtitle')}</p>
         </div>
       </div>
       <button type="button" onclick={load} class="mc-btn text-xs">
@@ -118,7 +119,7 @@
         class="flex-1 px-3 py-2 text-sm {scope === 'world' ? 'bg-primary text-white' : 'bg-secondary text-white'}"
         style="border: 2px solid #000000; box-shadow: inset 2px 2px 0 0 rgba(255,255,255,0.15), inset -2px -2px 0 0 rgba(0,0,0,0.4); text-shadow: 2px 2px 0 #3f3f3f;"
       >
-        só mundo
+        {t('content.backups.create.scopeWorld')}
       </button>
       <button
         type="button"
@@ -126,12 +127,12 @@
         class="flex-1 px-3 py-2 text-sm {scope === 'full' ? 'bg-primary text-white' : 'bg-secondary text-white'}"
         style="border: 2px solid #000000; box-shadow: inset 2px 2px 0 0 rgba(255,255,255,0.15), inset -2px -2px 0 0 rgba(0,0,0,0.4); text-shadow: 2px 2px 0 #3f3f3f;"
       >
-        tudo (mods + config + mundo)
+        {t('content.backups.create.scopeFull')}
       </button>
     </div>
 
     <button type="button" onclick={create} disabled={creating} class="mc-btn mc-btn-primary w-full">
-      {#if creating}<Loader2 class="size-4 animate-spin" /> criando (pode demorar...){:else}<Save class="size-4" /> criar backup agora{/if}
+      {#if creating}<Loader2 class="size-4 animate-spin" /> {t('content.backups.create.creating')}{:else}<Save class="size-4" /> {t('content.backups.create.action')}{/if}
     </button>
   </section>
 
@@ -139,8 +140,8 @@
     <header class="mb-4 flex items-center gap-3">
       <div class="mc-slot"><MCTexture src="/textures/item/diamond.png" size={24} /></div>
       <div>
-        <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">BACKUPS SALVOS</h3>
-        <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">{backups.length} backup{backups.length === 1 ? '' : 's'}</p>
+        <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('content.backups.list.title')}</h3>
+        <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">{plural(backups.length, { one: t('content.backups.list.count.one'), other: t('content.backups.list.count.other') })}</p>
       </div>
     </header>
 
@@ -148,7 +149,7 @@
       <div class="text-center py-8"><Loader2 class="size-6 animate-spin mx-auto text-white/60" /></div>
     {:else if backups.length === 0}
       <p class="text-sm text-white/60 text-center py-8" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        nenhum backup ainda
+        {t('content.backups.list.empty')}
       </p>
     {:else}
       <ul class="space-y-2">
@@ -168,7 +169,7 @@
               href={`/api/servers/${containerName}/backups/${b.id}`}
               download
               class="mc-btn text-xs py-1 px-2"
-              title="download"
+              title={t('content.backups.list.download')}
             >
               <Download class="size-3.5" />
             </a>
@@ -177,7 +178,7 @@
               onclick={() => restore(b)}
               disabled={pending === b.id}
               class="mc-btn mc-btn-accent text-xs py-1 px-2"
-              title="restaurar"
+              title={t('content.backups.list.restore')}
             >
               {#if pending === b.id}<Loader2 class="size-3.5 animate-spin" />{:else}<Upload class="size-3.5" />{/if}
             </button>
@@ -186,13 +187,13 @@
               onclick={() => remove(b)}
               disabled={pending === b.id}
               class="mc-btn mc-btn-destructive text-xs py-1 px-2"
-              title="deletar"
+              title={t('content.backups.list.delete')}
             >
               <Trash2 class="size-3.5" />
             </button>
             {#if restoring === b.id}
               <p class="w-full text-xs text-warning" style="text-shadow: 2px 2px 0 #3f3f3f;">
-                restaurando... isso pode levar alguns minutos para backups grandes. não feche a página.
+                {t('content.backups.list.restoringHint')}
               </p>
             {/if}
           </li>

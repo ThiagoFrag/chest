@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Search, ChevronDown, Check, Loader2 } from 'lucide-svelte';
   import { onMount } from 'svelte';
+  import { t } from '$lib/i18n';
 
   let { value = $bindable('') }: { value?: string } = $props();
 
@@ -77,12 +78,12 @@
   >
     <span class="text-white" style="text-shadow: 2px 2px 0 #3f3f3f;">
       {#if loading}
-        <span class="text-white/50">carregando versões...</span>
+        <span class="text-white/50">{t('serverconfig.version.loading')}</span>
       {:else if value}
         {value}
-        {#if value === latest}<span class="text-mc-yellow text-xs ml-2">(latest)</span>{/if}
+        {#if value === latest}<span class="text-mc-yellow text-xs ml-2">{t('serverconfig.version.latest')}</span>{/if}
       {:else}
-        <span class="text-white/50">selecione versão MC</span>
+        <span class="text-white/50">{t('serverconfig.version.placeholder')}</span>
       {/if}
     </span>
     <ChevronDown class="size-4 text-white/60" />
@@ -101,13 +102,13 @@
             bind:value={filter}
             onkeydown={onKeyDown}
             type="text"
-            placeholder="filtrar (1.21, 1.20.4...)"
+            placeholder={t('serverconfig.version.filterPlaceholder')}
             class="mc-input pl-10"
           />
         </div>
         <label class="flex items-center gap-2 text-xs mt-2 cursor-pointer text-white/70" style="text-shadow: 2px 2px 0 #3f3f3f;">
           <input type="checkbox" bind:checked={showSnapshots} />
-          mostrar snapshots
+          {t('serverconfig.version.showSnapshots')}
         </label>
       </div>
 
@@ -118,7 +119,7 @@
           </div>
         {:else if visible.length === 0}
           <p class="text-center py-6 text-xs text-white/50" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            nenhuma versão encontrada
+            {t('serverconfig.version.empty')}
           </p>
         {:else}
           <ul>
@@ -132,8 +133,8 @@
                 >
                   <span>
                     {v}
-                    {#if v === latest}<span class="text-mc-yellow text-xs ml-2">latest</span>{/if}
-                    {#if snapshots.includes(v)}<span class="text-warning text-xs ml-2">snapshot</span>{/if}
+                    {#if v === latest}<span class="text-mc-yellow text-xs ml-2">{t('serverconfig.version.latestTag')}</span>{/if}
+                    {#if snapshots.includes(v)}<span class="text-warning text-xs ml-2">{t('serverconfig.version.snapshotTag')}</span>{/if}
                   </span>
                   {#if value === v}<Check class="size-4 text-success" />{/if}
                 </button>
@@ -144,7 +145,7 @@
       </div>
 
       <div class="p-2 border-t-2 border-black text-xs text-white/50 text-center" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        {visible.length} de {showSnapshots ? releases.length + snapshots.length : releases.length} versões
+        {t('serverconfig.version.count', { shown: visible.length, total: showSnapshots ? releases.length + snapshots.length : releases.length })}
       </div>
     </div>
   {/if}

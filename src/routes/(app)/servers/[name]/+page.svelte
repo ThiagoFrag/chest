@@ -18,6 +18,7 @@
   import SubusersPanel from '$components/forja/SubusersPanel.svelte';
   import MetricsChart from '$components/forja/MetricsChart.svelte';
   import { formatUptime, formatBytes } from '$lib/utils';
+  import { t } from '$lib/i18n';
 
   let { data } = $props();
   const server = $derived(data.server);
@@ -31,15 +32,15 @@
     {id:'console',l:'console'},
     {id:'players',l:'players'},
     {id:'mods',l:'mods'},
-    {id:'world',l:'mundo'},
-    {id:'map',l:'🗺️ mapa'},
+    {id:'world',l:t('serverdetail.detail.tab.world')},
+    {id:'map',l:t('serverdetail.detail.tab.map')},
     {id:'properties',l:'properties'},
-    {id:'files',l:'arquivos'},
+    {id:'files',l:t('serverdetail.detail.tab.files')},
     {id:'backups',l:'backups'},
-    {id:'agenda',l:'agenda'},
-    {id:'network',l:'rede'},
+    {id:'agenda',l:t('serverdetail.detail.tab.agenda')},
+    {id:'network',l:t('serverdetail.detail.tab.network')},
     {id:'discord',l:'discord'},
-    ...(isAdmin ? [{id:'access',l:'🔑 acesso'}] : []),
+    ...(isAdmin ? [{id:'access',l:t('serverdetail.detail.tab.access')}] : []),
     {id:'settings',l:'settings'}
   ]);
 
@@ -97,9 +98,9 @@
         body: JSON.stringify({ command: c })
       });
       const data = await res.json();
-      rconResponses = [...rconResponses, data.response ?? `(erro: ${data.message ?? '?'})`];
+      rconResponses = [...rconResponses, data.response ?? t('serverdetail.console.rconError', { message: data.message ?? '?' })];
     } catch (e) {
-      rconResponses = [...rconResponses, `(erro: ${e instanceof Error ? e.message : '?'})`];
+      rconResponses = [...rconResponses, t('serverdetail.console.rconError', { message: e instanceof Error ? e.message : '?' })];
     }
   }
 
@@ -220,7 +221,7 @@
 
 <div class="px-8 py-6">
   <a href="/servers" class="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1 mb-2" style="text-shadow: 1px 1px 0 rgba(0,0,0,0.5);">
-    <ArrowLeft class="size-3" /> voltar
+    <ArrowLeft class="size-3" /> {t('serverdetail.detail.back')}
   </a>
 
   <header class="flex items-start justify-between gap-3 mb-6">
@@ -238,16 +239,16 @@
       {#if server.state === 'running'}
         <button type="button" onclick={() => act('restart')} disabled={pending !== null} class="mc-btn text-xs">
           {#if pending === 'restart'}<Loader2 class="size-3 animate-spin" />{:else}<RotateCw class="size-3" />{/if}
-          restart
+          {t('serverdetail.detail.button.restart')}
         </button>
         <button type="button" onclick={() => act('stop')} disabled={pending !== null} class="mc-btn mc-btn-destructive text-xs">
           {#if pending === 'stop'}<Loader2 class="size-3 animate-spin" />{:else}<Square class="size-3 fill-current" />{/if}
-          stop
+          {t('serverdetail.detail.button.stop')}
         </button>
       {:else}
         <button type="button" onclick={() => act('start')} disabled={pending !== null} class="mc-btn mc-btn-primary text-xs">
           {#if pending === 'start'}<Loader2 class="size-3 animate-spin" />{:else}<Play class="size-3 fill-current" />{/if}
-          start
+          {t('serverdetail.detail.button.start')}
         </button>
       {/if}
     </div>
@@ -270,21 +271,21 @@
   {#if tab === 'overview'}
     <div class="grid gap-4 md:grid-cols-3">
       <div class="mc-card">
-        <p class="text-xs text-muted-foreground mb-2" style="text-shadow: 1px 1px 0 rgba(0,0,0,0.5);">VERSÃO</p>
+        <p class="text-xs text-muted-foreground mb-2" style="text-shadow: 1px 1px 0 rgba(0,0,0,0.5);">{t('serverdetail.overview.version')}</p>
         <p class="mc-heading text-xl">{mc?.online ? mc.version : '—'}</p>
       </div>
       <div class="mc-card">
-        <p class="text-xs text-muted-foreground mb-2" style="text-shadow: 1px 1px 0 rgba(0,0,0,0.5);">PLAYERS</p>
+        <p class="text-xs text-muted-foreground mb-2" style="text-shadow: 1px 1px 0 rgba(0,0,0,0.5);">{t('serverdetail.overview.players')}</p>
         <p class="mc-heading text-xl">{mc?.online ? `${mc.players.online}/${mc.players.max}` : '—'}</p>
       </div>
       <div class="mc-card">
-        <p class="text-xs text-muted-foreground mb-2" style="text-shadow: 1px 1px 0 rgba(0,0,0,0.5);">UPTIME</p>
+        <p class="text-xs text-muted-foreground mb-2" style="text-shadow: 1px 1px 0 rgba(0,0,0,0.5);">{t('serverdetail.overview.uptime')}</p>
         <p class="mc-heading text-xl">{server.uptime ? formatUptime(server.uptime) : '—'}</p>
       </div>
       <div class="mc-card md:col-span-3">
         <div class="flex items-center gap-2 mb-3">
           <Cpu class="size-4 text-diamond" />
-          <p class="text-xs text-muted-foreground" style="text-shadow: 1px 1px 0 rgba(0,0,0,0.5);">RECURSOS EM TEMPO REAL</p>
+          <p class="text-xs text-muted-foreground" style="text-shadow: 1px 1px 0 rgba(0,0,0,0.5);">{t('serverdetail.overview.resources')}</p>
         </div>
         <div class="grid grid-cols-2 gap-6">
           <div>
@@ -309,7 +310,7 @@
       </div>
       {#if mc?.online}
         <div class="mc-card md:col-span-3">
-          <p class="text-xs text-muted-foreground mb-2" style="text-shadow: 1px 1px 0 rgba(0,0,0,0.5);">MOTD</p>
+          <p class="text-xs text-muted-foreground mb-2" style="text-shadow: 1px 1px 0 rgba(0,0,0,0.5);">{t('serverdetail.overview.motd')}</p>
           <p class="text-foreground" style="text-shadow: 2px 2px 0 rgba(0,0,0,0.5);">{mc.motd}</p>
         </div>
       {/if}
@@ -325,7 +326,7 @@
 
     <div class="mt-6">
       <div class="flex items-center gap-2 mb-3">
-        <p class="text-sm text-white" style="text-shadow: 2px 2px 0 #3f3f3f;">HISTÓRICO</p>
+        <p class="text-sm text-white" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('serverdetail.overview.history')}</p>
         <div class="flex gap-1 ml-auto">
           {#each ['1h', '6h', '24h', '7d'] as r}
             <button
@@ -350,13 +351,13 @@
     <div class="mc-card p-0 overflow-hidden">
       <div class="bg-input p-3 border-b border-border flex items-center gap-2 text-xs text-muted-foreground" style="text-shadow: 1px 1px 0 rgba(0,0,0,0.5);">
         <Terminal class="size-3" />
-        console — {logs.length} linhas
+        {t('serverdetail.console.lines', { n: logs.length })}
       </div>
       <div bind:this={logBox} class="bg-input text-xs p-3 h-96 overflow-y-auto font-mono text-foreground" style="line-height: 1.5;">
         {#each logs as line}
           <div>{line}</div>
         {:else}
-          <div class="text-muted-foreground">{server.state === 'running' ? 'aguardando logs...' : 'server parado — start pra ver logs'}</div>
+          <div class="text-muted-foreground">{server.state === 'running' ? t('serverdetail.console.waiting') : t('serverdetail.console.stopped')}</div>
         {/each}
         {#each rconResponses as r}
           <div class="text-diamond">{r}</div>
@@ -367,7 +368,7 @@
           type="text"
           bind:value={cmd}
           onkeydown={handleCmdKey}
-          placeholder={server.state === 'running' ? 'comando RCON (ex: list, say oi)' : 'server precisa estar online'}
+          placeholder={server.state === 'running' ? t('serverdetail.console.placeholder.online') : t('serverdetail.console.placeholder.offline')}
           disabled={server.state !== 'running'}
           class="flex-1 bg-input text-foreground px-3 py-2 text-sm outline-none font-mono"
           style="border-radius: 0;"
@@ -418,15 +419,15 @@
     <AuthModePanel containerName={server.containerName} />
     <SubusersPanel containerName={server.containerName} />
     <div class="mc-card border-l-4 border-l-destructive">
-      <h3 class="mc-heading text-lg text-destructive mb-2">DANGER ZONE</h3>
+      <h3 class="mc-heading text-lg text-destructive mb-2">{t('serverdetail.settings.dangerZone')}</h3>
       <p class="text-sm text-muted-foreground mb-4" style="text-shadow: 1px 1px 0 rgba(0,0,0,0.5);">
-        deletar server remove container + volume permanentemente. mundo perdido.
+        {t('serverdetail.settings.dangerDesc')}
       </p>
       <div class="space-y-3">
         <input
           type="text"
           bind:value={deleteConfirm}
-          placeholder="digite {server.containerName} pra confirmar"
+          placeholder={t('serverdetail.settings.confirmPlaceholder', { name: server.containerName })}
           class="mc-input"
         />
         <button
@@ -436,7 +437,7 @@
           class="mc-btn mc-btn-destructive"
         >
           {#if pending === 'delete'}<Loader2 class="size-4 animate-spin" />{:else}<Trash2 class="size-4" />{/if}
-          deletar server
+          {t('serverdetail.settings.deleteButton')}
         </button>
       </div>
     </div>

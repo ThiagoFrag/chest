@@ -2,6 +2,7 @@
   import { Globe, Loader2, Check, Copy, ExternalLink, AlertCircle } from 'lucide-svelte';
   import { untrack } from 'svelte';
   import MCTexture from '$components/mc-icons/MCTexture.svelte';
+  import { t } from '$lib/i18n';
 
   let { containerName, publicUrl: initialPublicUrl, publicMode: initialPublicMode, baseHostname }: {
     containerName: string;
@@ -30,14 +31,14 @@
       });
       const data = await res.json();
       if (!res.ok) {
-        error = data.message ?? `erro ${res.status}`;
+        error = data.message ?? t('serverconfig.error.status', { status: res.status });
         return;
       }
       publicUrl = data.publicUrl;
       publicMode = 'domain';
       subdomain = '';
     } catch (e) {
-      error = e instanceof Error ? e.message : 'falha';
+      error = e instanceof Error ? e.message : t('serverconfig.error.fail');
     } finally {
       exposing = false;
     }
@@ -57,8 +58,8 @@
     <header class="mb-4 flex items-center gap-3">
       <div class="mc-slot"><MCTexture src="/textures/item/ender_eye.png" size={24} /></div>
       <div>
-        <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">ACESSO PÚBLICO</h3>
-        <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">como players conectam</p>
+        <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('serverconfig.network.access.title')}</h3>
+        <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('serverconfig.network.access.subtitle')}</p>
       </div>
     </header>
 
@@ -67,21 +68,21 @@
         <div class="flex items-center gap-2 bg-black/40 border-2 border-success px-3 py-2" style="box-shadow: inset 1px 1px 0 0 rgba(60,60,60,1);">
           <span class="text-success">●</span>
           <span class="flex-1 text-sm text-white font-mono" style="text-shadow: 2px 2px 0 #3f3f3f;">{publicUrl}</span>
-          <button type="button" onclick={() => copy(publicUrl!)} class="text-white/60 hover:text-mc-yellow" title="copiar">
+          <button type="button" onclick={() => copy(publicUrl!)} class="text-white/60 hover:text-mc-yellow" title={t('serverconfig.network.access.copyTitle')}>
             {#if copied}<Check class="size-4 text-success" />{:else}<Copy class="size-4" />{/if}
           </button>
         </div>
         <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">
-          modo: <span class="text-diamond">{publicMode}</span>
+          {t('serverconfig.network.access.mode')} <span class="text-diamond">{publicMode}</span>
         </p>
         <p class="text-xs text-white/50" style="text-shadow: 2px 2px 0 #3f3f3f;">
-          players colam esse endereço no Minecraft pra conectar.
+          {t('serverconfig.network.access.connectHint')}
         </p>
       </div>
     {:else}
       <div class="p-3 bg-black/40 border-2 border-black mb-4" style="box-shadow: inset 1px 1px 0 0 rgba(60,60,60,1);">
         <p class="text-sm text-white/70" style="text-shadow: 2px 2px 0 #3f3f3f;">
-          ⚠ server ainda sem acesso público configurado
+          {t('serverconfig.network.access.none')}
         </p>
       </div>
     {/if}
@@ -91,8 +92,8 @@
     <header class="mb-4 flex items-center gap-3">
       <div class="mc-slot"><Globe class="size-5 text-diamond" /></div>
       <div>
-        <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">EXPOR VIA CLOUDFLARE</h3>
-        <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">cria CNAME automático</p>
+        <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('serverconfig.network.cf.title')}</h3>
+        <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('serverconfig.network.cf.subtitle')}</p>
       </div>
     </header>
 
@@ -101,10 +102,10 @@
         <div class="flex items-start gap-2">
           <AlertCircle class="size-5 text-warning mt-0.5 shrink-0" />
           <div>
-            <p class="text-sm text-white" style="text-shadow: 2px 2px 0 #3f3f3f;">Cloudflare não configurado</p>
+            <p class="text-sm text-white" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('serverconfig.network.cf.notConfigured')}</p>
             <p class="text-xs text-white/60 mt-1" style="text-shadow: 2px 2px 0 #3f3f3f;">
-              Configure API token, zone ID e CNAME target em
-              <a href="/settings" class="text-mc-yellow underline">Settings</a> pra liberar.
+              {t('serverconfig.network.cf.notConfiguredHint')}
+              <a href="/settings" class="text-mc-yellow underline">{t('serverconfig.network.cf.settingsLink')}</a> {t('serverconfig.network.cf.toEnable')}
             </p>
           </div>
         </div>
@@ -112,13 +113,13 @@
     {:else}
       <div class="space-y-3">
         <div>
-          <label for="sub" class="block text-sm mb-2" style="text-shadow: 2px 2px 0 #3f3f3f;">subdomain</label>
+          <label for="sub" class="block text-sm mb-2" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('serverconfig.network.cf.subdomain')}</label>
           <div class="flex items-center gap-2">
             <input
               id="sub"
               type="text"
               bind:value={subdomain}
-              placeholder="meu-server"
+              placeholder={t('serverconfig.network.cf.subdomainPlaceholder')}
               class="mc-input flex-1"
               autocomplete="off"
             />
@@ -127,7 +128,7 @@
             </span>
           </div>
           <p class="text-xs text-white/50 mt-1" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            só letras, números e hífen. cria CNAME apontando pro target configurado.
+            {t('serverconfig.network.cf.subdomainHint')}
           </p>
         </div>
 
@@ -142,9 +143,9 @@
           class="mc-btn mc-btn-primary w-full"
         >
           {#if exposing}
-            <Loader2 class="size-4 animate-spin" /> criando DNS...
+            <Loader2 class="size-4 animate-spin" /> {t('serverconfig.network.cf.creatingDns')}
           {:else}
-            <Globe class="size-4" /> {publicUrl ? 'atualizar DNS' : 'expor publicamente'}
+            <Globe class="size-4" /> {publicUrl ? t('serverconfig.network.cf.updateDns') : t('serverconfig.network.cf.expose')}
           {/if}
         </button>
       </div>

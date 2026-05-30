@@ -4,6 +4,7 @@
     Download, RefreshCw, Trash2, Maximize2, Box, Container
   } from 'lucide-svelte';
   import MCTexture from '$components/mc-icons/MCTexture.svelte';
+  import { t } from '$lib/i18n';
 
   let { containerName, loader, mcHostAddress, managed = true }: {
     containerName: string;
@@ -81,12 +82,12 @@
       const res = await fetch(`/api/servers/${containerName}/map`);
       if (!res.ok) {
         const e = await res.json().catch(() => ({}));
-        throw new Error(e.message ?? `erro ${res.status}`);
+        throw new Error(e.message ?? t('integrations.map.error.generic', { status: res.status }));
       }
       status = await res.json();
       iframeNonce = Date.now();
     } catch (e) {
-      error = e instanceof Error ? e.message : 'falha';
+      error = e instanceof Error ? e.message : t('integrations.map.error.fail');
     } finally {
       loading = false;
     }
@@ -104,23 +105,21 @@
       });
       if (!res.ok) {
         const e = await res.json().catch(() => ({}));
-        throw new Error(e.message ?? `erro ${res.status}`);
+        throw new Error(e.message ?? t('integrations.map.error.generic', { status: res.status }));
       }
       const data = await res.json();
       message = data.message;
       await load();
     } catch (e) {
-      error = e instanceof Error ? e.message : 'falha';
+      error = e instanceof Error ? e.message : t('integrations.map.error.fail');
     } finally {
       busy = null;
     }
   }
 
   async function uninstall() {
-    const wipeMsg = wipeOnDelete
-      ? '\n\n⚠ "wipe" também apaga TODO o cache do mapa renderizado (vai re-renderizar do zero se reinstalar).'
-      : '';
-    if (!confirm('Desativar BlueMap?' + wipeMsg)) return;
+    const wipeMsg = wipeOnDelete ? t('integrations.map.confirm.wipeWarning') : '';
+    if (!confirm(t('integrations.map.confirm.uninstall') + wipeMsg)) return;
     busy = 'uninstall';
     error = null;
     try {
@@ -128,14 +127,14 @@
       const res = await fetch(`/api/servers/${containerName}/map${qs}`, { method: 'DELETE' });
       if (!res.ok) {
         const e = await res.json().catch(() => ({}));
-        throw new Error(e.message ?? `erro ${res.status}`);
+        throw new Error(e.message ?? t('integrations.map.error.generic', { status: res.status }));
       }
       const data = await res.json();
       message = data.message;
       wipeOnDelete = false;
       await load();
     } catch (e) {
-      error = e instanceof Error ? e.message : 'falha';
+      error = e instanceof Error ? e.message : t('integrations.map.error.fail');
     } finally {
       busy = null;
     }
@@ -151,9 +150,9 @@
         <MCTexture src="/textures/item/ender_eye.png" size={24} />
       </div>
       <div class="flex-1">
-        <h2 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">MAPA DO MUNDO</h2>
+        <h2 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.map.header.title')}</h2>
         <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">
-          renderização 3D do mundo via BlueMap — vê players ao vivo, biomas, estruturas
+          {t('integrations.map.header.subtitle')}
         </p>
       </div>
       <button type="button" onclick={load} disabled={loading} class="mc-btn text-xs">
@@ -184,21 +183,20 @@
       {#if !managed}
         <div class="p-3 bg-mc-yellow/10 border-2 border-mc-yellow">
           <p class="text-xs text-mc-yellow" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            ℹ Este container foi criado fora do Chest. Só <strong>sidecar</strong> está disponível
-            (embedded exige que o Chest conheça o loader exato).
+            ℹ {t('integrations.map.unmanagedNoticeBefore')} <strong>sidecar</strong> {t('integrations.map.unmanagedNoticeAfter')}
           </p>
         </div>
       {/if}
 
       <div>
-        <h3 class="text-sm mb-2" style="text-shadow: 2px 2px 0 #3f3f3f;">ESCOLHA O MODO</h3>
+        <h3 class="text-sm mb-2" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.map.chooseMode.title')}</h3>
         <p class="text-xs text-white/70" style="text-shadow: 2px 2px 0 #3f3f3f;">
           {#if supportsEmbedded}
-            Seu loader (<code class="text-mc-yellow">{loader}</code>) suporta os dois modos. Embedded é melhor pra dados ao vivo (players), sidecar é independente e funciona offline.
+            {t('integrations.map.chooseMode.supportsBoth', { loader })}
           {:else if managed}
-            Loader <code class="text-mc-yellow">{loader}</code> não suporta embedded (sem mods/plugins). Sidecar é o caminho — funciona em <strong>qualquer mundo</strong>.
+            {t('integrations.map.chooseMode.managedNoEmbedded', { loader })}
           {:else}
-            Sidecar lê <code class="text-mc-yellow">/data/world</code> direto do container e renderiza num container separado. Funciona em <strong>qualquer mundo</strong>.
+            {t('integrations.map.chooseMode.unmanaged')}
           {/if}
         </p>
       </div>
@@ -213,14 +211,14 @@
         >
           <div class="flex items-center gap-2 mb-1">
             <Box class="size-4 text-mc-yellow" />
-            <span class="text-sm" style="text-shadow: 2px 2px 0 #3f3f3f;">EMBEDDED (mod/plugin)</span>
+            <span class="text-sm" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.map.embedded.title')}</span>
           </div>
           <ul class="text-[10px] text-white/70 space-y-0.5" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            <li>✓ players ao vivo no mapa</li>
-            <li>✓ chat ao vivo (Paper)</li>
-            <li>✓ markers de POIs</li>
-            <li>× exige restart do server</li>
-            <li>× só Paper/Fabric/Forge/etc</li>
+            <li>✓ {t('integrations.map.embedded.pro.live')}</li>
+            <li>✓ {t('integrations.map.embedded.pro.chat')}</li>
+            <li>✓ {t('integrations.map.embedded.pro.markers')}</li>
+            <li>× {t('integrations.map.embedded.con.restart')}</li>
+            <li>× {t('integrations.map.embedded.con.loaders')}</li>
           </ul>
         </button>
 
@@ -232,14 +230,14 @@
         >
           <div class="flex items-center gap-2 mb-1">
             <Container class="size-4 text-mc-yellow" />
-            <span class="text-sm" style="text-shadow: 2px 2px 0 #3f3f3f;">SIDECAR (container separado)</span>
+            <span class="text-sm" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.map.sidecar.title')}</span>
           </div>
           <ul class="text-[10px] text-white/70 space-y-0.5" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            <li>✓ funciona em <strong>VANILLA</strong> e qualquer mundo</li>
-            <li>✓ não exige restart do server MC</li>
-            <li>✓ container isolado, fácil debug</li>
-            <li>× sem players ao vivo</li>
-            <li>× usa +1GB RAM (sidecar dedicado)</li>
+            <li>✓ {t('integrations.map.sidecar.pro.anyWorldBefore')} <strong>VANILLA</strong> {t('integrations.map.sidecar.pro.anyWorldAfter')}</li>
+            <li>✓ {t('integrations.map.sidecar.pro.noRestart')}</li>
+            <li>✓ {t('integrations.map.sidecar.pro.isolated')}</li>
+            <li>× {t('integrations.map.sidecar.con.noLive')}</li>
+            <li>× {t('integrations.map.sidecar.con.ram')}</li>
           </ul>
         </button>
       </div>
@@ -250,12 +248,12 @@
         class="text-xs {chosenMode === 'auto' ? 'text-mc-yellow' : 'text-white/50 hover:text-mc-yellow'}"
         style="text-shadow: 2px 2px 0 #3f3f3f;"
       >
-        ou deixar auto (escolho o melhor pra você)
+        {t('integrations.map.auto')}
       </button>
 
       <div class="border-t-2 border-black pt-4">
         <p class="text-xs text-white/70 mb-3" style="text-shadow: 2px 2px 0 #3f3f3f;">
-          modo escolhido: <strong class="text-mc-yellow">{chosenMode}</strong>
+          {t('integrations.map.chosenModeBefore')} <strong class="text-mc-yellow">{chosenMode}</strong>
           {#if chosenMode === 'auto'}
             (→ {supportsEmbedded ? 'embedded' : 'sidecar'})
           {/if}
@@ -267,9 +265,9 @@
           class="mc-btn mc-btn-primary w-full"
         >
           {#if busy === 'install'}
-            <Loader2 class="size-4 animate-spin" /> instalando...
+            <Loader2 class="size-4 animate-spin" /> {t('integrations.map.installing')}
           {:else}
-            <Download class="size-4" /> instalar BlueMap
+            <Download class="size-4" /> {t('integrations.map.install')}
           {/if}
         </button>
       </div>
@@ -281,33 +279,33 @@
         <div class="flex items-center gap-2 mb-2">
           <Check class="size-4 text-success" />
           <p class="text-sm text-success" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            BlueMap instalado
+            {t('integrations.map.installed.title')}
             {#if status.mode === 'sidecar'}
               <span class="inline-flex items-center gap-1 ml-2 text-mc-yellow text-xs">
-                <Container class="size-3" /> sidecar {status.sidecarState ? `(${status.sidecarState})` : ''}
+                <Container class="size-3" /> {t('integrations.map.installed.sidecar')} {status.sidecarState ? `(${status.sidecarState})` : ''}
               </span>
             {:else if status.mode === 'embedded'}
               <span class="inline-flex items-center gap-1 ml-2 text-mc-yellow text-xs">
-                <Box class="size-3" /> embedded
+                <Box class="size-3" /> {t('integrations.map.installed.embedded')}
               </span>
             {/if}
-            · porta <code class="text-diamond">{status.hostPort}</code>
+            · {t('integrations.map.installed.portBefore')} <code class="text-diamond">{status.hostPort}</code>
           </p>
         </div>
         {#if status.reachable}
           <p class="text-xs text-white/70" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            ✓ embutido abaixo · também disponível em
+            {t('integrations.map.installed.reachableBefore')}
             {#if externalMapUrl}
               <a href={externalMapUrl} target="_blank" rel="noopener" class="text-mc-yellow underline">{externalMapUrl}</a>
             {/if}
           </p>
         {:else}
           <p class="text-xs text-warning" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            ⚠ servidor ainda não respondeu na porta {status.hostPort}.
+            {t('integrations.map.installed.notReachable', { port: status.hostPort ?? '' })}
             {#if status.mode === 'sidecar'}
-              Sidecar pode estar baixando o jar ou renderizando (1-2 min). Refresh em alguns segundos.
+              {t('integrations.map.installed.notReachableSidecar')}
             {:else}
-              Talvez ainda esteja gerando o mapa (1ª vez demora) ou o server não foi reiniciado.
+              {t('integrations.map.installed.notReachableEmbedded')}
             {/if}
           </p>
         {/if}
@@ -320,17 +318,17 @@
             rel="noopener"
             class="mc-btn mc-btn-primary w-full text-xs inline-flex items-center justify-center gap-1"
           >
-            <Maximize2 class="size-3" /> tela cheia
+            <Maximize2 class="size-3" /> {t('integrations.map.fullscreen')}
             <ExternalLink class="size-3" />
           </a>
         {/if}
         <label class="text-[10px] text-white/60 inline-flex items-center gap-1.5 cursor-pointer" style="text-shadow: 2px 2px 0 #3f3f3f;">
           <input type="checkbox" bind:checked={wipeOnDelete} class="size-3" />
-          wipe cache do mapa
+          {t('integrations.map.wipeCache')}
         </label>
         <button type="button" onclick={uninstall} disabled={busy === 'uninstall'} class="mc-btn mc-btn-destructive w-full text-xs">
           {#if busy === 'uninstall'}<Loader2 class="size-3 animate-spin" />{:else}<Trash2 class="size-3" />{/if}
-          desativar
+          {t('integrations.map.uninstall')}
         </button>
       </div>
     </div>
@@ -339,7 +337,7 @@
       <div class="mc-card p-0 overflow-hidden">
         <iframe
           src={proxiedMapUrl}
-          title="World map"
+          title={t('integrations.map.iframeTitle')}
           class="w-full h-[600px] block"
           style="border: 0;"
           referrerpolicy="no-referrer"
@@ -350,23 +348,23 @@
       <div class="mc-card text-center py-12">
         <MapIcon class="size-12 text-white/30 mx-auto animate-pulse" />
         <p class="text-sm text-white/60 mt-3" style="text-shadow: 2px 2px 0 #3f3f3f;">
-          aguardando BlueMap responder...
+          {t('integrations.map.waiting.title')}
         </p>
         <p class="text-xs text-white/40 mt-1" style="text-shadow: 2px 2px 0 #3f3f3f;">
           {#if status.mode === 'sidecar'}
-            sidecar pode levar 1-2 min na primeira execução (download jar + render inicial). Auto-refresh em 10s.
+            {t('integrations.map.waiting.sidecar')}
           {:else}
-            se o server acabou de instalar, reinicie e espere 1-2 min pelo render inicial
+            {t('integrations.map.waiting.embedded')}
           {/if}
         </p>
-        <button type="button" onclick={load} class="mc-btn text-xs mt-3">refresh agora</button>
+        <button type="button" onclick={load} class="mc-btn text-xs mt-3">{t('integrations.map.refreshNow')}</button>
       </div>
     {/if}
 
     {#if status.detectedFiles.length > 0}
       <div class="mc-card">
         <p class="text-xs text-white/60 mb-2" style="text-shadow: 2px 2px 0 #3f3f3f;">
-          arquivos detectados no container:
+          {t('integrations.map.detectedFiles')}
         </p>
         <ul class="space-y-1 text-[10px] font-mono text-white/50">
           {#each status.detectedFiles as f}

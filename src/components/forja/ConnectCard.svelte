@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Copy, Check, Globe, Network, Home, AlertCircle, Package } from 'lucide-svelte';
   import MCTexture from '$components/mc-icons/MCTexture.svelte';
+  import { t } from '$lib/i18n';
 
   let {
     hostPort,
@@ -44,13 +45,13 @@
 <div class="mc-card md:col-span-3">
   <div class="flex items-center gap-2 mb-4">
     <div class="mc-slot"><MCTexture src="/textures/item/ender_eye.png" size={20} /></div>
-    <p class="text-sm" style="text-shadow: 2px 2px 0 #3f3f3f;">COMO CONECTAR</p>
+    <p class="text-sm" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.connect.title')}</p>
   </div>
 
   {#if !hostPort}
     <div class="flex items-center gap-2 text-warning text-sm" style="text-shadow: 2px 2px 0 #3f3f3f;">
       <AlertCircle class="size-4" />
-      server precisa estar rodando pra mostrar endereço
+      {t('integrations.connect.serverNotRunning')}
     </div>
   {:else}
     {#if mcVersion}
@@ -58,19 +59,18 @@
         <Package class="size-5 text-mc-yellow shrink-0 mt-0.5" />
         <div class="flex-1">
           <p class="text-sm text-mc-yellow" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            ATENÇÃO — versão exigida no cliente Minecraft:
+            {t('integrations.connect.version.warning')}
             <strong class="ml-1">{mcVersion}</strong>
           </p>
           <p class="text-[10px] text-white/70 mt-1" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            no launcher (Prism/oficial/etc), escolha perfil <code class="text-mc-yellow">Release {mcVersion}</code>.
-            versão diferente = conexão cai com "Failed to decode packet".
+            {t('integrations.connect.version.hintBefore')} <code class="text-mc-yellow">{t('integrations.connect.version.profile', { version: mcVersion })}</code>{t('integrations.connect.version.hintAfter')}
           </p>
         </div>
         <button
           type="button"
           onclick={() => copy(mcVersion ?? '', 'version')}
           class="mc-btn text-xs px-2"
-          title={copyFailed === 'version' ? 'falha ao copiar — copie manualmente' : 'copiar versão'}
+          title={copyFailed === 'version' ? t('integrations.connect.version.copyFailTitle') : t('integrations.connect.version.copyTitle')}
         >
           {#if copied === 'version'}<Check class="size-3 text-success" />{:else if copyFailed === 'version'}<AlertCircle class="size-3 text-warning" />{:else}<Copy class="size-3" />{/if}
         </button>
@@ -82,7 +82,7 @@
       <div class="bg-black/40 border-2 border-black p-3" style="box-shadow: inset 1px 1px 0 0 rgba(60,60,60,1);">
         <div class="flex items-center gap-2 mb-2">
           <Home class="size-4 text-mc-yellow" />
-          <span class="text-xs text-mc-yellow" style="text-shadow: 2px 2px 0 #3f3f3f;">DIRETO (LAN/IPv6)</span>
+          <span class="text-xs text-mc-yellow" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.connect.direct.title')}</span>
         </div>
         {#if mcHostAddress}
           <div class="flex items-center gap-2">
@@ -93,7 +93,7 @@
               type="button"
               onclick={() => copy(localAddress, 'local')}
               class="mc-btn text-xs px-2"
-              title={copyFailed === 'local' ? 'falha ao copiar — selecione e copie manualmente' : 'copiar'}
+              title={copyFailed === 'local' ? t('integrations.connect.copyFailTitle') : t('integrations.connect.copyTitle')}
             >
               {#if copied === 'local'}<Check class="size-3 text-success" />{:else if copyFailed === 'local'}<AlertCircle class="size-3 text-warning" />{:else}<Copy class="size-3" />{/if}
             </button>
@@ -101,20 +101,20 @@
           {#if copyFailed === 'local'}
             <p class="text-[10px] text-warning mt-2 flex items-center gap-1" style="text-shadow: 2px 2px 0 #3f3f3f;">
               <AlertCircle class="size-3 shrink-0" />
-              não consegui copiar (clipboard bloqueado) — selecione o endereço acima e copie manualmente
+              {t('integrations.connect.copyFailMsg')}
             </p>
           {/if}
           <p class="text-[10px] text-white/50 mt-2" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            cole no Minecraft → Multiplayer → Add Server
+            {t('integrations.connect.direct.hint')}
           </p>
         {:else}
           <p class="text-xs text-warning" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            configure <code class="text-mc-yellow">forja.mc_host_address</code> em
-            <a href="/settings" class="text-mc-yellow underline">Settings</a>
-            pra mostrar endereço completo
+            {t('integrations.connect.direct.configureBefore')} <code class="text-mc-yellow">forja.mc_host_address</code> {t('integrations.connect.direct.configureAfter')}
+            <a href="/settings" class="text-mc-yellow underline">{t('integrations.connect.direct.settings')}</a>
+            {t('integrations.connect.direct.configureSuffix')}
           </p>
           <p class="text-xs text-white/60 mt-1" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            porta alocada: <code class="text-diamond">{hostPort}</code>
+            {t('integrations.connect.direct.allocatedPort')} <code class="text-diamond">{hostPort}</code>
           </p>
         {/if}
       </div>
@@ -125,10 +125,10 @@
           <div class="flex items-center gap-2 mb-2">
             {#if publicMode === 'playit'}
               <Network class="size-4 text-mc-yellow" />
-              <span class="text-xs text-mc-yellow" style="text-shadow: 2px 2px 0 #3f3f3f;">PÚBLICO (Playit.gg túnel)</span>
+              <span class="text-xs text-mc-yellow" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.connect.public.playit')}</span>
             {:else}
               <Globe class="size-4 text-mc-yellow" />
-              <span class="text-xs text-mc-yellow" style="text-shadow: 2px 2px 0 #3f3f3f;">PÚBLICO (Cloudflare CNAME)</span>
+              <span class="text-xs text-mc-yellow" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.connect.public.cloudflare')}</span>
             {/if}
           </div>
           <div class="flex items-center gap-2">
@@ -139,7 +139,7 @@
               type="button"
               onclick={() => copy(publicUrl ?? '', 'public')}
               class="mc-btn text-xs px-2"
-              title={copyFailed === 'public' ? 'falha ao copiar — selecione e copie manualmente' : 'copiar'}
+              title={copyFailed === 'public' ? t('integrations.connect.copyFailTitle') : t('integrations.connect.copyTitle')}
             >
               {#if copied === 'public'}<Check class="size-3 text-success" />{:else if copyFailed === 'public'}<AlertCircle class="size-3 text-warning" />{:else}<Copy class="size-3" />{/if}
             </button>
@@ -147,24 +147,24 @@
           {#if copyFailed === 'public'}
             <p class="text-[10px] text-warning mt-2 flex items-center gap-1" style="text-shadow: 2px 2px 0 #3f3f3f;">
               <AlertCircle class="size-3 shrink-0" />
-              não consegui copiar (clipboard bloqueado) — selecione o endereço acima e copie manualmente
+              {t('integrations.connect.copyFailMsg')}
             </p>
           {/if}
           <p class="text-[10px] text-white/50 mt-2" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            funciona em qualquer lugar do mundo
+            {t('integrations.connect.public.worksAnywhere')}
           </p>
         </div>
       {:else}
         <div class="bg-black/40 border-2 border-black p-3" style="box-shadow: inset 1px 1px 0 0 rgba(60,60,60,1);">
           <div class="flex items-center gap-2 mb-2">
             <Globe class="size-4 text-white/40" />
-            <span class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">PÚBLICO</span>
+            <span class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.connect.public.title')}</span>
           </div>
           <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            sem URL pública configurada.
+            {t('integrations.connect.public.noUrl')}
           </p>
           <a href="#rede" class="text-xs text-mc-yellow underline mt-1 inline-block" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            expor agora na aba REDE →
+            {t('integrations.connect.public.exposeNow')}
           </a>
         </div>
       {/if}

@@ -3,16 +3,17 @@
   import { onMount } from 'svelte';
   import MCTexture from '$components/mc-icons/MCTexture.svelte';
   import { invalidateAll } from '$app/navigation';
+  import { t } from '$lib/i18n';
 
   let testingDiscord = $state(false);
   async function testDiscord() {
     testingDiscord = true;
     try {
       const res = await fetch('/api/discord/test', { method: 'POST' });
-      if (res.ok) alert('✓ webhook ok! verifique seu canal Discord.');
+      if (res.ok) alert(t('admin.settings.testWebhookOk'));
       else {
         const e = await res.json().catch(() => ({}));
-        alert(`erro: ${e.message ?? res.status}`);
+        alert(t('admin.settings.error', { message: e.message ?? res.status }));
       }
     } finally {
       testingDiscord = false;
@@ -53,6 +54,7 @@
   const discordRedirectUri = $derived(`${origin}/login/discord/callback`);
 
   interface Section {
+    id: string;
     title: string;
     icon: string;
     desc: string;
@@ -65,157 +67,163 @@
     }>;
   }
 
-  const sections: Section[] = [
+  const sections: Section[] = $derived([
     {
-      title: 'DRASL (Auth Server)',
+      id: 'DRASL',
+      title: t('admin.settings.drasl.title'),
       icon: '/textures/item/ender_eye.png',
-      desc: 'Auth server self-hosted pra players sem conta Microsoft entrarem',
+      desc: t('admin.settings.drasl.desc'),
       fields: [
         {
           key: 'drasl.url',
-          label: 'URL do Drasl',
+          label: t('admin.settings.drasl.url.label'),
           placeholder: 'https://mc.exemplo.com',
           type: 'url',
-          help: 'URL base do seu Drasl. Wizard vai oferecer toggle "usar Drasl" quando configurado.'
+          help: t('admin.settings.drasl.url.help')
         },
         {
           key: 'drasl.admin_token',
-          label: 'Token admin (opcional)',
+          label: t('admin.settings.drasl.token.label'),
           placeholder: 'token...',
           type: 'secret',
-          help: 'Pra gerenciar players direto do painel'
+          help: t('admin.settings.drasl.token.help')
         }
       ]
     },
     {
-      title: 'CLOUDFLARE',
+      id: 'CLOUDFLARE',
+      title: t('admin.settings.cloudflare.title'),
       icon: '/textures/item/ender_eye.png',
-      desc: 'Pra criar DNS automaticamente quando expor server publicamente',
+      desc: t('admin.settings.cloudflare.desc'),
       fields: [
         {
           key: 'cloudflare.api_token',
-          label: 'API Token (Edit zone DNS)',
+          label: t('admin.settings.cloudflare.apiToken.label'),
           placeholder: 'token...',
           type: 'secret',
-          help: 'Cloudflare → My Profile → API Tokens → Create → "Edit zone DNS" template'
+          help: t('admin.settings.cloudflare.apiToken.help')
         },
         {
           key: 'cloudflare.zone_id',
-          label: 'Zone ID',
+          label: t('admin.settings.cloudflare.zoneId.label'),
           placeholder: 'a1b2c3d4...',
           type: 'text',
-          help: 'Visível no dashboard CF na sidebar direita da zona'
+          help: t('admin.settings.cloudflare.zoneId.help')
         },
         {
           key: 'cloudflare.cname_target',
-          label: 'CNAME target',
+          label: t('admin.settings.cloudflare.cnameTarget.label'),
           placeholder: 'tinyserver.exemplo.com',
           type: 'text',
-          help: 'Hostname pra onde os subdomínios criados vão apontar (ex: o host A record do servidor)'
+          help: t('admin.settings.cloudflare.cnameTarget.help')
         }
       ]
     },
     {
-      title: 'PLAYIT.GG',
+      id: 'PLAYIT.GG',
+      title: t('admin.settings.playit.title'),
       icon: '/textures/item/netherite_ingot.png',
-      desc: 'Túneis TCP automáticos pra servers em CGNAT',
+      desc: t('admin.settings.playit.desc'),
       fields: [
         {
           key: 'playit.secret_key',
-          label: 'SECRET_KEY do agent',
+          label: t('admin.settings.playit.secretKey.label'),
           placeholder: 'SK_xxxxx...',
           type: 'secret',
-          help: 'Criar em playit.gg/account/agents → Self managed (Docker)'
+          help: t('admin.settings.playit.secretKey.help')
         }
       ]
     },
     {
-      title: 'DISCORD',
+      id: 'DISCORD',
+      title: t('admin.settings.discord.title'),
       icon: '/textures/item/diamond.png',
-      desc: 'Notificações de eventos (server up/down, joins, backup)',
+      desc: t('admin.settings.discord.desc'),
       fields: [
         {
           key: 'discord.webhook_url',
-          label: 'Webhook URL (notificações)',
+          label: t('admin.settings.discord.webhookUrl.label'),
           placeholder: 'https://discord.com/api/webhooks/...',
           type: 'secret',
-          help: 'pra notificações simples (server up/down, backup, crash)'
+          help: t('admin.settings.discord.webhookUrl.help')
         },
         {
           key: 'discord.bot_token',
-          label: 'Bot Token (chat bridge MC ⇄ Discord)',
+          label: t('admin.settings.discord.botToken.label'),
           placeholder: 'MTI...',
           type: 'secret',
-          help: 'Crie bot em discord.com/developers/applications → Bot → token. Permissões: Send Messages, View Channel, Manage Webhooks. Convide com scope bot.'
+          help: t('admin.settings.discord.botToken.help')
         },
         {
           key: 'discord.admin_user_id',
-          label: 'Seu Discord User ID (admin)',
+          label: t('admin.settings.discord.adminUserId.label'),
           placeholder: '123456789012345678',
           type: 'text',
-          help: 'pra receber DM quando algum server crashar. Ative Developer Mode no Discord → clique direito no seu nick → Copy User ID.'
+          help: t('admin.settings.discord.adminUserId.help')
         },
         {
           key: 'discord.oauth_client_id',
-          label: 'OAuth Client ID (login com Discord)',
+          label: t('admin.settings.discord.oauthClientId.label'),
           placeholder: '123456789012345678',
           type: 'text',
-          help: 'discord.com/developers/applications → sua app → OAuth2 → Client ID. Habilita "entrar com Discord" e vínculo de conta.'
+          help: t('admin.settings.discord.oauthClientId.help')
         },
         {
           key: 'discord.oauth_client_secret',
-          label: 'OAuth Client Secret',
+          label: t('admin.settings.discord.oauthClientSecret.label'),
           placeholder: 'xxxxxxxx...',
           type: 'secret',
-          help: 'OAuth2 → Client Secret. Mantém em segredo — fica criptografado no banco.'
+          help: t('admin.settings.discord.oauthClientSecret.help')
         },
         {
           key: 'discord.oauth_guild_id',
-          label: 'OAuth Guild ID (opcional)',
+          label: t('admin.settings.discord.oauthGuildId.label'),
           placeholder: '123456789012345678',
           type: 'text',
-          help: 'Opcional. Se preenchido, membros deste servidor Discord podem criar conta automaticamente (como viewer). Vazio = somente vínculo manual.'
+          help: t('admin.settings.discord.oauthGuildId.help')
         }
       ]
     },
     {
-      title: 'CHEST',
+      id: 'CHEST',
+      title: t('admin.settings.chest.title'),
       icon: '/textures/item/iron_pickaxe.png',
-      desc: 'Configurações gerais do painel',
+      desc: t('admin.settings.chest.desc'),
       fields: [
         {
           key: 'forja.public_base_url',
-          label: 'URL base pública do Chest',
+          label: t('admin.settings.chest.baseUrl.label'),
           placeholder: 'https://chest.exemplo.com',
           type: 'url',
-          help: 'Usado em notifications, links em emails, etc.'
+          help: t('admin.settings.chest.baseUrl.help')
         },
         {
           key: 'forja.mc_host_address',
-          label: 'Endereço pra conectar nos MC servers',
+          label: t('admin.settings.chest.mcHost.label'),
           placeholder: 'mc.exemplo.com ou [2001:db8::200] ou 192.168.1.50',
           type: 'text',
-          help: 'Hostname/IP do host Docker. Aparece em "COMO CONECTAR" no overview de cada server. IPv6 entre colchetes.'
+          help: t('admin.settings.chest.mcHost.help')
         }
       ]
     },
     {
-      title: 'STORAGE',
+      id: 'STORAGE',
+      title: t('admin.settings.storage.title'),
       icon: '/textures/item/iron_ingot.png',
-      desc: 'Onde guardar backups — local (FS) ou S3-compatível (AWS/R2/B2/MinIO)',
+      desc: t('admin.settings.storage.desc'),
       fields: [
-        { key: 'chest.storage.driver', label: 'Driver', placeholder: 'local OR s3', type: 'text', help: 'valor: local OU s3' },
-        { key: 'chest.storage.local.dir', label: 'Diretório local (se driver=local)', placeholder: '/app/data/backups', type: 'text' },
-        { key: 'chest.storage.s3.endpoint', label: 'S3 endpoint (vazio = AWS; R2: https://accountid.r2.cloudflarestorage.com)', placeholder: '', type: 'text' },
-        { key: 'chest.storage.s3.region', label: 'S3 region', placeholder: 'auto OR us-east-1', type: 'text' },
-        { key: 'chest.storage.s3.bucket', label: 'S3 bucket', placeholder: 'chest-backups', type: 'text' },
-        { key: 'chest.storage.s3.access_key', label: 'S3 access key ID', placeholder: 'AKIA...', type: 'secret' },
-        { key: 'chest.storage.s3.secret_key', label: 'S3 secret access key', placeholder: '...', type: 'secret' },
-        { key: 'chest.storage.s3.path_prefix', label: 'Path prefix (opcional)', placeholder: 'chest-backups/', type: 'text' },
-        { key: 'chest.storage.s3.force_path_style', label: 'Force path style (true pra MinIO)', placeholder: 'true OR false', type: 'text' }
+        { key: 'chest.storage.driver', label: t('admin.settings.storage.driver.label'), placeholder: 'local OR s3', type: 'text', help: t('admin.settings.storage.driver.help') },
+        { key: 'chest.storage.local.dir', label: t('admin.settings.storage.localDir.label'), placeholder: '/app/data/backups', type: 'text' },
+        { key: 'chest.storage.s3.endpoint', label: t('admin.settings.storage.s3Endpoint.label'), placeholder: '', type: 'text' },
+        { key: 'chest.storage.s3.region', label: t('admin.settings.storage.s3Region.label'), placeholder: 'auto OR us-east-1', type: 'text' },
+        { key: 'chest.storage.s3.bucket', label: t('admin.settings.storage.s3Bucket.label'), placeholder: 'chest-backups', type: 'text' },
+        { key: 'chest.storage.s3.access_key', label: t('admin.settings.storage.s3AccessKey.label'), placeholder: 'AKIA...', type: 'secret' },
+        { key: 'chest.storage.s3.secret_key', label: t('admin.settings.storage.s3SecretKey.label'), placeholder: '...', type: 'secret' },
+        { key: 'chest.storage.s3.path_prefix', label: t('admin.settings.storage.s3PathPrefix.label'), placeholder: 'chest-backups/', type: 'text' },
+        { key: 'chest.storage.s3.force_path_style', label: t('admin.settings.storage.s3ForcePathStyle.label'), placeholder: 'true OR false', type: 'text' }
       ]
     }
-  ];
+  ]);
 
   let inputs = $state<Record<string, string>>({});
   let saving = $state<string | null>(null);
@@ -244,7 +252,7 @@
         await invalidateAll();
       } else {
         const err = await res.json().catch(() => ({}));
-        alert(`erro: ${err.message ?? res.status}`);
+        alert(t('admin.settings.error', { message: err.message ?? res.status }));
       }
     } finally {
       saving = null;
@@ -252,7 +260,7 @@
   }
 
   async function clear(key: string) {
-    if (!confirm(`Apagar ${key}?`)) return;
+    if (!confirm(t('admin.settings.confirmClear', { key }))) return;
     saving = key;
     try {
       await fetch('/api/settings', {
@@ -267,15 +275,15 @@
   }
 </script>
 
-<svelte:head><title>Chest · Settings</title></svelte:head>
+<svelte:head><title>{t('admin.settings.head')}</title></svelte:head>
 
 <div class="px-8 py-6">
   <div class="mc-banner mb-6 flex items-center gap-4">
     <Settings class="size-10 text-mc-yellow" />
     <div>
-      <h1 class="mc-heading text-3xl">SETTINGS</h1>
+      <h1 class="mc-heading text-3xl">{t('admin.settings.title')}</h1>
       <p class="mt-1 text-xs text-white/80" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        configurações globais do painel
+        {t('admin.settings.subtitle')}
       </p>
     </div>
   </div>
@@ -305,7 +313,7 @@
                 </label>
                 {#if hasValue}
                   <span class="text-xs text-success flex items-center gap-1" style="text-shadow: 2px 2px 0 #3f3f3f;">
-                    <Check class="size-3" /> configurado
+                    <Check class="size-3" /> {t('admin.settings.configured')}
                   </span>
                 {/if}
               </div>
@@ -313,12 +321,12 @@
               {#if hasValue && field.type === 'secret'}
                 <div class="flex items-center gap-2 bg-input border-2 border-black px-3 py-2" style="box-shadow: inset 1px 1px 0 0 rgba(60,60,60,1);">
                   <span class="flex-1 font-mono text-sm text-white/70">{stored.value}</span>
-                  <button type="button" onclick={() => clear(field.key)} disabled={saving === field.key} class="text-destructive hover:text-mc-yellow" title="apagar">
+                  <button type="button" onclick={() => clear(field.key)} disabled={saving === field.key} class="text-destructive hover:text-mc-yellow" title={t('admin.settings.delete')}>
                     {#if saving === field.key}<Loader2 class="size-3.5 animate-spin" />{:else}<Trash2 class="size-3.5" />{/if}
                   </button>
                 </div>
                 <p class="text-xs text-white/50" style="text-shadow: 2px 2px 0 #3f3f3f;">
-                  ↓ digite novo valor pra substituir
+                  {t('admin.settings.replaceHint')}
                 </p>
               {/if}
 
@@ -331,7 +339,7 @@
                   class="mc-input flex-1"
                 />
                 {#if field.type === 'secret'}
-                  <button type="button" onclick={() => (showSecret[field.key] = !isShowing)} class="mc-btn px-3" title={isShowing ? 'ocultar' : 'mostrar'}>
+                  <button type="button" onclick={() => (showSecret[field.key] = !isShowing)} class="mc-btn px-3" title={isShowing ? t('admin.settings.hide') : t('admin.settings.show')}>
                     {#if isShowing}<EyeOff class="size-4" />{:else}<Eye class="size-4" />{/if}
                   </button>
                 {/if}
@@ -344,9 +352,9 @@
                   {#if saving === field.key}
                     <Loader2 class="size-4 animate-spin" />
                   {:else if saved === field.key}
-                    <Check class="size-4" /> ok
+                    <Check class="size-4" /> {t('admin.settings.saved')}
                   {:else}
-                    salvar
+                    {t('admin.settings.save')}
                   {/if}
                 </button>
               </div>
@@ -359,34 +367,34 @@
             </div>
           {/each}
 
-          {#if section.title === 'DISCORD'}
+          {#if section.id === 'DISCORD'}
             <div class="border-2 border-mc-yellow/40 bg-black/40 px-3 py-3 space-y-1" style="box-shadow: inset 1px 1px 0 0 rgba(60,60,60,1);">
               <p class="text-xs text-mc-yellow" style="text-shadow: 2px 2px 0 #3f3f3f;">
-                ℹ Redirect URI (registre no Discord Developer Portal)
+                {t('admin.settings.discord.redirect.title')}
               </p>
               <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">
-                Em OAuth2 → Redirects, adicione exatamente:
+                {t('admin.settings.discord.redirect.desc')}
               </p>
               <code class="block break-all font-mono text-xs text-white bg-input border-2 border-black px-2 py-1">{discordRedirectUri}</code>
             </div>
           {/if}
 
-          {#if section.title === 'DISCORD' && current['discord.webhook_url']}
+          {#if section.id === 'DISCORD' && current['discord.webhook_url']}
             <div class="border-t-2 border-black pt-4 mt-2">
               <button type="button" onclick={testDiscord} disabled={testingDiscord} class="mc-btn mc-btn-accent">
                 {#if testingDiscord}<Loader2 class="size-4 animate-spin" />{:else}<Send class="size-4" />{/if}
-                testar webhook
+                {t('admin.settings.discord.test.button')}
               </button>
               <p class="text-xs text-white/50 mt-2" style="text-shadow: 2px 2px 0 #3f3f3f;">
-                envia uma mensagem de teste pro canal
+                {t('admin.settings.discord.test.hint')}
               </p>
             </div>
           {/if}
 
-          {#if section.title === 'DISCORD'}
+          {#if section.id === 'DISCORD'}
             <div class="border-t-2 border-black pt-4 mt-2 space-y-3">
               <h4 class="text-sm text-mc-yellow" style="text-shadow: 2px 2px 0 #3f3f3f;">
-                STATUS DO BOT
+                {t('admin.settings.bot.title')}
               </h4>
               {#if loadingBot}
                 <div class="text-center py-2">
@@ -394,25 +402,25 @@
                 </div>
               {:else if !botStatus?.configured}
                 <p class="text-xs text-white/50" style="text-shadow: 2px 2px 0 #3f3f3f;">
-                  configure bot token acima pra liberar instalação
+                  {t('admin.settings.bot.needToken')}
                 </p>
               {:else if !botStatus.connected}
                 <div class="flex items-center gap-2 text-destructive text-xs">
                   <X class="size-4" />
-                  <span style="text-shadow: 2px 2px 0 #3f3f3f;">token inválido ou falha de rede</span>
+                  <span style="text-shadow: 2px 2px 0 #3f3f3f;">{t('admin.settings.bot.invalidToken')}</span>
                 </div>
               {:else}
                 <div class="flex items-center gap-2 text-success text-xs">
                   <Check class="size-4" />
                   <span style="text-shadow: 2px 2px 0 #3f3f3f;">
-                    conectado como <strong>{botStatus.username}</strong>
+                    {t('admin.settings.bot.connectedAs')} <strong>{botStatus.username}</strong>
                   </span>
                 </div>
 
                 {#if botStatus.guilds.length > 0}
                   <div class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">
-                    instalado em <strong class="text-white">{botStatus.guilds.length}</strong>
-                    {botStatus.guilds.length === 1 ? 'servidor' : 'servidores'}:
+                    {t('admin.settings.bot.installedIn')} <strong class="text-white">{botStatus.guilds.length}</strong>
+                    {botStatus.guilds.length === 1 ? t('admin.settings.bot.serverOne') : t('admin.settings.bot.serverOther')}:
                   </div>
                   <ul class="space-y-1 max-h-32 overflow-y-auto">
                     {#each botStatus.guilds as g}
@@ -429,7 +437,7 @@
                   </ul>
                 {:else}
                   <p class="text-xs text-warning" style="text-shadow: 2px 2px 0 #3f3f3f;">
-                    bot ainda não está em nenhum servidor
+                    {t('admin.settings.bot.noGuild')}
                   </p>
                 {/if}
 
@@ -441,11 +449,11 @@
                     class="mc-btn mc-btn-primary w-full inline-flex items-center justify-center gap-2"
                   >
                     <Plus class="size-4" />
-                    adicionar bot a um servidor
+                    {t('admin.settings.bot.addToServer')}
                     <ExternalLink class="size-3" />
                   </a>
                   <p class="text-[10px] text-white/50 text-center" style="text-shadow: 2px 2px 0 #3f3f3f;">
-                    abre OAuth do Discord em nova aba. precisa ser admin do servidor.
+                    {t('admin.settings.bot.addHint')}
                   </p>
                 {/if}
               {/if}

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Plus, Trash2, Power, Loader2, Clock, Save, Square, RotateCw, Terminal } from 'lucide-svelte';
   import MCTexture from '$components/mc-icons/MCTexture.svelte';
+  import { t, plural, formatDate } from '$lib/i18n';
 
   let { containerName }: { containerName: string } = $props();
 
@@ -15,15 +16,15 @@
     nextRunAt: number | null;
   }
 
-  const presets = [
-    { id: 'hourly', label: 'a cada hora', cron: '0 * * * *' },
-    { id: 'every6h', label: 'a cada 6 horas', cron: '0 */6 * * *' },
-    { id: 'every12h', label: 'a cada 12 horas', cron: '0 */12 * * *' },
-    { id: 'daily3am', label: 'diário às 3am', cron: '0 3 * * *' },
-    { id: 'daily4am', label: 'diário às 4am', cron: '0 4 * * *' },
-    { id: 'daily6am', label: 'diário às 6am', cron: '0 6 * * *' },
-    { id: 'weeklySunday3am', label: 'domingo às 3am', cron: '0 3 * * 0' }
-  ];
+  const presets = $derived([
+    { id: 'hourly', label: t('integrations.scheduler.preset.hourly'), cron: '0 * * * *' },
+    { id: 'every6h', label: t('integrations.scheduler.preset.every6h'), cron: '0 */6 * * *' },
+    { id: 'every12h', label: t('integrations.scheduler.preset.every12h'), cron: '0 */12 * * *' },
+    { id: 'daily3am', label: t('integrations.scheduler.preset.daily3am'), cron: '0 3 * * *' },
+    { id: 'daily4am', label: t('integrations.scheduler.preset.daily4am'), cron: '0 4 * * *' },
+    { id: 'daily6am', label: t('integrations.scheduler.preset.daily6am'), cron: '0 6 * * *' },
+    { id: 'weeklySunday3am', label: t('integrations.scheduler.preset.weeklySunday3am'), cron: '0 3 * * 0' }
+  ]);
 
   let tasks = $state<Task[]>([]);
   let loading = $state(true);
@@ -72,41 +73,41 @@
         await load();
       } else {
         const err = await res.json().catch(() => ({}));
-        alert(`erro: ${err.message ?? res.status}`);
+        alert(t('integrations.scheduler.alert.createError', { error: err.message ?? res.status }));
       }
     } finally {
       saving = false;
     }
   }
 
-  async function toggle(t: Task) {
-    pending = t.id;
+  async function toggle(task: Task) {
+    pending = task.id;
     try {
-      await fetch(`/api/servers/${containerName}/tasks/${t.id}`, {
+      await fetch(`/api/servers/${containerName}/tasks/${task.id}`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ enabled: !t.enabled })
+        body: JSON.stringify({ enabled: !task.enabled })
       });
-      t.enabled = !t.enabled;
+      task.enabled = !task.enabled;
       tasks = tasks;
     } finally {
       pending = null;
     }
   }
 
-  async function remove(t: Task) {
-    if (!confirm('Deletar essa tarefa?')) return;
-    pending = t.id;
+  async function remove(task: Task) {
+    if (!confirm(t('integrations.scheduler.confirm.delete'))) return;
+    pending = task.id;
     try {
-      await fetch(`/api/servers/${containerName}/tasks/${t.id}`, { method: 'DELETE' });
-      tasks = tasks.filter((x) => x.id !== t.id);
+      await fetch(`/api/servers/${containerName}/tasks/${task.id}`, { method: 'DELETE' });
+      tasks = tasks.filter((x) => x.id !== task.id);
     } finally {
       pending = null;
     }
   }
 
   function fmtDate(ts: number | null): string {
-    return ts ? new Date(ts * 1000).toLocaleString('pt-BR') : '—';
+    return ts ? formatDate(ts * 1000, { dateStyle: 'short', timeStyle: 'short' }) : '—';
   }
 
   function fmtParams(p: string): string {
@@ -123,7 +124,7 @@
   <div class="mc-card mb-4" style="border-color: var(--color-warning);">
     <p class="text-sm text-warning" style="text-shadow: 2px 2px 0 #3f3f3f;">⚠ {note}</p>
     <p class="text-xs text-white/60 mt-1" style="text-shadow: 2px 2px 0 #3f3f3f;">
-      pra ter agenda, crie o server pelo wizard (botão "+ novo server").
+      {t('integrations.scheduler.note.wizardHintBefore')} "{t('integrations.scheduler.note.wizardHintButton')}"{t('integrations.scheduler.note.wizardHintAfter')}
     </p>
   </div>
 {/if}
@@ -134,14 +135,17 @@
       <div class="flex items-center gap-3">
         <div class="mc-slot"><MCTexture src="/textures/item/iron_pickaxe.png" size={24} /></div>
         <div>
-          <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">TAREFAS</h3>
+          <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.scheduler.list.title')}</h3>
           <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            {tasks.length} agendada{tasks.length === 1 ? '' : 's'}
+            {plural(tasks.length, {
+              one: t('integrations.scheduler.list.count.one'),
+              other: t('integrations.scheduler.list.count.other')
+            })}
           </p>
         </div>
       </div>
       <button type="button" onclick={() => (showAdd = true)} disabled={!!note} class="mc-btn mc-btn-primary text-xs py-1.5 px-3">
-        <Plus class="size-3.5" /> nova
+        <Plus class="size-3.5" /> {t('integrations.scheduler.list.new')}
       </button>
     </header>
 
@@ -149,29 +153,29 @@
       <div class="text-center py-8"><Loader2 class="size-6 animate-spin mx-auto text-white/60" /></div>
     {:else if tasks.length === 0}
       <p class="text-sm text-white/60 text-center py-8" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        nenhuma tarefa agendada
+        {t('integrations.scheduler.list.empty')}
       </p>
     {:else}
       <ul class="space-y-2">
-        {#each tasks as t (t.id)}
+        {#each tasks as task (task.id)}
           <li class="flex items-start gap-3 px-3 py-3 bg-black/40 border-2 border-black" style="box-shadow: inset 1px 1px 0 0 rgba(60,60,60,1);">
-            <button type="button" onclick={() => toggle(t)} disabled={pending === t.id} title={t.enabled ? 'desativar' : 'ativar'}>
-              <Power class="size-4 mt-1 {t.enabled ? 'text-success' : 'text-white/30'}" />
+            <button type="button" onclick={() => toggle(task)} disabled={pending === task.id} title={task.enabled ? t('integrations.scheduler.task.toggleDisable') : t('integrations.scheduler.task.toggleEnable')}>
+              <Power class="size-4 mt-1 {task.enabled ? 'text-success' : 'text-white/30'}" />
             </button>
             <div class="flex-1 min-w-0">
               <p class="text-sm text-white flex items-center gap-2" style="text-shadow: 2px 2px 0 #3f3f3f;">
-                {#if t.taskType === 'backup'}<Save class="size-3.5 text-diamond" /> backup{/if}
-                {#if t.taskType === 'restart'}<RotateCw class="size-3.5 text-warning" /> restart{/if}
-                {#if t.taskType === 'command'}<Terminal class="size-3.5 text-accent" /> command{/if}
-                <span class="text-xs text-white/50 ml-2">{fmtParams(t.params)}</span>
+                {#if task.taskType === 'backup'}<Save class="size-3.5 text-diamond" /> backup{/if}
+                {#if task.taskType === 'restart'}<RotateCw class="size-3.5 text-warning" /> restart{/if}
+                {#if task.taskType === 'command'}<Terminal class="size-3.5 text-accent" /> command{/if}
+                <span class="text-xs text-white/50 ml-2">{fmtParams(task.params)}</span>
               </p>
-              <p class="text-xs text-diamond mt-1 font-mono">{t.cronExpr}</p>
+              <p class="text-xs text-diamond mt-1 font-mono">{task.cronExpr}</p>
               <p class="text-xs text-white/40 mt-1">
-                última: <span class={t.lastRunStatus === 'ok' ? 'text-success' : 'text-warning'}>{fmtDate(t.lastRunAt)}</span>
-                · próx: <span class="text-white/60">{fmtDate(t.nextRunAt)}</span>
+                {t('integrations.scheduler.task.lastBefore')} <span class={task.lastRunStatus === 'ok' ? 'text-success' : 'text-warning'}>{fmtDate(task.lastRunAt)}</span>
+                · {t('integrations.scheduler.task.nextBefore')} <span class="text-white/60">{fmtDate(task.nextRunAt)}</span>
               </p>
             </div>
-            <button type="button" onclick={() => remove(t)} disabled={pending === t.id} class="text-destructive hover:text-mc-yellow" title="deletar">
+            <button type="button" onclick={() => remove(task)} disabled={pending === task.id} class="text-destructive hover:text-mc-yellow" title={t('integrations.scheduler.task.delete')}>
               <Trash2 class="size-3.5" />
             </button>
           </li>
@@ -182,17 +186,17 @@
 
   {#if showAdd}
     <section class="mc-card">
-      <h3 class="text-lg mb-4" style="text-shadow: 2px 2px 0 #3f3f3f;">NOVA TAREFA</h3>
+      <h3 class="text-lg mb-4" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.scheduler.form.title')}</h3>
 
       <div class="space-y-3">
         <div>
-          <span class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">tipo</span>
+          <span class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.scheduler.form.typeLabel')}</span>
           <div class="grid grid-cols-3 gap-1">
-            {#each [{id:'backup',l:'backup'},{id:'restart',l:'restart'},{id:'command',l:'comando'}] as t}
-              <button type="button" onclick={() => (newType = t.id as typeof newType)}
-                class="px-3 py-2 text-xs {newType === t.id ? 'bg-primary text-white' : 'bg-secondary text-white'}"
+            {#each [{ id: 'backup', l: t('integrations.scheduler.form.type.backup') }, { id: 'restart', l: t('integrations.scheduler.form.type.restart') }, { id: 'command', l: t('integrations.scheduler.form.type.command') }] as opt}
+              <button type="button" onclick={() => (newType = opt.id as typeof newType)}
+                class="px-3 py-2 text-xs {newType === opt.id ? 'bg-primary text-white' : 'bg-secondary text-white'}"
                 style="border: 2px solid #000; box-shadow: inset 1px 1px 0 0 rgba(255,255,255,0.15), inset -1px -1px 0 0 rgba(0,0,0,0.4); text-shadow: 2px 2px 0 #3f3f3f;">
-                {t.l}
+                {opt.l}
               </button>
             {/each}
           </div>
@@ -200,25 +204,25 @@
 
         {#if newType === 'backup'}
           <div>
-            <span class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">scope</span>
+            <span class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.scheduler.form.scopeLabel')}</span>
             <div class="grid grid-cols-2 gap-1">
               <button type="button" onclick={() => (newScope = 'world')} class="px-3 py-2 text-xs {newScope === 'world' ? 'bg-primary text-white' : 'bg-secondary text-white'}"
-                style="border: 2px solid #000; box-shadow: inset 1px 1px 0 0 rgba(255,255,255,0.15), inset -1px -1px 0 0 rgba(0,0,0,0.4); text-shadow: 2px 2px 0 #3f3f3f;">só mundo</button>
+                style="border: 2px solid #000; box-shadow: inset 1px 1px 0 0 rgba(255,255,255,0.15), inset -1px -1px 0 0 rgba(0,0,0,0.4); text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.scheduler.form.scope.world')}</button>
               <button type="button" onclick={() => (newScope = 'full')} class="px-3 py-2 text-xs {newScope === 'full' ? 'bg-primary text-white' : 'bg-secondary text-white'}"
-                style="border: 2px solid #000; box-shadow: inset 1px 1px 0 0 rgba(255,255,255,0.15), inset -1px -1px 0 0 rgba(0,0,0,0.4); text-shadow: 2px 2px 0 #3f3f3f;">tudo</button>
+                style="border: 2px solid #000; box-shadow: inset 1px 1px 0 0 rgba(255,255,255,0.15), inset -1px -1px 0 0 rgba(0,0,0,0.4); text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.scheduler.form.scope.full')}</button>
             </div>
           </div>
         {/if}
 
         {#if newType === 'command'}
           <div>
-            <label for="sp-cmd" class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">comando RCON</label>
-            <input id="sp-cmd" type="text" bind:value={newCommand} placeholder='say "anúncio"' class="mc-input" />
+            <label for="sp-cmd" class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.scheduler.form.commandLabel')}</label>
+            <input id="sp-cmd" type="text" bind:value={newCommand} placeholder={t('integrations.scheduler.form.commandPlaceholder')} class="mc-input" />
           </div>
         {/if}
 
         <div>
-          <span class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">presets</span>
+          <span class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.scheduler.form.presetsLabel')}</span>
           <div class="grid grid-cols-2 gap-1">
             {#each presets as p}
               <button type="button" onclick={() => (newCron = p.cron)} class="px-2 py-1.5 text-xs bg-secondary text-white hover:text-mc-yellow"
@@ -230,18 +234,18 @@
         </div>
 
         <div>
-          <label for="sp-cron" class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">cron expression</label>
+          <label for="sp-cron" class="block text-xs text-white/70 mb-1" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('integrations.scheduler.form.cronLabel')}</label>
           <input id="sp-cron" type="text" bind:value={newCron} placeholder="0 4 * * *" class="mc-input font-mono" />
           <p class="text-xs text-white/50 mt-1" style="text-shadow: 2px 2px 0 #3f3f3f;">
-            min hour dom mon dow · ex: <span class="text-diamond">0 */6 * * *</span> = a cada 6h
+            {t('integrations.scheduler.form.cronHintBefore')} <span class="text-diamond">0 */6 * * *</span> {t('integrations.scheduler.form.cronHintAfter')}
           </p>
         </div>
 
         <div class="flex gap-2">
-          <button type="button" onclick={() => (showAdd = false)} class="mc-btn flex-1">cancelar</button>
+          <button type="button" onclick={() => (showAdd = false)} class="mc-btn flex-1">{t('integrations.scheduler.form.cancel')}</button>
           <button type="button" onclick={create} disabled={saving} class="mc-btn mc-btn-primary flex-1">
             {#if saving}<Loader2 class="size-4 animate-spin" />{:else}<Plus class="size-4" />{/if}
-            criar
+            {t('integrations.scheduler.form.create')}
           </button>
         </div>
       </div>
@@ -250,13 +254,13 @@
     <section class="mc-card flex flex-col items-center justify-center text-center py-12">
       <Clock class="size-12 text-white/40 mb-3" />
       <p class="text-sm text-white/70" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        agende tarefas automáticas
+        {t('integrations.scheduler.empty.title')}
       </p>
       <p class="text-xs text-white/50 mt-1 max-w-xs" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        backup diário, restart noturno, comandos RCON, etc.
+        {t('integrations.scheduler.empty.subtitle')}
       </p>
       <button type="button" onclick={() => (showAdd = true)} disabled={!!note} class="mc-btn mc-btn-primary mt-4">
-        <Plus class="size-4" /> nova tarefa
+        <Plus class="size-4" /> {t('integrations.scheduler.empty.new')}
       </button>
     </section>
   {/if}

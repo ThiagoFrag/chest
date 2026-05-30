@@ -3,6 +3,7 @@
   import MCTexture from '$components/mc-icons/MCTexture.svelte';
   import { CATEGORIES, CURATED_TEMPLATES } from '$lib/templates';
   import { MODPACK_CATEGORIES, POPULAR_MC_VERSIONS } from '$lib/modrinth/modpacks';
+  import { t, formatNumber } from '$lib/i18n';
 
   interface Hit {
     project_id: string;
@@ -102,22 +103,22 @@
 
 <div class="px-8 py-6">
   <a href="/servers" class="text-xs text-white/70 hover:text-mc-yellow inline-flex items-center gap-1 mb-3" style="text-shadow: 2px 2px 0 #3f3f3f;">
-    <ArrowLeft class="size-3" /> voltar pra servers
+    <ArrowLeft class="size-3" /> {t('serverdetail.templates.back')}
   </a>
 
   <div class="mc-banner mb-6 flex items-center gap-4">
     <MCTexture src="/textures/block/grass_block_top.png" size={48} />
     <div>
-      <h1 class="mc-heading text-3xl">TEMPLATES</h1>
+      <h1 class="mc-heading text-3xl">{t('serverdetail.templates.heading')}</h1>
       <p class="mt-1 text-xs text-white/80" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        {total > 0 ? `${total.toLocaleString('pt-BR')} modpacks do Modrinth` : 'modpacks pra criar server em 1 click'}
+        {total > 0 ? t('serverdetail.templates.countModrinth', { count: formatNumber(total) }) : t('serverdetail.templates.subtitleEmpty')}
       </p>
     </div>
   </div>
 
   <section class="mb-8">
     <h2 class="flex items-center gap-2 mb-3 text-mc-yellow" style="text-shadow: 2px 2px 0 #3f3f3f;">
-      <Star class="size-4 fill-current" /> FEATURED
+      <Star class="size-4 fill-current" /> {t('serverdetail.templates.featured')}
     </h2>
     <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {#each CURATED_TEMPLATES.filter((t) => t.featured) as t (t.slug)}
@@ -139,21 +140,21 @@
   </section>
 
   <section class="mc-card mb-4">
-    <h2 class="text-sm text-white mb-3" style="text-shadow: 2px 2px 0 #3f3f3f;">EXPLORAR MODRINTH</h2>
+    <h2 class="text-sm text-white mb-3" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('serverdetail.templates.explore')}</h2>
     <div class="space-y-3">
       <div class="relative">
         <Search class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-white/40 pointer-events-none" />
         <input
           type="text"
           bind:value={search}
-          placeholder="ATM, RPG, optimization, vanilla+, performance..."
+          placeholder={t('serverdetail.templates.searchPlaceholder')}
           class="mc-input pl-10"
         />
       </div>
 
       <div class="grid gap-2 md:grid-cols-4">
         <select bind:value={loader} class="mc-input text-sm">
-          <option value="">todos loaders</option>
+          <option value="">{t('serverdetail.templates.allLoaders')}</option>
           <option value="fabric">Fabric</option>
           <option value="forge">Forge</option>
           <option value="neoforge">NeoForge</option>
@@ -161,25 +162,25 @@
         </select>
 
         <select bind:value={mcVersion} class="mc-input text-sm">
-          <option value="">todas versões MC</option>
+          <option value="">{t('serverdetail.templates.allVersions')}</option>
           {#each POPULAR_MC_VERSIONS as v}
             <option value={v}>MC {v}</option>
           {/each}
         </select>
 
         <select bind:value={category} class="mc-input text-sm">
-          <option value="">todas categorias</option>
+          <option value="">{t('serverdetail.templates.allCategories')}</option>
           {#each MODPACK_CATEGORIES as c}
             <option value={c.id}>{c.label}</option>
           {/each}
         </select>
 
         <select bind:value={sort} class="mc-input text-sm">
-          <option value="downloads">mais baixados</option>
-          <option value="follows">mais favoritados</option>
-          <option value="updated">recém-atualizados</option>
-          <option value="newest">mais novos</option>
-          <option value="relevance">relevância</option>
+          <option value="downloads">{t('serverdetail.templates.sortDownloads')}</option>
+          <option value="follows">{t('serverdetail.templates.sortFollows')}</option>
+          <option value="updated">{t('serverdetail.templates.sortUpdated')}</option>
+          <option value="newest">{t('serverdetail.templates.sortNewest')}</option>
+          <option value="relevance">{t('serverdetail.templates.sortRelevance')}</option>
         </select>
       </div>
     </div>
@@ -188,15 +189,15 @@
   {#if loading}
     <div class="mc-card text-center py-12">
       <Loader2 class="size-8 animate-spin mx-auto text-white/60" />
-      <p class="text-sm text-white/60 mt-3" style="text-shadow: 2px 2px 0 #3f3f3f;">buscando modpacks...</p>
+      <p class="text-sm text-white/60 mt-3" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('serverdetail.templates.searching')}</p>
     </div>
   {:else if hits.length === 0}
     <div class="mc-card text-center py-12">
       <p class="text-sm text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        nenhum modpack encontrado
+        {t('serverdetail.templates.empty')}
       </p>
       <p class="text-xs text-white/50 mt-1" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        tente outros filtros
+        {t('serverdetail.templates.emptyHint')}
       </p>
     </div>
   {:else}
@@ -238,9 +239,9 @@
               href="/servers/new?modrinthId={h.project_id}&title={encodeURIComponent(h.title)}&loader={detectedLoader}&mc={detectedMc}&icon={encodeURIComponent(h.icon_url ?? '')}"
               class="mc-btn mc-btn-primary flex-1 text-xs py-1.5"
             >
-              criar server
+              {t('serverdetail.templates.createServer')}
             </a>
-            <a href="https://modrinth.com/modpack/{h.slug}" target="_blank" rel="noopener" class="mc-btn text-xs px-2 py-1.5" title="ver no Modrinth">
+            <a href="https://modrinth.com/modpack/{h.slug}" target="_blank" rel="noopener" class="mc-btn text-xs px-2 py-1.5" title={t('serverdetail.templates.viewOnModrinth')}>
               <ExternalLink class="size-3" />
             </a>
           </div>
@@ -252,9 +253,9 @@
       <div class="mt-6 text-center">
         <button type="button" onclick={() => load(false)} disabled={loadingMore} class="mc-btn">
           {#if loadingMore}
-            <Loader2 class="size-4 animate-spin" /> carregando...
+            <Loader2 class="size-4 animate-spin" /> {t('serverdetail.templates.loadingMore')}
           {:else}
-            carregar mais ({hits.length} de {total.toLocaleString('pt-BR')})
+            {t('serverdetail.templates.loadMore', { shown: hits.length, total: formatNumber(total) })}
           {/if}
         </button>
       </div>

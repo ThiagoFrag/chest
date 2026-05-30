@@ -6,6 +6,7 @@ declare global {
       user: User | null;
       sessionId: string | null;
       passed2fa: boolean;
+      locale: import('$lib/i18n/types').Locale;
     }
   }
 }

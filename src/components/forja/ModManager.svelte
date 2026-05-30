@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Search, Download, Trash2, Power, Loader2, ExternalLink, Package } from 'lucide-svelte';
   import MCTexture from '$components/mc-icons/MCTexture.svelte';
+  import { t, plural } from '$lib/i18n';
 
   interface Mod {
     filename: string;
@@ -69,7 +70,7 @@
 
   async function install(projectId: string, title: string) {
     installing = projectId;
-    installingMessage = kind === 'modpack' ? `instalando modpack "${title}" (pode demorar)...` : null;
+    installingMessage = kind === 'modpack' ? t('content.mods.installingModpack', { title }) : null;
     try {
       const endpoint = kind === 'modpack'
         ? `/api/servers/${containerName}/modpack`
@@ -81,12 +82,17 @@
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        alert(`erro: ${err.message ?? res.status}`);
+        alert(t('content.mods.error', { message: err.message ?? res.status }));
         return;
       }
       if (kind === 'modpack') {
         const data = await res.json();
-        alert(`modpack instalado: ${data.installed} mods (${data.errors.length} erros). MC ${data.mcVersion} + ${data.loader}. Reinicie o server.`);
+        alert(t('content.mods.modpackInstalled', {
+          installed: data.installed,
+          errors: data.errors.length,
+          mcVersion: data.mcVersion,
+          loader: data.loader
+        }));
       }
       await loadMods();
     } finally {
@@ -111,7 +117,7 @@
   }
 
   async function remove(mod: Mod) {
-    if (!confirm(`Remover ${mod.filename}?`)) return;
+    if (!confirm(t('content.mods.installed.confirmRemove', { filename: mod.filename }))) return;
     pending = mod.filename;
     try {
       const res = await fetch(`/api/servers/${containerName}/mods/${encodeURIComponent(mod.filename)}`, {
@@ -119,12 +125,12 @@
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        alert(`erro: ${err.message ?? res.status}`);
+        alert(t('content.mods.error', { message: err.message ?? res.status }));
         return;
       }
       mods = mods.filter((m) => m.filename !== mod.filename);
     } catch {
-      alert('erro de rede ao remover o mod');
+      alert(t('content.mods.installed.removeNetworkError'));
     } finally {
       pending = null;
     }
@@ -152,9 +158,9 @@
     <header class="mb-4 flex items-center gap-3">
       <div class="mc-slot"><MCTexture src="/textures/item/iron_pickaxe.png" size={24} /></div>
       <div>
-        <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">INSTALADOS</h3>
+        <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('content.mods.installed.title')}</h3>
         <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">
-          {mods.length} mod{mods.length === 1 ? '' : 's'} · MC {mcVersion} · {loader}
+          {plural(mods.length, { one: t('content.mods.installed.count.one'), other: t('content.mods.installed.count.other') })} · {t('content.mods.installed.meta', { mcVersion, loader })}
         </p>
       </div>
     </header>
@@ -162,17 +168,17 @@
     {#if loadingMods}
       <div class="text-center py-8 text-white/60">
         <Loader2 class="size-6 animate-spin mx-auto mb-2" />
-        carregando...
+        {t('content.mods.installed.loading')}
       </div>
     {:else if mods.length === 0}
       <p class="text-sm text-white/60 text-center py-8" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        nenhum mod instalado
+        {t('content.mods.installed.empty')}
       </p>
     {:else}
       <ul class="space-y-1 max-h-[480px] overflow-y-auto pr-2">
         {#each mods as mod (mod.filename)}
           <li class="flex items-center gap-2 px-3 py-2 bg-black/40 border-2 border-black" style="box-shadow: inset 1px 1px 0 0 rgba(60,60,60,1);">
-            <button type="button" onclick={() => toggleEnabled(mod)} disabled={pending === mod.filename} title={mod.enabled ? 'desativar' : 'ativar'} class="shrink-0">
+            <button type="button" onclick={() => toggleEnabled(mod)} disabled={pending === mod.filename} title={mod.enabled ? t('content.mods.installed.toggle.disable') : t('content.mods.installed.toggle.enable')} class="shrink-0">
               <Power class="size-4 {mod.enabled ? 'text-success' : 'text-white/30'}" />
             </button>
             <div class="flex-1 min-w-0">
@@ -181,7 +187,7 @@
               </p>
               <p class="text-xs text-white/40">{formatBytes(mod.sizeBytes)}</p>
             </div>
-            <button type="button" onclick={() => remove(mod)} disabled={pending === mod.filename} class="shrink-0 text-destructive hover:text-mc-yellow" title="remover">
+            <button type="button" onclick={() => remove(mod)} disabled={pending === mod.filename} class="shrink-0 text-destructive hover:text-mc-yellow" title={t('content.mods.installed.remove')}>
               {#if pending === mod.filename}<Loader2 class="size-3.5 animate-spin" />{:else}<Trash2 class="size-3.5" />{/if}
             </button>
           </li>
@@ -195,8 +201,8 @@
     <header class="mb-4 flex items-center gap-3">
       <div class="mc-slot mc-enchanted"><MCTexture src={kind === 'modpack' ? '/textures/item/ender_eye.png' : '/textures/item/experience_bottle.png'} size={24} /></div>
       <div>
-        <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">BUSCAR</h3>
-        <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">via Modrinth</p>
+        <h3 class="text-lg" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('content.mods.search.title')}</h3>
+        <p class="text-xs text-white/60" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('content.mods.search.subtitle')}</p>
       </div>
     </header>
 
@@ -207,7 +213,7 @@
         class="flex-1 px-3 py-2 text-sm flex items-center justify-center gap-2 {kind === 'mod' ? 'bg-primary text-white' : 'bg-secondary text-white'}"
         style="border: 2px solid #000000; box-shadow: inset 2px 2px 0 0 rgba(255,255,255,0.15), inset -2px -2px 0 0 rgba(0,0,0,0.4); text-shadow: 2px 2px 0 #3f3f3f;"
       >
-        <Package class="size-3.5" /> mods
+        <Package class="size-3.5" /> {t('content.mods.search.tab.mods')}
       </button>
       <button
         type="button"
@@ -215,7 +221,7 @@
         class="flex-1 px-3 py-2 text-sm flex items-center justify-center gap-2 {kind === 'modpack' ? 'bg-primary text-white' : 'bg-secondary text-white'}"
         style="border: 2px solid #000000; box-shadow: inset 2px 2px 0 0 rgba(255,255,255,0.15), inset -2px -2px 0 0 rgba(0,0,0,0.4); text-shadow: 2px 2px 0 #3f3f3f;"
       >
-        <Package class="size-3.5" /> modpacks
+        <Package class="size-3.5" /> {t('content.mods.search.tab.modpacks')}
       </button>
     </div>
 
@@ -224,7 +230,7 @@
       <input
         type="text"
         bind:value={search}
-        placeholder={kind === 'modpack' ? 'all the mods, BMC, vault hunters...' : 'sodium, iron chest, lithium...'}
+        placeholder={kind === 'modpack' ? t('content.mods.search.placeholder.modpacks') : t('content.mods.search.placeholder.mods')}
         class="mc-input pl-10"
       />
     </div>
@@ -232,15 +238,15 @@
     {#if searching}
       <div class="text-center py-8 text-white/60">
         <Loader2 class="size-6 animate-spin mx-auto mb-2" />
-        buscando...
+        {t('content.mods.search.searching')}
       </div>
     {:else if search.trim().length < 2}
       <p class="text-sm text-white/50 text-center py-8" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        digite ao menos 2 letras
+        {t('content.mods.search.minChars')}
       </p>
     {:else if searchResults.length === 0}
       <p class="text-sm text-white/50 text-center py-8" style="text-shadow: 2px 2px 0 #3f3f3f;">
-        nenhum {kind === 'modpack' ? 'modpack' : 'mod'} compatível
+        {kind === 'modpack' ? t('content.mods.search.emptyModpack') : t('content.mods.search.emptyMod')}
       </p>
     {:else}
       <ul class="space-y-2 max-h-[420px] overflow-y-auto pr-2">
@@ -257,7 +263,7 @@
               <p class="text-sm text-white truncate" style="text-shadow: 2px 2px 0 #3f3f3f;">{hit.title}</p>
               <p class="text-xs text-white/60 line-clamp-2" style="text-shadow: 2px 2px 0 #3f3f3f;">{hit.description}</p>
               <p class="text-xs text-white/40 mt-1">
-                <span class="text-diamond">{hit.author}</span> · {hit.downloads.toLocaleString('pt-BR')} downloads
+                <span class="text-diamond">{hit.author}</span> · {t('content.mods.search.downloads', { n: hit.downloads.toLocaleString('pt-BR') })}
               </p>
             </div>
             <div class="flex flex-col gap-1 shrink-0">

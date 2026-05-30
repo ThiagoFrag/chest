@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm';
 import { db, schema } from '$lib/db';
 import { getSetting } from '$lib/settings';
 import { logAudit } from '$lib/audit';
+import { tServer } from '$lib/i18n/server';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -26,12 +27,12 @@ export const actions: Actions = {
     if (!locals.user) throw error(401);
 
     if (!locals.user.discordId) {
-      return fail(400, { unlink: 'Discord não está vinculado.' });
+      return fail(400, { unlink: tServer(locals.locale, 'serverrors.security.discordNotLinked') });
     }
 
     if (!locals.user.passwordHash) {
       return fail(400, {
-        unlink: 'defina uma senha antes de desvincular o Discord, senão você ficará sem como entrar.'
+        unlink: tServer(locals.locale, 'serverrors.security.setPasswordFirst')
       });
     }
 
