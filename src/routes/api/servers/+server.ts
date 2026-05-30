@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { createServer } from '$lib/mc/server-lifecycle';
 import { requireRole } from '$lib/auth/permissions';
 import { getEgg } from '$lib/eggs/loader';
+import { getHost, LOCAL_HOST_ID } from '$lib/docker/hosts';
 import { logAudit } from '$lib/audit';
 import type { RequestHandler } from './$types';
 
@@ -28,7 +29,8 @@ const bodySchema = z.object({
   difficulty: z.enum(['peaceful', 'easy', 'normal', 'hard']).default('normal'),
   motd: z.string().max(120).optional(),
   draslEnabled: z.boolean().default(false),
-  eggSlug: z.string().regex(/^[a-z0-9][a-z0-9-]{1,40}$/).optional()
+  eggSlug: z.string().regex(/^[a-z0-9][a-z0-9-]{1,40}$/).optional(),
+  hostId: z.string().trim().min(1).default(LOCAL_HOST_ID)
 });
 
 export const POST: RequestHandler = async (event) => {
@@ -40,6 +42,10 @@ export const POST: RequestHandler = async (event) => {
   if (!parsed.success) {
     throw error(400, parsed.error.issues[0]?.message ?? 'body inválido');
   }
+
+  const host = await getHost(parsed.data.hostId);
+  if (!host) throw error(400, `host "${parsed.data.hostId}" não existe`);
+  if (!host.enabled) throw error(400, `host "${host.name}" está desabilitado`);
 
   let envExtras: Record<string, string> | undefined;
   let jvmOptsExtra: string | undefined;

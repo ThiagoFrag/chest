@@ -8,6 +8,7 @@ export const navMessages: Dict = {
   'nav.users': 'usuarios',
   'nav.audit': 'registro de auditoria',
   'nav.webhooks': 'webhooks',
+  'nav.hosts': 'hosts',
   'nav.security': 'seguridad 2FA',
   'nav.settings': 'ajustes',
   'nav.loggedAs': 'conectado',

@@ -1,6 +1,6 @@
-import { docker } from '$lib/docker/client';
+import { dockerForContainer } from '$lib/docker/client';
 import { db, schema } from '$lib/db';
-import { listManagedServers } from '$lib/docker/server-actions';
+import { listManagedServers, type ManagedServer } from '$lib/docker/server-actions';
 import { getStatus } from './monitor';
 import { eq, lt } from 'drizzle-orm';
 
@@ -23,9 +23,29 @@ async function collect(): Promise<void> {
   const servers = await listManagedServers().catch(() => []);
   const now = new Date();
 
+  const byHost = new Map<string, ManagedServer[]>();
   for (const s of servers) {
     if (s.state !== 'running') continue;
+    const list = byHost.get(s.hostId);
+    if (list) list.push(s);
+    else byHost.set(s.hostId, [s]);
+  }
 
+  // One host being unreachable must never sink the others, so each host runs in
+  // its own settled branch and failures only log.
+  await Promise.allSettled(
+    [...byHost.entries()].map(([hostId, hostServers]) =>
+      collectHost(hostId, hostServers, now)
+    )
+  );
+}
+
+async function collectHost(
+  hostId: string,
+  hostServers: ManagedServer[],
+  now: Date
+): Promise<void> {
+  for (const s of hostServers) {
     try {
       const stats = await getOneShotStats(s.containerName);
       let playersOnline: number | null = null;
@@ -57,8 +77,11 @@ async function collect(): Promise<void> {
           playersOnline
         })
         .catch(() => undefined);
-    } catch {
-      /* ignore individual server failures */
+    } catch (err) {
+      console.warn(
+        `[metrics-collector] failed to collect ${s.containerName} on host "${hostId}", skipping:`,
+        err instanceof Error ? err.message : err
+      );
     }
   }
 }
@@ -77,7 +100,8 @@ interface OneShotStats {
 }
 
 async function getOneShotStats(containerName: string): Promise<OneShotStats> {
-  const container = docker().getContainer(containerName);
+  const d = await dockerForContainer(containerName);
+  const container = d.getContainer(containerName);
   const raw = (await container.stats({ stream: false })) as unknown as {
     cpu_stats?: {
       cpu_usage?: { total_usage?: number };

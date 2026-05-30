@@ -1,4 +1,4 @@
-import { docker } from '$lib/docker/client';
+import { dockerForContainer } from '$lib/docker/client';
 import {
   readContainerFile,
   writeContainerFile,
@@ -46,7 +46,7 @@ export async function resetWorld(
   containerName: string,
   opts: ResetOptions = {}
 ): Promise<{ paused: boolean }> {
-  const container = docker().getContainer(containerName);
+  const container = (await dockerForContainer(containerName)).getContainer(containerName);
 
   let wasRunning = false;
   try {
@@ -94,7 +94,7 @@ export async function resetWorld(
 }
 
 async function execInContainer(containerName: string, cmd: string[]): Promise<void> {
-  const container = docker().getContainer(containerName);
+  const container = (await dockerForContainer(containerName)).getContainer(containerName);
   const exec = await container.exec({
     Cmd: cmd,
     AttachStdout: true,

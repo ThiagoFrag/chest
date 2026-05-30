@@ -1,4 +1,4 @@
-import { docker } from '$lib/docker/client';
+import { dockerForContainer } from '$lib/docker/client';
 import * as tar from 'node:stream/web';
 import { Readable } from 'node:stream';
 
@@ -6,7 +6,7 @@ export async function readContainerFile(
   containerName: string,
   pathInContainer: string
 ): Promise<string> {
-  const container = docker().getContainer(containerName);
+  const container = (await dockerForContainer(containerName)).getContainer(containerName);
   const stream = (await container.getArchive({ path: pathInContainer })) as unknown as NodeJS.ReadableStream;
   const chunks: Buffer[] = [];
   for await (const c of stream as AsyncIterable<Buffer>) chunks.push(c);
@@ -19,7 +19,7 @@ export async function writeContainerFile(
   pathInContainer: string,
   content: string | Buffer
 ): Promise<void> {
-  const container = docker().getContainer(containerName);
+  const container = (await dockerForContainer(containerName)).getContainer(containerName);
   const buffer = typeof content === 'string' ? Buffer.from(content, 'utf8') : content;
   const name = pathInContainer.split('/').pop() ?? 'file';
   const dir = pathInContainer.substring(0, pathInContainer.lastIndexOf('/')) || '/';

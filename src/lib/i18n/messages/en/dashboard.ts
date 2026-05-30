@@ -29,6 +29,7 @@ export const dashboardMessages: Dict = {
   "dashboard.list.count.other": "{n} servers",
 
   "dashboard.card.version": "version",
+  "dashboard.card.host": "host",
   "dashboard.card.players": "players",
   "dashboard.card.uptime": "uptime",
   "dashboard.card.noMotd": "(no motd)",

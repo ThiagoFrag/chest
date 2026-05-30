@@ -1,4 +1,4 @@
-import { docker } from '$lib/docker/client';
+import { dockerForContainer } from '$lib/docker/client';
 import { db, schema } from '$lib/db';
 import { eq } from 'drizzle-orm';
 
@@ -10,7 +10,7 @@ export interface ModFile {
 }
 
 export async function listMods(containerName: string): Promise<ModFile[]> {
-  const container = docker().getContainer(containerName);
+  const container = (await dockerForContainer(containerName)).getContainer(containerName);
   try {
     const stream = (await container.getArchive({ path: '/data/mods/' })) as unknown as NodeJS.ReadableStream;
     const chunks: Buffer[] = [];
@@ -67,7 +67,7 @@ export async function installMod(
   if (content.length < 4 || !content.slice(0, 2).equals(Buffer.from('PK'))) {
     throw new Error('arquivo não é jar válido (magic bytes ausentes)');
   }
-  const container = docker().getContainer(containerName);
+  const container = (await dockerForContainer(containerName)).getContainer(containerName);
   await container.putArchive(makeSingleFileTar(filename, content), { path: '/data/mods' });
 }
 
@@ -87,7 +87,7 @@ export async function removeMod(containerName: string, filename: string): Promis
     throw new Error('filename inválido');
   }
   assertSafeModFilename(filename);
-  const container = docker().getContainer(containerName);
+  const container = (await dockerForContainer(containerName)).getContainer(containerName);
   const exec = await container.exec({
     Cmd: ['rm', '-f', `/data/mods/${filename}`, `/data/mods/${filename}.disabled`],
     AttachStdout: true,
@@ -109,7 +109,7 @@ export async function toggleMod(
   enabled: boolean
 ): Promise<void> {
   assertSafeModFilename(filename);
-  const container = docker().getContainer(containerName);
+  const container = (await dockerForContainer(containerName)).getContainer(containerName);
   const current = enabled ? `/data/mods/${filename}.disabled` : `/data/mods/${filename}`;
   const target = enabled ? `/data/mods/${filename}` : `/data/mods/${filename}.disabled`;
   const exec = await container.exec({

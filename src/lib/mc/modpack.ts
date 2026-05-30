@@ -1,5 +1,5 @@
 import unzipper from 'unzipper';
-import { docker } from '$lib/docker/client';
+import { dockerForContainer } from '$lib/docker/client';
 import { downloadFile, getVersions } from '$lib/modrinth/client';
 
 interface ModrinthPackFile {
@@ -103,7 +103,7 @@ async function extractPackIndex(buf: Buffer): Promise<ModrinthPackIndex> {
 
 async function extractOverrides(buf: Buffer, containerName: string): Promise<void> {
   const dir = await unzipper.Open.buffer(buf);
-  const container = docker().getContainer(containerName);
+  const container = (await dockerForContainer(containerName)).getContainer(containerName);
 
   for (const entry of dir.files) {
     if (entry.type !== 'File') continue;
@@ -139,7 +139,7 @@ async function extractOverrides(buf: Buffer, containerName: string): Promise<voi
 }
 
 async function putModFile(containerName: string, filename: string, content: Buffer): Promise<void> {
-  const container = docker().getContainer(containerName);
+  const container = (await dockerForContainer(containerName)).getContainer(containerName);
   const tarBuf = makeSingleFileTar(filename, content);
   await container.putArchive(tarBuf, { path: '/data/mods' });
 }

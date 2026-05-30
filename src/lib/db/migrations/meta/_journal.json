@@ -85,6 +85,13 @@
       "when": 1780151000000,
       "tag": "0011_discord_oauth",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1780152000000,
+      "tag": "0012_multihost",
+      "breakpoints": true
     }
   ]
 }

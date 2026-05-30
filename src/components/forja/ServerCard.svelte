@@ -1,7 +1,7 @@
 <script lang="ts">
   import { invalidateAll, goto } from '$app/navigation';
   import { page } from '$app/state';
-  import { Play, Square, RotateCw, Loader2 } from 'lucide-svelte';
+  import { Play, Square, RotateCw, Loader2, Server } from 'lucide-svelte';
   import StatusPill from './StatusPill.svelte';
   import MCTexture from '$components/mc-icons/MCTexture.svelte';
   import { formatUptime } from '$lib/utils';
@@ -21,14 +21,22 @@
     status: string;
     uptime: number | null;
     hostPort: number | null;
+    hostId?: string;
+    hostName?: string | null;
     mc:
       | { online: true; motd: string; version: string; players: { online: number; max: number }; latencyMs: number }
       | { online: false; error: string }
       | null;
   }
 
-  let { server }: { server: ServerData } = $props();
+  let { server, showHost = false }: { server: ServerData; showHost?: boolean } = $props();
   let pending = $state<'start' | 'stop' | 'restart' | null>(null);
+
+  const hostBadge = $derived.by(() => {
+    const isRemote = server.hostId !== undefined && server.hostId !== 'local';
+    if (!showHost && !isRemote) return null;
+    return server.hostName ?? server.hostId ?? null;
+  });
 
   async function act(e: Event, action: 'start' | 'stop' | 'restart') {
     e.stopPropagation();
@@ -63,6 +71,11 @@
           {server.displayName}
         </h3>
         <p class="mt-0.5 truncate text-xs text-white/60">{server.containerName}</p>
+        {#if hostBadge}
+          <span class="mt-1 inline-flex max-w-full items-center gap-1 truncate text-xs text-white/50" style="text-shadow: 2px 2px 0 #3f3f3f;" title={t('dashboard.card.host')}>
+            <Server class="size-3 shrink-0" /> <span class="truncate">{hostBadge}</span>
+          </span>
+        {/if}
       </div>
     </div>
     <StatusPill state={server.state} />

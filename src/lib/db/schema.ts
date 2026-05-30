@@ -52,10 +52,32 @@ export const sessions = sqliteTable('sessions', {
     .default(sql`(unixepoch())`)
 });
 
+export const hosts = sqliteTable('hosts', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  endpoint: text('endpoint'),
+  tlsCaEncrypted: text('tls_ca_encrypted'),
+  tlsCertEncrypted: text('tls_cert_encrypted'),
+  tlsKeyEncrypted: text('tls_key_encrypted'),
+  isDefault: integer('is_default', { mode: 'boolean' }).notNull().default(false),
+  enabled: integer('enabled', { mode: 'boolean' }).notNull().default(true),
+  hostAddress: text('host_address'),
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .default(sql`(unixepoch())`)
+});
+
+export type Host = typeof hosts.$inferSelect;
+export type NewHost = typeof hosts.$inferInsert;
+
 export const servers = sqliteTable('servers', {
   id: text('id').primaryKey(),
   slug: text('slug').notNull().unique(),
   containerName: text('container_name').notNull().unique(),
+  hostId: text('host_id')
+    .notNull()
+    .default('local')
+    .references(() => hosts.id, { onDelete: 'restrict' }),
   displayName: text('display_name').notNull(),
   modloaderType: text('modloader_type', {
     enum: ['VANILLA', 'PAPER', 'FABRIC', 'FORGE', 'NEOFORGE', 'PURPUR', 'SPIGOT', 'QUILT']

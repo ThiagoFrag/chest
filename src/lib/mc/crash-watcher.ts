@@ -1,4 +1,4 @@
-import { docker } from '$lib/docker/client';
+import { dockerForContainer } from '$lib/docker/client';
 import { listManagedServers } from '$lib/docker/server-actions';
 import { events as discord } from '$lib/discord/notifier';
 import { notifyServerLifecycle, notifyAdminDM } from '$lib/discord/bot';
@@ -83,7 +83,8 @@ async function tick(): Promise<void> {
 
 async function getExitCode(containerName: string): Promise<number | undefined> {
   try {
-    const info = await docker().getContainer(containerName).inspect();
+    const d = await dockerForContainer(containerName);
+    const info = await d.getContainer(containerName).inspect();
     return info.State.ExitCode;
   } catch {
     return undefined;

@@ -1,4 +1,4 @@
-import { docker } from '$lib/docker/client';
+import { dockerForContainer } from '$lib/docker/client';
 import { readContainerFile, writeContainerFile } from './files';
 import { withLock } from './locks';
 
@@ -46,7 +46,7 @@ export function isTextFile(path: string): boolean {
 }
 
 async function execInContainer(containerName: string, cmd: string[]): Promise<string> {
-  const container = docker().getContainer(containerName);
+  const container = (await dockerForContainer(containerName)).getContainer(containerName);
   const exec = await container.exec({
     Cmd: cmd,
     AttachStdout: true,
@@ -73,7 +73,7 @@ async function execInContainer(containerName: string, cmd: string[]): Promise<st
 
 async function assertContainerReady(containerName: string): Promise<void> {
   try {
-    const info = await docker().getContainer(containerName).inspect();
+    const info = await (await dockerForContainer(containerName)).getContainer(containerName).inspect();
     if (info.State.Restarting) {
       throw new Error(`container ${containerName} está em loop de restart. veja logs no console pra debugar.`);
     }

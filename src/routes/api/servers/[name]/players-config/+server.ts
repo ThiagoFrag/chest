@@ -3,7 +3,7 @@ import { json, error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { readContainerFile, writeContainerFile } from '$lib/mc/files';
 import { sendCommand } from '$lib/mc/rcon';
-import { docker } from '$lib/docker/client';
+import { dockerForContainer } from '$lib/docker/client';
 import type { RequestHandler } from './$types';
 
 interface WhitelistEntry { uuid?: string; name: string }
@@ -30,7 +30,7 @@ async function readJsonSafe<T>(name: string, path: string, fallback: T): Promise
 
 async function isRunning(name: string): Promise<boolean> {
   try {
-    const info = await docker().getContainer(name).inspect();
+    const info = await (await dockerForContainer(name)).getContainer(name).inspect();
     return info.State.Running;
   } catch {
     return false;

@@ -1,4 +1,4 @@
-import { docker } from '$lib/docker/client';
+import { dockerForContainer } from '$lib/docker/client';
 import { db, schema } from '$lib/db';
 import { eq, isNotNull } from 'drizzle-orm';
 import { sendToChannel, sendEmbedToChannel, onMessage, ensureBot } from '$lib/discord/bot';
@@ -110,11 +110,14 @@ async function startBridge(containerName: string, channelId: string, slug: strin
   const work = (async () => {
     if (active.has(containerName)) return;
 
-    const container = docker().getContainer(containerName);
+    let container;
     let info;
     try {
+      const d = await dockerForContainer(containerName);
+      container = d.getContainer(containerName);
       info = await container.inspect();
-    } catch {
+    } catch (e) {
+      console.error(`[chat-bridge] could not reach host for ${containerName}, skipping:`, e);
       return;
     }
     if (!info.State.Running) return;

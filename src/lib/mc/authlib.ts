@@ -1,4 +1,4 @@
-import { docker } from '$lib/docker/client';
+import { dockerForContainer } from '$lib/docker/client';
 import { writeContainerFile } from './files';
 
 const AUTHLIB_INJECTOR_URL =
@@ -13,7 +13,7 @@ export function buildJvmOpts(draslUrl: string): string {
 
 export async function ensureAuthlibInjector(containerName: string): Promise<void> {
   try {
-    const exec = await docker().getContainer(containerName).exec({
+    const exec = await (await dockerForContainer(containerName)).getContainer(containerName).exec({
       Cmd: ['sh', '-c', `test -f ${AUTHLIB_INJECTOR_PATH} && echo ok || echo missing`],
       AttachStdout: true,
       AttachStderr: true

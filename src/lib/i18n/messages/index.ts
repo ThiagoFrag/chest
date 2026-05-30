@@ -9,6 +9,7 @@ import { contentMessages as contentPtBr } from './pt-br/content';
 import { integrationsMessages as integrationsPtBr } from './pt-br/integrations';
 import { adminMessages as adminPtBr } from './pt-br/admin';
 import { serverrorsMessages as serverrorsPtBr } from './pt-br/serverrors';
+import { hostsMessages as hostsPtBr } from './pt-br/hosts';
 
 import { navMessages as navEn } from './en/nav';
 import { authMessages as authEn } from './en/auth';
@@ -19,6 +20,7 @@ import { contentMessages as contentEn } from './en/content';
 import { integrationsMessages as integrationsEn } from './en/integrations';
 import { adminMessages as adminEn } from './en/admin';
 import { serverrorsMessages as serverrorsEn } from './en/serverrors';
+import { hostsMessages as hostsEn } from './en/hosts';
 
 import { navMessages as navEs } from './es/nav';
 import { authMessages as authEs } from './es/auth';
@@ -29,6 +31,7 @@ import { contentMessages as contentEs } from './es/content';
 import { integrationsMessages as integrationsEs } from './es/integrations';
 import { adminMessages as adminEs } from './es/admin';
 import { serverrorsMessages as serverrorsEs } from './es/serverrors';
+import { hostsMessages as hostsEs } from './es/hosts';
 
 export const messages: Record<Locale, Dict> = {
   'pt-BR': {
@@ -40,7 +43,8 @@ export const messages: Record<Locale, Dict> = {
     ...contentPtBr,
     ...integrationsPtBr,
     ...adminPtBr,
-    ...serverrorsPtBr
+    ...serverrorsPtBr,
+    ...hostsPtBr
   },
   en: {
     ...navEn,
@@ -51,7 +55,8 @@ export const messages: Record<Locale, Dict> = {
     ...contentEn,
     ...integrationsEn,
     ...adminEn,
-    ...serverrorsEn
+    ...serverrorsEn,
+    ...hostsEn
   },
   es: {
     ...navEs,
@@ -62,6 +67,7 @@ export const messages: Record<Locale, Dict> = {
     ...contentEs,
     ...integrationsEs,
     ...adminEs,
-    ...serverrorsEs
+    ...serverrorsEs,
+    ...hostsEs
   }
 };

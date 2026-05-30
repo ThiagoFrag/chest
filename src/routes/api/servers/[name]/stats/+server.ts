@@ -1,6 +1,6 @@
 import { requireServerPermission } from '$lib/auth/require-server-permission';
 import { error } from '@sveltejs/kit';
-import { docker } from '$lib/docker/client';
+import { dockerForContainer } from '$lib/docker/client';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (event) => {
@@ -8,7 +8,7 @@ export const GET: RequestHandler = async (event) => {
   if (!params.name) throw error(400);
   await requireServerPermission(event, params.name, 'view_logs');
 
-  const container = docker().getContainer(params.name);
+  const container = (await dockerForContainer(params.name)).getContainer(params.name);
   try {
     await container.inspect();
   } catch {

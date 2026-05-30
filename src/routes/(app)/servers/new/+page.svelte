@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { untrack } from 'svelte';
-  import { ArrowLeft, ArrowRight, Loader2, Check, Globe, Home, Network, AlertCircle, Settings as SettingsIcon, MessageSquare } from 'lucide-svelte';
+  import { ArrowLeft, ArrowRight, Loader2, Check, Globe, Home, Network, AlertCircle, Settings as SettingsIcon, MessageSquare, Server } from 'lucide-svelte';
   import MCTexture from '$components/mc-icons/MCTexture.svelte';
   import Achievement from '$components/forja/Achievement.svelte';
   import VersionPicker from '$components/forja/VersionPicker.svelte';
@@ -10,6 +10,11 @@
   let { data } = $props();
   const configured = $derived(data.configured);
   const template = $derived(data.template);
+  const hosts = $derived(data.hosts);
+  const showHostPicker = $derived(hosts.length > 1);
+
+  let hostId = $state('local');
+  const selectedHostName = $derived(hosts.find((h) => h.id === hostId)?.name ?? hostId);
 
   let achievement = $state<{ title: string; desc: string; icon: string } | null>(null);
 
@@ -118,6 +123,7 @@
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           displayName: displayName.trim(),
+          hostId,
           modloaderType,
           mcVersion: mcVersion.trim(),
           memoryMb: memoryGb * 1024,
@@ -236,6 +242,22 @@
             {t('serverdetail.step1.containerPrefix')} <span class="text-diamond">forja-{displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || '...'}</span>
           </p>
         </div>
+
+        {#if showHostPicker}
+          <div class="space-y-2">
+            <label for="host" class="flex items-center gap-2 text-sm" style="text-shadow: 2px 2px 0 #3f3f3f;">
+              <Server class="size-4 text-diamond" /> {t('serverdetail.step1.hostLabel')}
+            </label>
+            <select id="host" bind:value={hostId} class="mc-input text-sm">
+              {#each hosts as h}
+                <option value={h.id}>{h.name}</option>
+              {/each}
+            </select>
+            <p class="text-xs text-white/70" style="text-shadow: 2px 2px 0 #3f3f3f;">
+              {t('serverdetail.step1.hostHint')}
+            </p>
+          </div>
+        {/if}
       </div>
     {:else if step === 2}
       <div class="space-y-4">
@@ -508,6 +530,9 @@
 
         <dl class="grid grid-cols-2 gap-y-2 gap-x-4 text-sm">
           <dt class="text-white/70" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('serverdetail.confirm.name')}</dt><dd style="text-shadow: 2px 2px 0 #3f3f3f;">{displayName}</dd>
+          {#if showHostPicker}
+            <dt class="text-white/70" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('serverdetail.confirm.host')}</dt><dd class="text-diamond" style="text-shadow: 2px 2px 0 #3f3f3f;">{selectedHostName}</dd>
+          {/if}
           <dt class="text-white/70" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('serverdetail.confirm.modloader')}</dt><dd class="text-diamond" style="text-shadow: 2px 2px 0 #3f3f3f;">{modloaderType}</dd>
           <dt class="text-white/70" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('serverdetail.confirm.version')}</dt><dd class="text-diamond" style="text-shadow: 2px 2px 0 #3f3f3f;">{mcVersion}</dd>
           <dt class="text-white/70" style="text-shadow: 2px 2px 0 #3f3f3f;">{t('serverdetail.confirm.ram')}</dt><dd style="text-shadow: 2px 2px 0 #3f3f3f;">{memoryGb} GB</dd>

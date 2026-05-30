@@ -1,4 +1,5 @@
-import { docker } from '$lib/docker/client';
+import { dockerForHost, dockerForContainer, LOCAL_HOST_ID } from '$lib/docker/client';
+import type Docker from 'dockerode';
 import { db, schema } from '$lib/db';
 import { eq } from 'drizzle-orm';
 import { allocatePorts, slugify } from './port-allocator';
@@ -32,12 +33,14 @@ export interface CreateServerInput {
   draslEnabled: boolean;
   envExtras?: Record<string, string>;
   jvmOptsExtra?: string;
+  hostId?: string;
 }
 
 const IMAGE = 'itzg/minecraft-server:java21';
 
-export async function ensureImage(): Promise<void> {
-  const d = docker();
+// Guarantees the image exists on the daemon where the container will run, not
+// on the local one — a remote host needs its own pulled copy.
+export async function ensureImage(d: Docker): Promise<void> {
   try {
     await d.getImage(IMAGE).inspect();
   } catch {
@@ -83,9 +86,10 @@ async function createServerLocked(input: CreateServerInput): Promise<{
     slug = `${baseSlug}-${suffix}`;
   }
 
+  const hostId = input.hostId ?? LOCAL_HOST_ID;
   const containerName = `forja-${slug}`;
   const volumeName = `forja-data-${slug}`;
-  const ports = await allocatePorts();
+  const ports = await allocatePorts(hostId);
   const rconPassword = generateRconPassword();
   const rconPasswordEncrypted = await encrypt(rconPassword);
   const id = crypto.randomUUID();
@@ -96,6 +100,7 @@ async function createServerLocked(input: CreateServerInput): Promise<{
       id,
       slug,
       containerName,
+      hostId,
       displayName: input.displayName,
       modloaderType: input.modloaderType,
       mcVersion: input.mcVersion,
@@ -112,8 +117,10 @@ async function createServerLocked(input: CreateServerInput): Promise<{
       status: 'creating'
     });
 
+  const d = await dockerForHost(hostId);
+
   try {
-    await ensureImage();
+    await ensureImage(d);
 
     let draslUrl: string | null = null;
     if (input.draslEnabled) {
@@ -123,7 +130,6 @@ async function createServerLocked(input: CreateServerInput): Promise<{
       }
     }
 
-    const d = docker();
     await d.createVolume({ Name: volumeName, Labels: { 'forja.managed': 'true', 'forja.slug': slug } });
 
     const env = buildEnv(input, rconPassword, draslUrl);
@@ -186,7 +192,6 @@ async function createServerLocked(input: CreateServerInput): Promise<{
     return { id, slug, containerName, hostPort: ports.http };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    const d = docker();
     await d.getContainer(containerName).remove({ force: true }).catch(() => undefined);
     await d.getVolume(volumeName).remove().catch(() => undefined);
     await db()
@@ -248,7 +253,7 @@ export async function deleteServer(slug: string): Promise<void> {
     .set({ status: 'deleting', updatedAt: new Date() })
     .where(eq(schema.servers.id, server.id));
 
-  const d = docker();
+  const d = await dockerForHost(server.hostId ?? LOCAL_HOST_ID);
 
   try {
     const { removeBlueMapSidecar } = await import('./world-map-sidecar');

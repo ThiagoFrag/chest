@@ -1,4 +1,4 @@
-import { docker } from '$lib/docker/client';
+import { dockerForContainer } from '$lib/docker/client';
 import { db, schema } from '$lib/db';
 import { eq } from 'drizzle-orm';
 import { downloadFile, getVersions } from '$lib/modrinth/client';
@@ -24,7 +24,7 @@ const SAFE_PATH = /^\/[A-Za-z0-9._/-]*$/;
 async function execList(containerName: string, dir: string): Promise<string[]> {
   if (!SAFE_PATH.test(dir)) return [];
   try {
-    const exec = await docker().getContainer(containerName).exec({
+    const exec = await (await dockerForContainer(containerName)).getContainer(containerName).exec({
       Cmd: ['ls', '-1', dir],
       AttachStdout: true,
       AttachStderr: true
@@ -73,8 +73,8 @@ export async function detectMap(containerName: string): Promise<{
 const BLUEMAP_HTTP_PORT_RANGE_START = 8100;
 const BLUEMAP_HTTP_PORT_RANGE_END = 8200;
 
-export async function allocateMapPort(): Promise<number> {
-  const containers = await docker().listContainers({ all: true });
+export async function allocateMapPort(containerName: string): Promise<number> {
+  const containers = await (await dockerForContainer(containerName)).listContainers({ all: true });
   const used = new Set<number>();
   for (const c of containers) {
     for (const p of c.Ports ?? []) {

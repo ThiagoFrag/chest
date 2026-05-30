@@ -1,4 +1,30 @@
-import { docker } from '$lib/docker/client';
+import { dockerForHost, dockerForContainer, LOCAL_HOST_ID } from '$lib/docker/client';
+import { db, schema } from '$lib/db';
+import { eq } from 'drizzle-orm';
+import type Docker from 'dockerode';
+
+/**
+ * Resolve the Docker host that a sidecar must run on: the SAME host as its parent
+ * Minecraft server. The sidecar only carries a `slug`, so we look up the parent
+ * server row by slug to learn its hostId and route there. Unmanaged containers
+ * (no server row — slug is the sanitized container name) fall back to local.
+ */
+async function dockerForSidecar(slug: string): Promise<Docker> {
+  try {
+    const row = db()
+      .select({ hostId: schema.servers.hostId, containerName: schema.servers.containerName })
+      .from(schema.servers)
+      .where(eq(schema.servers.slug, slug))
+      .get();
+    if (row) {
+      // Route via the parent container so the host stays in sync with the server.
+      return await dockerForContainer(row.containerName);
+    }
+  } catch {
+    /* fall through to local */
+  }
+  return dockerForHost(LOCAL_HOST_ID);
+}
 
 const BLUEMAP_CLI_VERSION = '3.20';
 const BLUEMAP_CLI_URL = `https://github.com/BlueMap-Minecraft/BlueMap/releases/download/v${BLUEMAP_CLI_VERSION}/BlueMap-${BLUEMAP_CLI_VERSION}-cli.jar`;
@@ -41,7 +67,7 @@ export function sidecarVolumeName(slug: string): string {
  */
 export async function resolveServerDataMount(containerName: string): Promise<string | null> {
   try {
-    const info = await docker().getContainer(containerName).inspect();
+    const info = await (await dockerForContainer(containerName)).getContainer(containerName).inspect();
     const mounts = info.Mounts ?? [];
     const dataMount = mounts.find((m) => m.Destination === '/data');
     if (!dataMount) return null;
@@ -171,7 +197,7 @@ export interface SidecarStatus {
 export async function getSidecarStatus(slug: string): Promise<SidecarStatus> {
   const name = sidecarName(slug);
   try {
-    const info = await docker().getContainer(name).inspect();
+    const info = await (await dockerForSidecar(slug)).getContainer(name).inspect();
     const hostPort = parseInt(
       info.NetworkSettings?.Ports?.[`${SIDECAR_CONTAINER_PORT}/tcp`]?.[0]?.HostPort ?? '0',
       10
@@ -198,12 +224,12 @@ export interface CreateSidecarInput {
 
 export async function createBlueMapSidecar(input: CreateSidecarInput): Promise<void> {
   return withSidecarLock(input.slug, async () => {
-    const d = docker();
+    const d = await dockerForSidecar(input.slug);
     const name = sidecarName(input.slug);
     const volumeName = sidecarVolumeName(input.slug);
 
-    await removeBlueMapSidecarUnlocked(input.slug).catch(() => undefined);
-    await ensureSidecarImage();
+    await removeBlueMapSidecarUnlocked(input.slug, {}, d).catch(() => undefined);
+    await ensureSidecarImage(d);
     await d.createVolume({ Name: volumeName, Labels: { [SIDECAR_LABEL]: 'true', 'forja.slug': input.slug } }).catch(() => undefined);
 
     const networkConfig = input.network
@@ -237,8 +263,7 @@ export async function createBlueMapSidecar(input: CreateSidecarInput): Promise<v
   });
 }
 
-async function ensureSidecarImage(): Promise<void> {
-  const d = docker();
+async function ensureSidecarImage(d: Docker): Promise<void> {
   try {
     await d.getImage(SIDECAR_IMAGE).inspect();
     return;
@@ -258,22 +283,27 @@ async function ensureSidecarImage(): Promise<void> {
 export async function stopBlueMapSidecar(slug: string): Promise<void> {
   const name = sidecarName(slug);
   try {
-    await docker().getContainer(name).stop({ t: 10 });
+    await (await dockerForSidecar(slug)).getContainer(name).stop({ t: 10 });
   } catch {
     /* ignore */
   }
 }
 
-async function removeBlueMapSidecarUnlocked(slug: string, opts: { wipeVolume?: boolean } = {}): Promise<void> {
+async function removeBlueMapSidecarUnlocked(
+  slug: string,
+  opts: { wipeVolume?: boolean } = {},
+  client?: Docker
+): Promise<void> {
+  const d = client ?? (await dockerForSidecar(slug));
   const name = sidecarName(slug);
   try {
-    await docker().getContainer(name).remove({ force: true });
+    await d.getContainer(name).remove({ force: true });
   } catch {
     /* ignore */
   }
   if (opts.wipeVolume) {
     try {
-      await docker().getVolume(sidecarVolumeName(slug)).remove({ force: true });
+      await d.getVolume(sidecarVolumeName(slug)).remove({ force: true });
     } catch {
       /* ignore */
     }
@@ -285,7 +315,9 @@ export async function removeBlueMapSidecar(slug: string, opts: { wipeVolume?: bo
 }
 
 export async function listAllSidecars(): Promise<Array<{ slug: string; containerName: string; state: string; hostPort: number | null }>> {
-  const containers = await docker().listContainers({
+  // Cross-host aggregation is out of scope for this wave: a single Docker client
+  // only sees one host. Keep prior behavior by listing on the local host.
+  const containers = await (await dockerForHost(LOCAL_HOST_ID)).listContainers({
     all: true,
     filters: { label: [`${SIDECAR_LABEL}=true`] }
   });

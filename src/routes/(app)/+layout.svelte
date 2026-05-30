@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { invalidateAll } from '$app/navigation';
-  import { LayoutGrid, ServerCog, LogOut, Settings, Users, ShieldAlert, Shield, Egg, Webhook } from 'lucide-svelte';
+  import { LayoutGrid, ServerCog, LogOut, Settings, Users, ShieldAlert, Shield, Egg, Webhook, Server } from 'lucide-svelte';
   import MCTexture from '$components/mc-icons/MCTexture.svelte';
   import Logo from '$components/mc-icons/Logo.svelte';
   import { t, getLocale, setLocale, LOCALES, LOCALE_LABELS, type Locale } from '$lib/i18n';
@@ -18,6 +18,7 @@
       { href: '/users', label: t('nav.users'), icon: Users, show: isAdmin },
       { href: '/audit', label: t('nav.audit'), icon: ShieldAlert, show: isAdmin },
       { href: '/webhooks', label: t('nav.webhooks'), icon: Webhook, show: isAdmin },
+      { href: '/hosts', label: t('nav.hosts'), icon: Server, show: isAdmin },
       { href: '/security', label: t('nav.security'), icon: Shield, show: true },
       { href: '/settings', label: t('nav.settings'), icon: Settings, show: isAdmin }
     ].filter((i) => i.show)

@@ -1,4 +1,5 @@
-import { docker } from './client';
+import { docker, dockerForContainer, dockerForHost, LOCAL_HOST_ID } from './client';
+import { listHosts } from './hosts';
 import type { ContainerInfo, ContainerInspectInfo } from 'dockerode';
 import { events as discord } from '$lib/discord/notifier';
 import { notifyServerLifecycle } from '$lib/discord/bot';
@@ -71,23 +72,58 @@ export interface ManagedServer {
   mcVersion: string | null;
   hostPort: number | null;
   rconPort: number | null;
+  hostId: string;
 }
 
 const MANAGED_LABEL = 'forja.managed';
 const DISPLAY_LABEL = 'forja.display';
 
-export async function listManagedServers(): Promise<ManagedServer[]> {
-  const containers = await docker().listContainers({
-    all: true,
-    filters: { label: [`${MANAGED_LABEL}=true`] }
+/**
+ * Lists managed containers across every enabled host in parallel. A host that
+ * is down or unreachable is logged and skipped — it never sinks the rest. Each
+ * resulting ManagedServer is tagged with the host it came from.
+ */
+export async function listManagedServersAllHosts(): Promise<ManagedServer[]> {
+  const enabledHosts = (await listHosts()).filter((h) => h.enabled);
+
+  const results = await Promise.allSettled(
+    enabledHosts.map(async (h) => {
+      const d = await dockerForHost(h.id);
+      const containers = await d.listContainers({
+        all: true,
+        filters: { label: [`${MANAGED_LABEL}=true`] }
+      });
+      return containers.map((c) => toManagedServer(c, h.id));
+    })
+  );
+
+  const servers: ManagedServer[] = [];
+  results.forEach((r, i) => {
+    if (r.status === 'fulfilled') {
+      servers.push(...r.value);
+    } else {
+      console.warn(
+        `[listManagedServersAllHosts] host "${enabledHosts[i].id}" unreachable, skipping:`,
+        r.reason
+      );
+    }
   });
-  return containers.map(toManagedServer);
+  return servers;
+}
+
+/**
+ * Default listing is all-hosts: the workers and UI expect the full fleet, not
+ * just the local daemon.
+ */
+export async function listManagedServers(): Promise<ManagedServer[]> {
+  return listManagedServersAllHosts();
 }
 
 export async function getServer(
   containerName: string
 ): Promise<ManagedServer | null> {
-  const containers = await docker().listContainers({
+  const d = await dockerForContainer(containerName);
+  const containers = await d.listContainers({
     all: true,
     filters: { name: [containerName] }
   });
@@ -101,7 +137,8 @@ export async function inspectServer(
   containerName: string
 ): Promise<ContainerInspectInfo | null> {
   try {
-    return await docker().getContainer(containerName).inspect();
+    const d = await dockerForContainer(containerName);
+    return await d.getContainer(containerName).inspect();
   } catch {
     return null;
   }
@@ -118,7 +155,8 @@ async function fireServerWebhook(
 
 export async function startServer(containerName: string): Promise<void> {
   await assertManaged(containerName);
-  await docker().getContainer(containerName).start();
+  const d = await dockerForContainer(containerName);
+  await d.getContainer(containerName).start();
   discord.serverStarted(containerName).catch(() => undefined);
   notifyServerLifecycle(containerName, { type: 'started' }).catch(() => undefined);
   fireServerWebhook('server.started', containerName).catch(() => undefined);
@@ -128,7 +166,8 @@ export async function startServer(containerName: string): Promise<void> {
 export async function stopServer(containerName: string, timeout = 60): Promise<void> {
   await assertManaged(containerName);
   recordManualStop(containerName);
-  await docker().getContainer(containerName).stop({ t: timeout });
+  const d = await dockerForContainer(containerName);
+  await d.getContainer(containerName).stop({ t: timeout });
   discord.serverStopped(containerName).catch(() => undefined);
   notifyServerLifecycle(containerName, { type: 'stopped' }).catch(() => undefined);
   fireServerWebhook('server.stopped', containerName).catch(() => undefined);
@@ -141,7 +180,8 @@ export async function restartServer(
 ): Promise<void> {
   await assertManaged(containerName);
   recordManualStop(containerName);
-  await docker().getContainer(containerName).restart({ t: timeout });
+  const d = await dockerForContainer(containerName);
+  await d.getContainer(containerName).restart({ t: timeout });
   discord.serverRestarted(containerName).catch(() => undefined);
   notifyServerLifecycle(containerName, { type: 'restarted' }).catch(() => undefined);
   fireServerWebhook('server.restarted', containerName).catch(() => undefined);
@@ -156,7 +196,7 @@ async function assertManaged(containerName: string): Promise<void> {
   }
 }
 
-function toManagedServer(c: ContainerInfo): ManagedServer {
+function toManagedServer(c: ContainerInfo, hostId: string = LOCAL_HOST_ID): ManagedServer {
   const name = c.Names[0]?.replace(/^\//, '') ?? 'unknown';
   const labels = c.Labels ?? {};
   const startedAt = c.State === 'running' ? extractUptime(c.Status) : null;
@@ -173,7 +213,8 @@ function toManagedServer(c: ContainerInfo): ManagedServer {
     uptime: startedAt,
     mcVersion: null,
     hostPort: portInfo,
-    rconPort
+    rconPort,
+    hostId
   };
 }
 

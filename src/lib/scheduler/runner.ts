@@ -1,6 +1,6 @@
 import { eq, and, lte } from 'drizzle-orm';
 import { db, schema } from '$lib/db';
-import { docker } from '$lib/docker/client';
+import { dockerForContainer } from '$lib/docker/client';
 import { createBackup } from '$lib/mc/backup';
 import { sendCommand } from '$lib/mc/rcon';
 import { parseCron, matches, nextRunAt } from './cron';
@@ -57,7 +57,8 @@ async function runOne(task: schema.ScheduledTask): Promise<void> {
       const scope = (params.scope === 'full' ? 'full' : 'world') as 'world' | 'full';
       await createBackup(serverRow.containerName, scope);
     } else if (task.taskType === 'restart') {
-      await docker().getContainer(serverRow.containerName).restart({ t: 30 });
+      const d = await dockerForContainer(serverRow.containerName);
+      await d.getContainer(serverRow.containerName).restart({ t: 30 });
     } else if (task.taskType === 'command') {
       const cmd = String(params.command ?? '');
       if (cmd) await sendCommand(serverRow.slug, cmd);

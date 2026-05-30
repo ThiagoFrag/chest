@@ -1,4 +1,4 @@
-import { docker } from '$lib/docker/client';
+import { dockerForContainer } from '$lib/docker/client';
 import { sendCommand } from './rcon';
 import { Readable } from 'node:stream';
 import { events as discord } from '$lib/discord/notifier';
@@ -41,7 +41,7 @@ export async function createBackup(
   scope: 'world' | 'full'
 ): Promise<BackupEntry> {
   const storage = await getStorage();
-  const container = docker().getContainer(containerName);
+  const container = (await dockerForContainer(containerName)).getContainer(containerName);
 
   let wasRunning = false;
   try {
@@ -209,7 +209,7 @@ export async function restoreBackup(id: string, containerName: string): Promise<
   const objs = await storage.list(`${containerName}__`);
   if (!objs.some((o) => o.key === filename)) throw new Error('backup não encontrado');
 
-  const container = docker().getContainer(containerName);
+  const container = (await dockerForContainer(containerName)).getContainer(containerName);
   let wasRunning = false;
   try {
     const info = await container.inspect();
@@ -254,7 +254,7 @@ export async function restoreBackup(id: string, containerName: string): Promise<
 }
 
 async function execInContainer(containerName: string, cmd: string[]): Promise<void> {
-  const container = docker().getContainer(containerName);
+  const container = (await dockerForContainer(containerName)).getContainer(containerName);
   const exec = await container.exec({
     Cmd: cmd,
     AttachStdout: true,

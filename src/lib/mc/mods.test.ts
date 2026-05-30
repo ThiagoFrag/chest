@@ -7,7 +7,8 @@ const getContainerMock = vi.fn(() => ({
 }));
 
 vi.mock('$lib/docker/client', () => ({
-  docker: () => ({ getContainer: getContainerMock })
+  docker: () => ({ getContainer: getContainerMock }),
+  dockerForContainer: () => Promise.resolve({ getContainer: getContainerMock })
 }));
 
 vi.mock('$lib/db', () => ({

@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { requireServerPermission } from '$lib/auth/require-server-permission';
 import { db, schema } from '$lib/db';
-import { docker } from '$lib/docker/client';
+import { dockerForContainer } from '$lib/docker/client';
 import {
   detectMap,
   installBlueMap,
@@ -111,11 +111,11 @@ export const POST: RequestHandler = async (event) => {
         });
       }
       if (!mapPort) {
-        mapPort = await allocateMapPort();
+        mapPort = await allocateMapPort(params.name);
         await rebindContainerPorts(params.name, mapPort);
       }
     } else {
-      sidecarPort = mapPort ?? (await allocateMapPort());
+      sidecarPort = mapPort ?? (await allocateMapPort(params.name));
       mapPort = sidecarPort;
       const network = await detectInternalNetwork(params.name);
       await installBlueMap(params.name, loaderType, mcVersion, {
@@ -199,7 +199,7 @@ export const DELETE: RequestHandler = async (event) => {
 
 async function detectInternalNetwork(containerName: string): Promise<string | null> {
   try {
-    const info = await docker().getContainer(containerName).inspect();
+    const info = await (await dockerForContainer(containerName)).getContainer(containerName).inspect();
     // host network mode can't be shared with a separate container with port bindings
     if (info.HostConfig?.NetworkMode === 'host') return null;
     const networks = Object.keys(info.NetworkSettings?.Networks ?? {});
@@ -212,7 +212,8 @@ async function detectInternalNetwork(containerName: string): Promise<string | nu
 }
 
 async function rebindContainerPorts(containerName: string, mapPort: number): Promise<void> {
-  const container = docker().getContainer(containerName);
+  const d = await dockerForContainer(containerName);
+  const container = d.getContainer(containerName);
   const info = await container.inspect();
   const wasRunning = info.State.Running;
 
@@ -234,7 +235,7 @@ async function rebindContainerPorts(containerName: string, mapPort: number): Pro
   }
   await container.remove({ force: true });
 
-  await docker().createContainer({
+  await d.createContainer({
     name: containerName,
     Image: cfg.Image,
     Env: cfg.Env ?? [],
@@ -247,6 +248,6 @@ async function rebindContainerPorts(containerName: string, mapPort: number): Pro
   });
 
   if (wasRunning) {
-    await docker().getContainer(containerName).start();
+    await d.getContainer(containerName).start();
   }
 }

@@ -1,15 +1,21 @@
 import { getSetting } from '$lib/settings';
 import { CURATED_TEMPLATES } from '$lib/templates';
 import { getEgg } from '$lib/eggs/loader';
+import { listHosts } from '$lib/docker/hosts';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ url }) => {
-  const [draslUrl, cfToken, playitSecret, discordToken] = await Promise.all([
+  const [draslUrl, cfToken, playitSecret, discordToken, allHosts] = await Promise.all([
     getSetting('drasl.url'),
     getSetting('cloudflare.api_token'),
     getSetting('playit.secret_key'),
-    getSetting('discord.bot_token')
+    getSetting('discord.bot_token'),
+    listHosts().catch(() => [])
   ]);
+
+  const hosts = allHosts
+    .filter((h) => h.enabled)
+    .map((h) => ({ id: h.id, name: h.name }));
 
   const eggSlug = url.searchParams.get('egg');
   const eggTemplate = eggSlug
@@ -63,6 +69,7 @@ export const load: PageServerLoad = async ({ url }) => {
       playit: !!playitSecret,
       discord: !!discordToken
     },
+    hosts,
     template: eggTemplate ?? curatedTemplate ?? dynamicTemplate
   };
 };

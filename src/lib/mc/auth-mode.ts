@@ -1,4 +1,4 @@
-import { docker } from '$lib/docker/client';
+import { dockerForContainer } from '$lib/docker/client';
 import { getSetting } from '$lib/settings';
 import { ensureAuthlibInjector, buildJvmOpts } from './authlib';
 
@@ -12,7 +12,7 @@ export interface AuthModeStatus {
 }
 
 export async function detectAuthMode(containerName: string): Promise<AuthModeStatus> {
-  const info = await docker().getContainer(containerName).inspect();
+  const info = await (await dockerForContainer(containerName)).getContainer(containerName).inspect();
   const envArr = info.Config.Env ?? [];
   const env: Record<string, string> = {};
   for (const e of envArr) {
@@ -38,7 +38,8 @@ export async function setAuthMode(
   mode: AuthMode,
   opts: { draslUrl?: string } = {}
 ): Promise<{ recreated: boolean; jvmOpts: string | null; onlineMode: boolean }> {
-  const container = docker().getContainer(containerName);
+  const dockerClient = await dockerForContainer(containerName);
+  const container = dockerClient.getContainer(containerName);
   const info = await container.inspect();
   const wasRunning = info.State.Running;
 
@@ -87,7 +88,7 @@ export async function setAuthMode(
 
   await container.remove({ force: true });
 
-  await docker().createContainer({
+  await dockerClient.createContainer({
     name: containerName,
     Image: cfg.Image,
     Env: newEnv,
@@ -100,7 +101,7 @@ export async function setAuthMode(
   });
 
   if (wasRunning) {
-    await docker().getContainer(containerName).start();
+    await dockerClient.getContainer(containerName).start();
   }
 
   return { recreated: true, jvmOpts, onlineMode };
