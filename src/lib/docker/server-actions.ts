@@ -75,16 +75,8 @@ export interface ManagedServer {
   hostId: string;
 }
 
-const MANAGED_LABEL = 'forja.managed';
-const DISPLAY_LABEL = 'forja.display';
-// BlueMap sidecars are also forja.managed=true (so the workers manage them),
-// but they are NOT Minecraft servers and have no `servers` table row. They must
-// never show up in the server list nor resolve as a server.
-const SIDECAR_LABEL = 'forja.bluemap';
-
-export function isSidecar(c: Pick<ContainerInfo, 'Labels'>): boolean {
-  return c.Labels?.[SIDECAR_LABEL] === 'true';
-}
+import { MANAGED_LABEL, DISPLAY_LABEL, isSidecar } from './labels';
+export { isSidecar } from './labels';
 
 /**
  * Lists managed containers across every enabled host in parallel. A host that

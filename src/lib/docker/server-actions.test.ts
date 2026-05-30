@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isSidecar } from './server-actions';
+import { isSidecar } from './labels';
 
 // Regression: BlueMap sidecars carry forja.managed=true (so workers manage
 // them) but are NOT Minecraft servers and have no `servers` table row. They
