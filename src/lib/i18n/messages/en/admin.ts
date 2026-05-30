@@ -91,6 +91,39 @@ export const adminMessages: Dict = {
   'admin.settings.bot.addToServer': 'add bot to a server',
   'admin.settings.bot.addHint': 'opens Discord OAuth in a new tab. you must be a server admin.',
 
+  // settings - discord guided flow
+  'admin.settings.discord.flow.title': 'DISCORD',
+  'admin.settings.discord.flow.desc': 'connect the bot in 3 steps. self-hosted, so the token is yours.',
+
+  'admin.settings.discord.step1.title': '1. Connect the bot',
+  'admin.settings.discord.step1.desc': 'paste your bot token and validate it before saving.',
+  'admin.settings.discord.step1.tokenLabel': 'Bot Token',
+  'admin.settings.discord.step1.validate': 'validate token',
+  'admin.settings.discord.step1.validating': 'validating...',
+  'admin.settings.discord.step1.valid': 'Bot: {username}',
+  'admin.settings.discord.step1.invalid': 'invalid token: {reason}',
+  'admin.settings.discord.step1.invalidGeneric': 'invalid token or network failure',
+  'admin.settings.discord.step1.helpToggle': 'How to create the bot?',
+  'admin.settings.discord.step1.helpBody': 'create an application, open the Bot tab and copy the token.',
+  'admin.settings.discord.step1.helpLink': 'Discord Developer Portal',
+
+  'admin.settings.discord.step2.title': '2. Add it to your server',
+  'admin.settings.discord.step2.desc': 'you will pick which server to add it to, right on the Discord screen.',
+  'admin.settings.discord.step2.add': 'Add bot to Discord',
+  'admin.settings.discord.step2.permissions': 'requested permissions: {hint}',
+  'admin.settings.discord.step2.refresh': 'I added it / refresh',
+  'admin.settings.discord.step2.locked': 'validate or save a valid token in step 1 to unlock.',
+
+  'admin.settings.discord.step3.title': '3. Status',
+  'admin.settings.discord.step3.channelNote': 'which channel each server uses is set in that server\'s Discord tab (DiscordBridgePanel). no need to configure it here.',
+
+  'admin.settings.discord.advanced.summary': 'Advanced',
+  'admin.settings.discord.advanced.webhookLabel': 'Webhook URL (legacy)',
+  'admin.settings.discord.advanced.webhookHelp': 'Optional. Simple notifications (server up/down/crash) WITHOUT running the bot 24/7. If you already use the bot above, you don\'t need this.',
+  'admin.settings.discord.advanced.adminIdHelp': 'Optional. Gets a DM when a server crashes.',
+  'admin.settings.discord.advanced.loginTitle': 'Login with Discord',
+  'admin.settings.discord.advanced.loginDesc': 'OAuth for "sign in with Discord". A separate feature, independent of the bot.',
+
   // webhooks
   'admin.webhooks.head': 'Chest · Webhooks',
   'admin.webhooks.title': 'WEBHOOKS',

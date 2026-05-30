@@ -15,7 +15,7 @@ import { db, schema } from '$lib/db';
 import { getSetting } from '$lib/settings';
 import { COMMANDS, autocompleteServers, handleSlashCommand } from './commands';
 import { BOT_AVATAR_PNG_BASE64 } from './bot-avatar';
-import { buildInviteUrl } from './invite-url';
+import { buildInviteUrl, extractAppIdFromToken } from './invite-url';
 
 export { buildInviteUrl };
 
@@ -167,12 +167,13 @@ export async function getStatus(): Promise<BotStatus> {
 
   const c = await ensureBot();
   if (!c || !c.isReady()) {
+    const appId = extractAppIdFromToken(token);
     return {
       configured: true,
       connected: false,
       username: null,
-      applicationId: null,
-      inviteUrl: null,
+      applicationId: appId,
+      inviteUrl: appId ? buildInviteUrl(appId) : null,
       guilds: []
     };
   }

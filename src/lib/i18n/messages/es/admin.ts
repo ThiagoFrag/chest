@@ -91,6 +91,39 @@ export const adminMessages: Dict = {
   'admin.settings.bot.addToServer': 'agregar bot a un servidor',
   'admin.settings.bot.addHint': 'abre el OAuth de Discord en una nueva pestaña. tienes que ser admin del servidor.',
 
+  // settings - discord guided flow
+  'admin.settings.discord.flow.title': 'DISCORD',
+  'admin.settings.discord.flow.desc': 'conecta el bot en 3 pasos. self-hosted, así que el token es tuyo.',
+
+  'admin.settings.discord.step1.title': '1. Conectar el bot',
+  'admin.settings.discord.step1.desc': 'pega el token de tu bot y valídalo antes de guardar.',
+  'admin.settings.discord.step1.tokenLabel': 'Bot Token',
+  'admin.settings.discord.step1.validate': 'validar token',
+  'admin.settings.discord.step1.validating': 'validando...',
+  'admin.settings.discord.step1.valid': 'Bot: {username}',
+  'admin.settings.discord.step1.invalid': 'token inválido: {reason}',
+  'admin.settings.discord.step1.invalidGeneric': 'token inválido o falla de red',
+  'admin.settings.discord.step1.helpToggle': '¿Cómo crear el bot?',
+  'admin.settings.discord.step1.helpBody': 'crea una aplicación, abre la pestaña Bot y copia el token.',
+  'admin.settings.discord.step1.helpLink': 'Discord Developer Portal',
+
+  'admin.settings.discord.step2.title': '2. Agregar a tu servidor',
+  'admin.settings.discord.step2.desc': 'vas a elegir en qué servidor agregarlo, en la propia pantalla de Discord.',
+  'admin.settings.discord.step2.add': 'Agregar bot a Discord',
+  'admin.settings.discord.step2.permissions': 'permisos solicitados: {hint}',
+  'admin.settings.discord.step2.refresh': 'ya lo agregué / actualizar',
+  'admin.settings.discord.step2.locked': 'valida o guarda un token válido en el paso 1 para desbloquear.',
+
+  'admin.settings.discord.step3.title': '3. Estado',
+  'admin.settings.discord.step3.channelNote': 'qué canal usa cada servidor se define en la pestaña Discord de cada servidor (DiscordBridgePanel). no hace falta configurarlo aquí.',
+
+  'admin.settings.discord.advanced.summary': 'Avanzado',
+  'admin.settings.discord.advanced.webhookLabel': 'Webhook URL (legado)',
+  'admin.settings.discord.advanced.webhookHelp': 'Opcional. Notificaciones simples (servidor up/down/crash) SIN tener el bot 24/7. Si ya usas el bot de arriba, no hace falta.',
+  'admin.settings.discord.advanced.adminIdHelp': 'Opcional. Recibe un DM cuando un servidor crashea.',
+  'admin.settings.discord.advanced.loginTitle': 'Login con Discord',
+  'admin.settings.discord.advanced.loginDesc': 'OAuth para "entrar con Discord". Otra feature, independiente del bot.',
+
   // webhooks
   'admin.webhooks.head': 'Chest · Webhooks',
   'admin.webhooks.title': 'WEBHOOKS',
