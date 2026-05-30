@@ -36,7 +36,7 @@ export const hostsMessages: Dict = {
   'hosts.create.button': 'añadir host',
   'hosts.create.creating': 'añadiendo...',
   'hosts.form.name.label': 'nombre',
-  'hosts.form.name.placeholder': 'fedora-server',
+  'hosts.form.name.placeholder': 'home-lab',
   'hosts.form.endpoint.label': 'endpoint',
   'hosts.form.endpoint.placeholder': 'tcp://10.0.0.5:2376',
   'hosts.form.endpoint.help': 'tcp://host:puerto para un daemon remoto o unix:///var/run/docker.sock para local',
