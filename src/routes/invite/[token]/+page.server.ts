@@ -17,8 +17,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     .get();
 
   if (!inv) throw error(404, tServer(locals.locale, 'serverrors.invite.notFound'));
-  const expired = (inv.expiresAt instanceof Date ? inv.expiresAt.getTime() : Number(inv.expiresAt) * 1000) < Date.now();
-  if (inv.usedAt) throw error(410, tServer(locals.locale, 'serverrors.invite.alreadyUsed'));
+  const expired =
+    (inv.expiresAt instanceof Date
+      ? inv.expiresAt.getTime()
+      : Number(inv.expiresAt) * 1000) < Date.now();
+  if (inv.usedAt)
+    throw error(410, tServer(locals.locale, 'serverrors.invite.alreadyUsed'));
   if (expired) throw error(410, tServer(locals.locale, 'serverrors.invite.expired'));
 
   return {
@@ -29,7 +33,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 };
 
 const formSchema = z.object({
-  username: z.string().trim().min(3).max(32).regex(/^[a-zA-Z0-9_-]+$/),
+  username: z
+    .string()
+    .trim()
+    .min(3)
+    .max(32)
+    .regex(/^[a-zA-Z0-9_-]+$/),
   password: z.string().min(8).max(200)
 });
 
@@ -40,9 +49,16 @@ export const actions: Actions = {
       .from(schema.invites)
       .where(eq(schema.invites.token, params.token!))
       .get();
-    if (!inv) return fail(404, { error: tServer(locals.locale, 'serverrors.invite.invalid') });
-    const expired = (inv.expiresAt instanceof Date ? inv.expiresAt.getTime() : Number(inv.expiresAt) * 1000) < Date.now();
-    if (inv.usedAt || expired) return fail(410, { error: tServer(locals.locale, 'serverrors.invite.unavailable') });
+    if (!inv)
+      return fail(404, { error: tServer(locals.locale, 'serverrors.invite.invalid') });
+    const expired =
+      (inv.expiresAt instanceof Date
+        ? inv.expiresAt.getTime()
+        : Number(inv.expiresAt) * 1000) < Date.now();
+    if (inv.usedAt || expired)
+      return fail(410, {
+        error: tServer(locals.locale, 'serverrors.invite.unavailable')
+      });
 
     const form = await request.formData();
     const parsed = formSchema.safeParse({
@@ -50,7 +66,9 @@ export const actions: Actions = {
       password: form.get('password')
     });
     if (!parsed.success) {
-      return fail(400, { error: tServer(locals.locale, 'serverrors.invite.invalidData') });
+      return fail(400, {
+        error: tServer(locals.locale, 'serverrors.invite.invalidData')
+      });
     }
 
     const existing = await db()
@@ -58,19 +76,18 @@ export const actions: Actions = {
       .from(schema.users)
       .where(eq(schema.users.username, parsed.data.username))
       .get();
-    if (existing) return fail(409, { error: tServer(locals.locale, 'serverrors.invite.userExists') });
+    if (existing)
+      return fail(409, { error: tServer(locals.locale, 'serverrors.invite.userExists') });
 
     const passwordHash = await hashPassword(parsed.data.password);
     const userId = crypto.randomUUID();
 
-    await db()
-      .insert(schema.users)
-      .values({
-        id: userId,
-        username: parsed.data.username,
-        passwordHash,
-        role: inv.role
-      });
+    await db().insert(schema.users).values({
+      id: userId,
+      username: parsed.data.username,
+      passwordHash,
+      role: inv.role
+    });
 
     await db()
       .update(schema.invites)

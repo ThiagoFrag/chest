@@ -1,4 +1,4 @@
-import { requireServerPermission } from "$lib/auth/require-server-permission";
+import { requireServerPermission } from '$lib/auth/require-server-permission';
 import { json, error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
@@ -10,7 +10,11 @@ import type { RequestHandler } from './$types';
 export const GET: RequestHandler = async (event) => {
   const { params } = event;
   if (!params.name) throw error(400);
-  const { server } = await requireServerPermission(event, params.name, 'manage_scheduled');
+  const { server } = await requireServerPermission(
+    event,
+    params.name,
+    'manage_scheduled'
+  );
 
   const tasks = await db()
     .select()
@@ -31,7 +35,11 @@ const createSchema = z.object({
 export const POST: RequestHandler = async (event) => {
   const { params, request } = event;
   if (!params.name) throw error(400);
-  const { server } = await requireServerPermission(event, params.name, 'manage_scheduled');
+  const { server } = await requireServerPermission(
+    event,
+    params.name,
+    'manage_scheduled'
+  );
 
   const body = await request.json().catch(() => null);
   const parsed = createSchema.safeParse(body);
@@ -61,7 +69,12 @@ export const POST: RequestHandler = async (event) => {
     action: 'server.task.create',
     resourceType: 'server',
     resourceId: params.name,
-    details: { taskId: id, taskType: parsed.data.taskType, cronExpr: parsed.data.cronExpr, enabled: parsed.data.enabled }
+    details: {
+      taskId: id,
+      taskType: parsed.data.taskType,
+      cronExpr: parsed.data.cronExpr,
+      enabled: parsed.data.enabled
+    }
   });
 
   return json({ id, nextRunAt: next }, { status: 201 });

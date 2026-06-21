@@ -25,7 +25,8 @@ export const serverdetailMessages: Dict = {
   'serverdetail.console.placeholder.offline': 'el servidor debe estar en línea',
   'serverdetail.console.rconError': '(error: {message})',
   'serverdetail.settings.dangerZone': 'ZONA DE PELIGRO',
-  'serverdetail.settings.dangerDesc': 'eliminar el servidor borra el contenedor + el volumen permanentemente. mundo perdido.',
+  'serverdetail.settings.dangerDesc':
+    'eliminar el servidor borra el contenedor + el volumen permanentemente. mundo perdido.',
   'serverdetail.settings.confirmPlaceholder': 'escribe {name} para confirmar',
   'serverdetail.settings.deleteButton': 'eliminar servidor',
 
@@ -64,9 +65,11 @@ export const serverdetailMessages: Dict = {
   'serverdetail.step2.heading': 'MODLOADER & VERSIÓN',
   'serverdetail.step2.typeLabel': 'tipo',
   'serverdetail.step2.versionLabel': 'versión MC',
-  'serverdetail.step2.versionHint': 'cualquier versión de Mojang (release o snapshot). itzg/minecraft-server la descarga al instante.',
+  'serverdetail.step2.versionHint':
+    'cualquier versión de Mojang (release o snapshot). itzg/minecraft-server la descarga al instante.',
   'serverdetail.step2.clientWarning': 'el cliente de Minecraft debe estar EXACTAMENTE en',
-  'serverdetail.step2.clientWarningRest': 'las versiones distintas se desconectan con "Failed to decode packet". en tu launcher (Prism Launcher/oficial/Modrinth), crea o edita el perfil para esta versión antes de conectar.',
+  'serverdetail.step2.clientWarningRest':
+    'las versiones distintas se desconectan con "Failed to decode packet". en tu launcher (Prism Launcher/oficial/Modrinth), crea o edita el perfil para esta versión antes de conectar.',
   'serverdetail.step3.heading': 'RECURSOS',
   'serverdetail.step3.ramLabel': 'RAM:',
   'serverdetail.step3.maxPlayersLabel': 'máx. jugadores',
@@ -76,7 +79,8 @@ export const serverdetailMessages: Dict = {
   'serverdetail.step4.heading': 'ACCESO PÚBLICO',
   'serverdetail.step4.subtitle': 'cómo se conectarán los jugadores',
   'serverdetail.step4.localTitle': 'Solo local',
-  'serverdetail.step4.localDesc': 'acceso por IP del host + puerto. recomendado para LAN/IPv6.',
+  'serverdetail.step4.localDesc':
+    'acceso por IP del host + puerto. recomendado para LAN/IPv6.',
   'serverdetail.step4.domainTitle': 'Dominio propio',
   'serverdetail.step4.cfOk': '✓ CF configurado',
   'serverdetail.step4.cfMissing': '⚠ CF no configurado',
@@ -92,25 +96,32 @@ export const serverdetailMessages: Dict = {
   'serverdetail.step4.playitConfigureRest': 'para un túnel automático.',
   'serverdetail.step4.draslLabel': 'usar Drasl para autenticación personalizada',
   'serverdetail.step4.draslUrl': 'URL:',
-  'serverdetail.step4.draslHint': 'los jugadores sin cuenta de Microsoft pueden entrar con un launcher compatible (Prism Launcher, FjordLauncher, HMCL).',
+  'serverdetail.step4.draslHint':
+    'los jugadores sin cuenta de Microsoft pueden entrar con un launcher compatible (Prism Launcher, FjordLauncher, HMCL).',
   'serverdetail.step4.draslMissingTitle': 'Drasl no configurado',
-  'serverdetail.step4.draslMissingDesc': 'Configura la URL de Drasl en Ajustes para habilitar la autenticación personalizada (jugadores sin cuenta de Microsoft).',
+  'serverdetail.step4.draslMissingDesc':
+    'Configura la URL de Drasl en Ajustes para habilitar la autenticación personalizada (jugadores sin cuenta de Microsoft).',
   'serverdetail.step4.draslConfigureNow': 'configurar Drasl ahora →',
   'serverdetail.step4.discordHeading': 'PUENTE DE CHAT CON DISCORD (opcional)',
   'serverdetail.step4.discordBotMissing': 'bot de Discord no configurado',
   'serverdetail.step4.discordConfigureBot': 'configurar bot →',
-  'serverdetail.step4.discordTokenError': '⚠ token configurado pero el bot no se conectó. revisa el token en Ajustes.',
-  'serverdetail.step4.discordNoGuilds': 'bot conectado pero no está en ningún servidor de Discord.',
+  'serverdetail.step4.discordTokenError':
+    '⚠ token configurado pero el bot no se conectó. revisa el token en Ajustes.',
+  'serverdetail.step4.discordNoGuilds':
+    'bot conectado pero no está en ningún servidor de Discord.',
   'serverdetail.step4.discordAddBot': 'añadir el bot a un servidor →',
-  'serverdetail.step4.discordIntro': 'los jugadores de MC y de Discord chatean en el mismo canal. también aparecen los eventos de entrada/salida/muerte.',
+  'serverdetail.step4.discordIntro':
+    'los jugadores de MC y de Discord chatean en el mismo canal. también aparecen los eventos de entrada/salida/muerte.',
   'serverdetail.step4.discordGuildLabel': 'servidor de Discord',
   'serverdetail.step4.discordNoBridge': '— sin puente —',
   'serverdetail.step4.discordChannelLabel': 'canal de texto',
   'serverdetail.step4.discordSelectGuildFirst': 'elige primero un servidor',
   'serverdetail.step4.discordLoadingChannels': 'cargando...',
-  'serverdetail.step4.discordNoChannels': 'sin canales accesibles. el bot necesita View Channel + Send Messages.',
+  'serverdetail.step4.discordNoChannels':
+    'sin canales accesibles. el bot necesita View Channel + Send Messages.',
   'serverdetail.step4.discordChoose': '— elige —',
-  'serverdetail.step4.discordBridgeReady': '✓ el puente se activará automáticamente al crear el servidor',
+  'serverdetail.step4.discordBridgeReady':
+    '✓ el puente se activará automáticamente al crear el servidor',
   'serverdetail.step5.heading': 'CONFIRMAR',
   'serverdetail.confirm.name': 'nombre',
   'serverdetail.confirm.host': 'host',
@@ -126,7 +137,8 @@ export const serverdetailMessages: Dict = {
   'serverdetail.confirm.yes': 'sí',
   'serverdetail.confirm.no': 'no',
   'serverdetail.confirm.discordBridge': 'puente de Discord',
-  'serverdetail.confirm.summary': 'Crearé el contenedor, descargaré la imagen (si hace falta), asignaré un puerto libre e iniciaré el servidor.',
+  'serverdetail.confirm.summary':
+    'Crearé el contenedor, descargaré la imagen (si hace falta), asignaré un puerto libre e iniciaré el servidor.',
   'serverdetail.nav.back': 'volver',
   'serverdetail.nav.next': 'avanzar',
   'serverdetail.nav.creating': 'creando...',
@@ -139,7 +151,8 @@ export const serverdetailMessages: Dict = {
   'serverdetail.templates.subtitleEmpty': 'modpacks para crear un servidor en 1 clic',
   'serverdetail.templates.featured': 'DESTACADOS',
   'serverdetail.templates.explore': 'EXPLORAR MODRINTH',
-  'serverdetail.templates.searchPlaceholder': 'ATM, RPG, optimization, vanilla+, performance...',
+  'serverdetail.templates.searchPlaceholder':
+    'ATM, RPG, optimization, vanilla+, performance...',
   'serverdetail.templates.allLoaders': 'todos los loaders',
   'serverdetail.templates.allVersions': 'todas las versiones MC',
   'serverdetail.templates.allCategories': 'todas las categorías',

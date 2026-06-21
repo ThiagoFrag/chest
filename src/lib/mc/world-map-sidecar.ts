@@ -12,7 +12,10 @@ import type Docker from 'dockerode';
 async function dockerForSidecar(slug: string): Promise<Docker> {
   try {
     const row = db()
-      .select({ hostId: schema.servers.hostId, containerName: schema.servers.containerName })
+      .select({
+        hostId: schema.servers.hostId,
+        containerName: schema.servers.containerName
+      })
       .from(schema.servers)
       .where(eq(schema.servers.slug, slug))
       .get();
@@ -65,9 +68,13 @@ export function sidecarVolumeName(slug: string): string {
  * Works for both Chest-managed servers (named volume) and externally-created
  * containers (host bind or different volume name).
  */
-export async function resolveServerDataMount(containerName: string): Promise<string | null> {
+export async function resolveServerDataMount(
+  containerName: string
+): Promise<string | null> {
   try {
-    const info = await (await dockerForContainer(containerName)).getContainer(containerName).inspect();
+    const info = await (await dockerForContainer(containerName))
+      .getContainer(containerName)
+      .inspect();
     const mounts = info.Mounts ?? [];
     const dataMount = mounts.find((m) => m.Destination === '/data');
     if (!dataMount) return null;
@@ -199,7 +206,8 @@ export async function getSidecarStatus(slug: string): Promise<SidecarStatus> {
   try {
     const info = await (await dockerForSidecar(slug)).getContainer(name).inspect();
     const hostPort = parseInt(
-      info.NetworkSettings?.Ports?.[`${SIDECAR_CONTAINER_PORT}/tcp`]?.[0]?.HostPort ?? '0',
+      info.NetworkSettings?.Ports?.[`${SIDECAR_CONTAINER_PORT}/tcp`]?.[0]?.HostPort ??
+        '0',
       10
     );
     return {
@@ -210,7 +218,13 @@ export async function getSidecarStatus(slug: string): Promise<SidecarStatus> {
       containerName: name
     };
   } catch {
-    return { exists: false, state: null, hostPort: null, uptime: null, containerName: name };
+    return {
+      exists: false,
+      state: null,
+      hostPort: null,
+      uptime: null,
+      containerName: name
+    };
   }
 }
 
@@ -230,7 +244,12 @@ export async function createBlueMapSidecar(input: CreateSidecarInput): Promise<v
 
     await removeBlueMapSidecarUnlocked(input.slug, {}, d).catch(() => undefined);
     await ensureSidecarImage(d);
-    await d.createVolume({ Name: volumeName, Labels: { [SIDECAR_LABEL]: 'true', 'forja.slug': input.slug } }).catch(() => undefined);
+    await d
+      .createVolume({
+        Name: volumeName,
+        Labels: { [SIDECAR_LABEL]: 'true', 'forja.slug': input.slug }
+      })
+      .catch(() => undefined);
 
     const networkConfig = input.network
       ? { EndpointsConfig: { [input.network]: {} } }
@@ -310,21 +329,29 @@ async function removeBlueMapSidecarUnlocked(
   }
 }
 
-export async function removeBlueMapSidecar(slug: string, opts: { wipeVolume?: boolean } = {}): Promise<void> {
+export async function removeBlueMapSidecar(
+  slug: string,
+  opts: { wipeVolume?: boolean } = {}
+): Promise<void> {
   return withSidecarLock(slug, () => removeBlueMapSidecarUnlocked(slug, opts));
 }
 
-export async function listAllSidecars(): Promise<Array<{ slug: string; containerName: string; state: string; hostPort: number | null }>> {
+export async function listAllSidecars(): Promise<
+  Array<{ slug: string; containerName: string; state: string; hostPort: number | null }>
+> {
   // Cross-host aggregation is out of scope for this wave: a single Docker client
   // only sees one host. Keep prior behavior by listing on the local host.
-  const containers = await (await dockerForHost(LOCAL_HOST_ID)).listContainers({
+  const containers = await (
+    await dockerForHost(LOCAL_HOST_ID)
+  ).listContainers({
     all: true,
     filters: { label: [`${SIDECAR_LABEL}=true`] }
   });
   return containers.map((c) => {
     const name = c.Names[0]?.replace(/^\//, '') ?? '';
     const slug = c.Labels?.[SIDECAR_PARENT_LABEL] ?? '';
-    const hostPort = c.Ports?.find((p) => p.PrivatePort === SIDECAR_CONTAINER_PORT)?.PublicPort ?? null;
+    const hostPort =
+      c.Ports?.find((p) => p.PrivatePort === SIDECAR_CONTAINER_PORT)?.PublicPort ?? null;
     return { slug, containerName: name, state: c.State, hostPort: hostPort ?? null };
   });
 }

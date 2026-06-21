@@ -18,54 +18,71 @@ export const adminMessages: Dict = {
 
   // settings sections
   'admin.settings.drasl.title': 'DRASL (Servidor de Auth)',
-  'admin.settings.drasl.desc': 'Servidor de auth self-hosted para que jugadores sin cuenta de Microsoft puedan entrar',
+  'admin.settings.drasl.desc':
+    'Servidor de auth self-hosted para que jugadores sin cuenta de Microsoft puedan entrar',
   'admin.settings.drasl.url.label': 'URL de Drasl',
-  'admin.settings.drasl.url.help': 'URL base de tu Drasl. El asistente ofrecerá el toggle "usar Drasl" cuando esté configurado.',
+  'admin.settings.drasl.url.help':
+    'URL base de tu Drasl. El asistente ofrecerá el toggle "usar Drasl" cuando esté configurado.',
   'admin.settings.drasl.token.label': 'Token de admin (opcional)',
   'admin.settings.drasl.token.help': 'Para gestionar jugadores directo desde el panel',
 
   'admin.settings.cloudflare.title': 'CLOUDFLARE',
-  'admin.settings.cloudflare.desc': 'Para crear DNS automáticamente al exponer un servidor públicamente',
+  'admin.settings.cloudflare.desc':
+    'Para crear DNS automáticamente al exponer un servidor públicamente',
   'admin.settings.cloudflare.apiToken.label': 'API Token (Edit zone DNS)',
-  'admin.settings.cloudflare.apiToken.help': 'Cloudflare → My Profile → API Tokens → Create → plantilla "Edit zone DNS"',
+  'admin.settings.cloudflare.apiToken.help':
+    'Cloudflare → My Profile → API Tokens → Create → plantilla "Edit zone DNS"',
   'admin.settings.cloudflare.zoneId.label': 'Zone ID',
-  'admin.settings.cloudflare.zoneId.help': 'Visible en el dashboard de CF en la barra lateral derecha de la zona',
+  'admin.settings.cloudflare.zoneId.help':
+    'Visible en el dashboard de CF en la barra lateral derecha de la zona',
   'admin.settings.cloudflare.cnameTarget.label': 'CNAME target',
-  'admin.settings.cloudflare.cnameTarget.help': 'Hostname al que apuntarán los subdominios creados (ej: el host del A record del servidor)',
+  'admin.settings.cloudflare.cnameTarget.help':
+    'Hostname al que apuntarán los subdominios creados (ej: el host del A record del servidor)',
 
   'admin.settings.playit.title': 'PLAYIT.GG',
   'admin.settings.playit.desc': 'Túneles TCP automáticos para servidores en CGNAT',
   'admin.settings.playit.secretKey.label': 'SECRET_KEY del agente',
-  'admin.settings.playit.secretKey.help': 'Créala en playit.gg/account/agents → Self managed (Docker)',
+  'admin.settings.playit.secretKey.help':
+    'Créala en playit.gg/account/agents → Self managed (Docker)',
 
   'admin.settings.discord.title': 'DISCORD',
-  'admin.settings.discord.desc': 'Notificaciones de eventos (servidor up/down, joins, backup)',
+  'admin.settings.discord.desc':
+    'Notificaciones de eventos (servidor up/down, joins, backup)',
   'admin.settings.discord.webhookUrl.label': 'Webhook URL (notificaciones)',
-  'admin.settings.discord.webhookUrl.help': 'para notificaciones simples (servidor up/down, backup, crash)',
+  'admin.settings.discord.webhookUrl.help':
+    'para notificaciones simples (servidor up/down, backup, crash)',
   'admin.settings.discord.botToken.label': 'Bot Token (puente de chat MC ⇄ Discord)',
-  'admin.settings.discord.botToken.help': 'Crea un bot en discord.com/developers/applications → Bot → token. Permisos: Send Messages, View Channel, Manage Webhooks. Invítalo con el scope bot.',
+  'admin.settings.discord.botToken.help':
+    'Crea un bot en discord.com/developers/applications → Bot → token. Permisos: Send Messages, View Channel, Manage Webhooks. Invítalo con el scope bot.',
   'admin.settings.discord.adminUserId.label': 'Tu Discord User ID (admin)',
-  'admin.settings.discord.adminUserId.help': 'para recibir un DM cuando un servidor crashee. Activa el Modo Desarrollador en Discord → clic derecho en tu nombre → Copy User ID.',
+  'admin.settings.discord.adminUserId.help':
+    'para recibir un DM cuando un servidor crashee. Activa el Modo Desarrollador en Discord → clic derecho en tu nombre → Copy User ID.',
   'admin.settings.discord.oauthClientId.label': 'OAuth Client ID (login con Discord)',
-  'admin.settings.discord.oauthClientId.help': 'discord.com/developers/applications → tu app → OAuth2 → Client ID. Habilita "entrar con Discord" y la vinculación de cuenta.',
+  'admin.settings.discord.oauthClientId.help':
+    'discord.com/developers/applications → tu app → OAuth2 → Client ID. Habilita "entrar con Discord" y la vinculación de cuenta.',
   'admin.settings.discord.oauthClientSecret.label': 'OAuth Client Secret',
-  'admin.settings.discord.oauthClientSecret.help': 'OAuth2 → Client Secret. Mantenlo en secreto — queda cifrado en la base de datos.',
+  'admin.settings.discord.oauthClientSecret.help':
+    'OAuth2 → Client Secret. Mantenlo en secreto — queda cifrado en la base de datos.',
   'admin.settings.discord.oauthGuildId.label': 'OAuth Guild ID (opcional)',
-  'admin.settings.discord.oauthGuildId.help': 'Opcional. Si se completa, los miembros de este servidor de Discord pueden crear cuenta automáticamente (como viewer). Vacío = solo vinculación manual.',
+  'admin.settings.discord.oauthGuildId.help':
+    'Opcional. Si se completa, los miembros de este servidor de Discord pueden crear cuenta automáticamente (como viewer). Vacío = solo vinculación manual.',
 
   'admin.settings.chest.title': 'CHEST',
   'admin.settings.chest.desc': 'Ajustes generales del panel',
   'admin.settings.chest.baseUrl.label': 'URL base pública de Chest',
   'admin.settings.chest.baseUrl.help': 'Usado en notificaciones, enlaces en emails, etc.',
   'admin.settings.chest.mcHost.label': 'Dirección para conectarse a los servidores MC',
-  'admin.settings.chest.mcHost.help': 'Hostname/IP del host de Docker. Aparece en "CÓMO CONECTAR" en el resumen de cada servidor. IPv6 entre corchetes.',
+  'admin.settings.chest.mcHost.help':
+    'Hostname/IP del host de Docker. Aparece en "CÓMO CONECTAR" en el resumen de cada servidor. IPv6 entre corchetes.',
 
   'admin.settings.storage.title': 'STORAGE',
-  'admin.settings.storage.desc': 'Dónde guardar los backups — local (FS) o compatible con S3 (AWS/R2/B2/MinIO)',
+  'admin.settings.storage.desc':
+    'Dónde guardar los backups — local (FS) o compatible con S3 (AWS/R2/B2/MinIO)',
   'admin.settings.storage.driver.label': 'Driver',
   'admin.settings.storage.driver.help': 'valor: local O s3',
   'admin.settings.storage.localDir.label': 'Directorio local (si driver=local)',
-  'admin.settings.storage.s3Endpoint.label': 'S3 endpoint (vacío = AWS; R2: https://accountid.r2.cloudflarestorage.com)',
+  'admin.settings.storage.s3Endpoint.label':
+    'S3 endpoint (vacío = AWS; R2: https://accountid.r2.cloudflarestorage.com)',
   'admin.settings.storage.s3Region.label': 'S3 region',
   'admin.settings.storage.s3Bucket.label': 'S3 bucket',
   'admin.settings.storage.s3AccessKey.label': 'S3 access key ID',
@@ -74,14 +91,16 @@ export const adminMessages: Dict = {
   'admin.settings.storage.s3ForcePathStyle.label': 'Force path style (true para MinIO)',
 
   // settings - discord redirect uri block
-  'admin.settings.discord.redirect.title': 'ℹ Redirect URI (regístralo en el Discord Developer Portal)',
+  'admin.settings.discord.redirect.title':
+    'ℹ Redirect URI (regístralo en el Discord Developer Portal)',
   'admin.settings.discord.redirect.desc': 'En OAuth2 → Redirects, agrega exactamente:',
   'admin.settings.discord.test.button': 'probar webhook',
   'admin.settings.discord.test.hint': 'envía un mensaje de prueba al canal',
 
   // settings - bot status
   'admin.settings.bot.title': 'ESTADO DEL BOT',
-  'admin.settings.bot.needToken': 'configura el bot token arriba para habilitar la instalación',
+  'admin.settings.bot.needToken':
+    'configura el bot token arriba para habilitar la instalación',
   'admin.settings.bot.invalidToken': 'token inválido o falla de red',
   'admin.settings.bot.connectedAs': 'conectado como',
   'admin.settings.bot.installedIn': 'instalado en',
@@ -89,14 +108,17 @@ export const adminMessages: Dict = {
   'admin.settings.bot.serverOther': 'servidores',
   'admin.settings.bot.noGuild': 'el bot aún no está en ningún servidor',
   'admin.settings.bot.addToServer': 'agregar bot a un servidor',
-  'admin.settings.bot.addHint': 'abre el OAuth de Discord en una nueva pestaña. tienes que ser admin del servidor.',
+  'admin.settings.bot.addHint':
+    'abre el OAuth de Discord en una nueva pestaña. tienes que ser admin del servidor.',
 
   // settings - discord guided flow
   'admin.settings.discord.flow.title': 'DISCORD',
-  'admin.settings.discord.flow.desc': 'conecta el bot en 3 pasos. self-hosted, así que el token es tuyo.',
+  'admin.settings.discord.flow.desc':
+    'conecta el bot en 3 pasos. self-hosted, así que el token es tuyo.',
 
   'admin.settings.discord.step1.title': '1. Conectar el bot',
-  'admin.settings.discord.step1.desc': 'pega el token de tu bot y valídalo antes de guardar.',
+  'admin.settings.discord.step1.desc':
+    'pega el token de tu bot y valídalo antes de guardar.',
   'admin.settings.discord.step1.tokenLabel': 'Bot Token',
   'admin.settings.discord.step1.validate': 'validar token',
   'admin.settings.discord.step1.validating': 'validando...',
@@ -104,33 +126,42 @@ export const adminMessages: Dict = {
   'admin.settings.discord.step1.invalid': 'token inválido: {reason}',
   'admin.settings.discord.step1.invalidGeneric': 'token inválido o falla de red',
   'admin.settings.discord.step1.helpToggle': '¿Cómo crear el bot?',
-  'admin.settings.discord.step1.helpBody': 'crea una aplicación, abre la pestaña Bot y copia el token.',
+  'admin.settings.discord.step1.helpBody':
+    'crea una aplicación, abre la pestaña Bot y copia el token.',
   'admin.settings.discord.step1.helpLink': 'Discord Developer Portal',
 
   'admin.settings.discord.step2.title': '2. Agregar a tu servidor',
-  'admin.settings.discord.step2.desc': 'vas a elegir en qué servidor agregarlo, en la propia pantalla de Discord.',
+  'admin.settings.discord.step2.desc':
+    'vas a elegir en qué servidor agregarlo, en la propia pantalla de Discord.',
   'admin.settings.discord.step2.add': 'Agregar bot a Discord',
   'admin.settings.discord.step2.permissions': 'permisos solicitados: {hint}',
   'admin.settings.discord.step2.refresh': 'ya lo agregué / actualizar',
-  'admin.settings.discord.step2.locked': 'valida o guarda un token válido en el paso 1 para desbloquear.',
+  'admin.settings.discord.step2.locked':
+    'valida o guarda un token válido en el paso 1 para desbloquear.',
 
   'admin.settings.discord.step3.title': '3. Estado',
-  'admin.settings.discord.step3.channelNote': 'qué canal usa cada servidor se define en la pestaña Discord de cada servidor (DiscordBridgePanel). no hace falta configurarlo aquí.',
+  'admin.settings.discord.step3.channelNote':
+    'qué canal usa cada servidor se define en la pestaña Discord de cada servidor (DiscordBridgePanel). no hace falta configurarlo aquí.',
 
   'admin.settings.discord.advanced.summary': 'Avanzado',
   'admin.settings.discord.advanced.webhookLabel': 'Webhook URL (legado)',
-  'admin.settings.discord.advanced.webhookHelp': 'Opcional. Notificaciones simples (servidor up/down/crash) SIN tener el bot 24/7. Si ya usas el bot de arriba, no hace falta.',
-  'admin.settings.discord.advanced.adminIdHelp': 'Opcional. Recibe un DM cuando un servidor crashea.',
+  'admin.settings.discord.advanced.webhookHelp':
+    'Opcional. Notificaciones simples (servidor up/down/crash) SIN tener el bot 24/7. Si ya usas el bot de arriba, no hace falta.',
+  'admin.settings.discord.advanced.adminIdHelp':
+    'Opcional. Recibe un DM cuando un servidor crashea.',
   'admin.settings.discord.advanced.loginTitle': 'Login con Discord',
-  'admin.settings.discord.advanced.loginDesc': 'OAuth para "entrar con Discord". Otra feature, independiente del bot.',
+  'admin.settings.discord.advanced.loginDesc':
+    'OAuth para "entrar con Discord". Otra feature, independiente del bot.',
 
   // webhooks
   'admin.webhooks.head': 'Chest · Webhooks',
   'admin.webhooks.title': 'WEBHOOKS',
-  'admin.webhooks.subtitle': 'notifica a sistemas externos cuando ocurren eventos (Slack, n8n, Zapier, etc)',
+  'admin.webhooks.subtitle':
+    'notifica a sistemas externos cuando ocurren eventos (Slack, n8n, Zapier, etc)',
   'admin.webhooks.errorGeneric': 'falla',
   'admin.webhooks.errorStatus': 'error {status}',
-  'admin.webhooks.secretCreated': '✓ ¡webhook creado! Guarda el secret — se muestra solo una vez:',
+  'admin.webhooks.secretCreated':
+    '✓ ¡webhook creado! Guarda el secret — se muestra solo una vez:',
   'admin.webhooks.copy': 'copiar',
   'admin.webhooks.noted': 'ya lo anoté',
   'admin.webhooks.verifyHeader': 'tu endpoint debe verificar el header',
@@ -139,7 +170,8 @@ export const adminMessages: Dict = {
   'admin.webhooks.create.namePlaceholder': 'Slack #ops',
   'admin.webhooks.create.urlLabel': 'URL',
   'admin.webhooks.create.urlPlaceholder': 'https://hooks.slack.com/...',
-  'admin.webhooks.create.eventsHelp': 'eventos (usa {star} para todos o {group} para grupos)',
+  'admin.webhooks.create.eventsHelp':
+    'eventos (usa {star} para todos o {group} para grupos)',
   'admin.webhooks.create.allEvents': '* todos',
   'admin.webhooks.create.button': 'crear webhook',
   'admin.webhooks.list.title': 'WEBHOOKS CONFIGURADOS',
@@ -154,7 +186,8 @@ export const adminMessages: Dict = {
   'admin.webhooks.row.lastDelivery': 'última entrega: {when}',
   'admin.webhooks.docs.summary': '📖 cómo verificar la firma (HMAC SHA-256)',
   'admin.webhooks.docs.eachRequest': 'cada request POST tiene el header:',
-  'admin.webhooks.docs.compare': 'compáralo con el HMAC SHA-256 del raw body usando el secret:',
+  'admin.webhooks.docs.compare':
+    'compáralo con el HMAC SHA-256 del raw body usando el secret:',
 
   // audit
   'admin.audit.head': 'Chest · Registro de auditoría',
@@ -185,15 +218,19 @@ export const adminMessages: Dict = {
   'admin.security.subtitle': 'protege tu cuenta con autenticación de dos factores',
   'admin.security.fail': 'falla',
   'admin.security.invalidCode': 'código inválido',
-  'admin.security.confirmDisable': '¿Estás seguro? Esto quita la protección 2FA de tu cuenta.',
+  'admin.security.confirmDisable':
+    '¿Estás seguro? Esto quita la protección 2FA de tu cuenta.',
   'admin.security.totp.title': 'AUTENTICACIÓN 2FA (TOTP)',
-  'admin.security.totp.desc': 'código de 6 dígitos de la app autenticadora (Google Authenticator, Authy, Aegis, 1Password)',
+  'admin.security.totp.desc':
+    'código de 6 dígitos de la app autenticadora (Google Authenticator, Authy, Aegis, 1Password)',
   'admin.security.totp.active': 'activo',
   'admin.security.totp.inactive': 'desactivado',
-  'admin.security.backup.saved': '✓ ¡2FA ACTIVADO! Guarda estos códigos de respaldo en un lugar seguro:',
+  'admin.security.backup.saved':
+    '✓ ¡2FA ACTIVADO! Guarda estos códigos de respaldo en un lugar seguro:',
   'admin.security.backup.copyAll': 'copiar todos',
   'admin.security.backup.noted': 'ya lo anoté',
-  'admin.security.backup.onceHint': '⚠ cada código se puede usar una vez. reemplazan el código de la app si pierdes acceso al autenticador.',
+  'admin.security.backup.onceHint':
+    '⚠ cada código se puede usar una vez. reemplazan el código de la app si pierdes acceso al autenticador.',
   'admin.security.enabledAt': 'activado el',
   'admin.security.disable.summary': 'desactivar 2FA',
   'admin.security.disable.confirmHint': 'escribe tu código actual para confirmar',
@@ -204,7 +241,8 @@ export const adminMessages: Dict = {
   'admin.security.setup.step2': 'Escribe el código generado por la app para confirmar',
   'admin.security.setup.enable': 'activar',
   'admin.security.setup.cancel': 'cancelar configuración',
-  'admin.security.intro': 'agregar 2FA hace tu cuenta mucho más segura. incluso si alguien descubre tu contraseña, no puede entrar sin el código de la app.',
+  'admin.security.intro':
+    'agregar 2FA hace tu cuenta mucho más segura. incluso si alguien descubre tu contraseña, no puede entrar sin el código de la app.',
   'admin.security.enable2fa': 'activar 2FA',
   'admin.security.connections.title': 'CONEXIONES',
   'admin.security.connections.desc': 'vincula cuentas externas para entrar más rápido',
@@ -231,7 +269,8 @@ export const adminMessages: Dict = {
   'admin.users.role.operator': 'operator',
   'admin.users.role.viewer': 'viewer',
   'admin.users.role.adminDesc': 'todo: crear/eliminar servidores, ajustes, usuarios',
-  'admin.users.role.operatorDesc': 'gestionar servidores existentes (start/stop, consola, mods, backups)',
+  'admin.users.role.operatorDesc':
+    'gestionar servidores existentes (start/stop, consola, mods, backups)',
   'admin.users.role.viewerDesc': 'solo lectura (resumen, lectura de consola, métricas)',
   'admin.users.deleteUser': 'eliminar',
   'admin.users.invites.title': 'INVITACIONES',

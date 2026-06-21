@@ -5,12 +5,35 @@ import { withLock } from './locks';
 const ALLOWED_ROOT = '/data';
 const MAX_FILE_SIZE = 1024 * 1024; // 1MB
 const TEXT_EXTENSIONS = new Set([
-  'txt', 'log', 'json', 'yml', 'yaml', 'toml', 'properties', 'conf', 'cfg',
-  'md', 'sh', 'env', 'csv', 'xml', 'html', 'css', 'js', 'ts', 'mcfunction'
+  'txt',
+  'log',
+  'json',
+  'yml',
+  'yaml',
+  'toml',
+  'properties',
+  'conf',
+  'cfg',
+  'md',
+  'sh',
+  'env',
+  'csv',
+  'xml',
+  'html',
+  'css',
+  'js',
+  'ts',
+  'mcfunction'
 ]);
 const TEXT_FILENAMES = new Set([
-  'server.properties', 'whitelist.json', 'banned-players.json', 'banned-ips.json',
-  'ops.json', 'usercache.json', 'eula.txt', 'banned-ips.json'
+  'server.properties',
+  'whitelist.json',
+  'banned-players.json',
+  'banned-ips.json',
+  'ops.json',
+  'usercache.json',
+  'eula.txt',
+  'banned-ips.json'
 ]);
 
 export interface DirEntry {
@@ -73,12 +96,18 @@ async function execInContainer(containerName: string, cmd: string[]): Promise<st
 
 async function assertContainerReady(containerName: string): Promise<void> {
   try {
-    const info = await (await dockerForContainer(containerName)).getContainer(containerName).inspect();
+    const info = await (await dockerForContainer(containerName))
+      .getContainer(containerName)
+      .inspect();
     if (info.State.Restarting) {
-      throw new Error(`container ${containerName} está em loop de restart. veja logs no console pra debugar.`);
+      throw new Error(
+        `container ${containerName} está em loop de restart. veja logs no console pra debugar.`
+      );
     }
     if (!info.State.Running) {
-      throw new Error(`container ${containerName} está parado. inicie o server pra browsear arquivos.`);
+      throw new Error(
+        `container ${containerName} está parado. inicie o server pra browsear arquivos.`
+      );
     }
   } catch (err) {
     if (err instanceof Error && err.message.includes('container')) throw err;
@@ -117,7 +146,10 @@ export async function listDir(containerName: string, path: string): Promise<DirE
   });
 }
 
-export async function readFile(containerName: string, path: string): Promise<{ content: string; truncated: boolean }> {
+export async function readFile(
+  containerName: string,
+  path: string
+): Promise<{ content: string; truncated: boolean }> {
   if (!isSafePath(path)) throw new Error('path inválido');
   if (!isTextFile(path)) throw new Error('arquivo binário, não pode ser editado aqui');
   const raw = await readContainerFile(containerName, path);
@@ -127,11 +159,17 @@ export async function readFile(containerName: string, path: string): Promise<{ c
   return { content: raw, truncated: false };
 }
 
-export async function writeFile(containerName: string, path: string, content: string): Promise<void> {
+export async function writeFile(
+  containerName: string,
+  path: string,
+  content: string
+): Promise<void> {
   if (!isSafePath(path)) throw new Error('path inválido');
   if (!isTextFile(path)) throw new Error('arquivo binário, não pode ser editado aqui');
   if (content.length > MAX_FILE_SIZE) throw new Error('arquivo muito grande (>1MB)');
-  await withLock(fileLockKey(containerName), () => writeContainerFile(containerName, path, content));
+  await withLock(fileLockKey(containerName), () =>
+    writeContainerFile(containerName, path, content)
+  );
 }
 
 /**

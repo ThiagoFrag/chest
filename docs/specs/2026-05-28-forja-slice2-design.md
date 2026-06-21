@@ -6,27 +6,30 @@
 
 ## Decisões alinhadas com o usuário
 
-| Decisão | Escolha |
-|---|---|
+| Decisão    | Escolha                                                                                                           |
+| ---------- | ----------------------------------------------------------------------------------------------------------------- |
 | Modloaders | **Todos** suportados via `itzg/minecraft-server` (Vanilla, Paper, Fabric, Forge, NeoForge, Purpur, Spigot, Quilt) |
-| Modpack | **Upload .zip** (CurseForge/Modrinth export) |
-| Permissão | **Só admin** (multi-user fica pro slice 3+) |
-| Auth | Mantém Drasl (toggle por server) |
+| Modpack    | **Upload .zip** (CurseForge/Modrinth export)                                                                      |
+| Permissão  | **Só admin** (multi-user fica pro slice 3+)                                                                       |
+| Auth       | Mantém Drasl (toggle por server)                                                                                  |
 
 ## Features
 
 ### 1. Wizard de criação (4 steps)
 
 **Step 1 — Info básica**
+
 - Nome de exibição
 - Slug auto-gerado (`forja-<slug>` vira nome do container)
 
 **Step 2 — Modloader & versão**
+
 - Tipo: dropdown (Vanilla / Paper / Fabric / Forge / NeoForge / Purpur / Spigot / Quilt)
 - Versão MC: text input (com sugestões 1.21.1, 1.20.4, etc.)
 - (Se Fabric) Loader version: opcional
 
 **Step 3 — Recursos**
+
 - RAM (slider 1-16 GB, default 4)
 - Max players (default 10)
 - Difficulty (peaceful/easy/normal/hard)
@@ -34,11 +37,13 @@
 - Port: auto-aloca primeira livre a partir de 25566 (mostra qual ficou)
 
 **Step 4 — Mods (opcional)**
+
 - "Pular" → cria server limpo
 - Upload `.zip`: aceita formato CurseForge (`flame/manifest.json` + `minecraft/mods/`) ou Modrinth (`modrinth.index.json` + `overrides/`) ou zip simples (mods soltos)
 - Backend extrai pasta `mods/` e `config/` do zip pro volume do server
 
 **Confirmação final**
+
 - Resumo das escolhas
 - Botão "Criar e iniciar" → cria container + sobe + redireciona pro detalhe
 
@@ -47,11 +52,13 @@
 **Tabs:**
 
 **a) Overview** (já tem da slice 1, melhorada)
+
 - Status pill + uptime + versão real (via SLP ping)
 - CPU% / RAM% / Players via WebSocket (atualiza a cada 2s)
 - Botões Start/Stop/Restart (já tem)
 
 **b) Console**
+
 - Terminal estilo xterm com cores ANSI
 - Stream live via WebSocket de `docker logs -f --tail 200`
 - Input no rodapé com histórico ↑↓ (last 50 cmds)
@@ -59,22 +66,26 @@
 - Filtros: nível (INFO/WARN/ERROR), busca textual
 
 **c) Players**
+
 - Lista online (RCON `list`)
 - Ações: kick, op/deop, whitelist add/remove (RCON)
 - Histórico join/leave (parsing do log)
 
 **d) Arquivos**
+
 - Editor de `server.properties` (form com fields conhecidos + raw)
 - Editor de `whitelist.json` / `ops.json`
 - Upload de mods individuais (drag-drop)
 - Listar/baixar `world/` (limitado, sem editar)
 
 **e) Backups**
+
 - Lista snapshots (tar do volume)
 - Botão "Criar backup agora" → snapshot ephemeral (server precisa estar parado, ou usa `save-off`/`save-all flush` via RCON antes)
 - Botão "Restaurar" (com confirmação dupla)
 
 **f) Settings**
+
 - Renomear server
 - Editar RAM/MOTD/players (requer restart)
 - Toggle "usar Drasl" (adiciona/remove authlib-injector)
@@ -89,13 +100,13 @@
 
 ## Stack adicionada
 
-| Lib | Função |
-|---|---|
-| `ws` | WebSocket server-side (já vem com bun) |
-| `rcon-client` | Conectar/enviar comandos RCON |
-| `adm-zip` ou `unzipper` | Extrair modpack zip |
-| `xterm-svelte` ou custom | Terminal UI |
-| `chart.js` ou skip | Gráfico de stats (opcional) |
+| Lib                      | Função                                 |
+| ------------------------ | -------------------------------------- |
+| `ws`                     | WebSocket server-side (já vem com bun) |
+| `rcon-client`            | Conectar/enviar comandos RCON          |
+| `adm-zip` ou `unzipper`  | Extrair modpack zip                    |
+| `xterm-svelte` ou custom | Terminal UI                            |
+| `chart.js` ou skip       | Gráfico de stats (opcional)            |
 
 ## Schema changes (Drizzle migration)
 
@@ -117,10 +128,11 @@ slug: text('slug').unique(),
 ## Socket-proxy: ampliar perms
 
 Adicionar ao compose:
+
 ```yaml
 environment:
-  IMAGES: 1      # pra pull da itzg
-  VOLUMES: 1     # pra criar volumes
+  IMAGES: 1 # pra pull da itzg
+  VOLUMES: 1 # pra criar volumes
   # POST=1 já tem
   # CONTAINERS=1 já tem
   # NETWORKS=1 já tem
@@ -135,14 +147,14 @@ environment:
    b. Pulls imagem `itzg/minecraft-server:java21` se necessário (via socket-proxy)
    c. Cria volume nomeado `forja-server-<slug>`
    d. Cria container `forja-<slug>` com:
-      - Labels: `forja.managed=true`, `forja.display=<nome>`, `forja.slug=<slug>`
-      - Env vars: `EULA=TRUE`, `TYPE=<type>`, `VERSION=<ver>`, `MEMORY=<X>G`, etc.
-      - Port mapping: `<host_port>:25565`, `<host_rcon>:25575`
-      - Volume mount: `forja-server-<slug>:/data`
-      - Network: `proxy` (pra forja conseguir falar RCON)
-   e. Se tem modpack zip: extrai e copia mods/config pro volume via `docker cp`
-   f. Start container
-   g. Atualiza status='running'
+   - Labels: `forja.managed=true`, `forja.display=<nome>`, `forja.slug=<slug>`
+   - Env vars: `EULA=TRUE`, `TYPE=<type>`, `VERSION=<ver>`, `MEMORY=<X>G`, etc.
+   - Port mapping: `<host_port>:25565`, `<host_rcon>:25575`
+   - Volume mount: `forja-server-<slug>:/data`
+   - Network: `proxy` (pra forja conseguir falar RCON)
+     e. Se tem modpack zip: extrai e copia mods/config pro volume via `docker cp`
+     f. Start container
+     g. Atualiza status='running'
 3. Retorna 201 com `{id, slug, hostPort}`
 4. Frontend redireciona pra `/servers/<slug>`
 
@@ -161,13 +173,13 @@ environment:
 
 ## Riscos / Mitigações
 
-| Risco | Mitigação |
-|---|---|
-| Socket-proxy + IMAGES+VOLUMES amplia ataque | Container Forja roda non-root, sem capabilities extras |
-| Port collision MC | Auto-aloca primeira livre, valida com `docker ps` antes |
-| Modpack zip malicioso (path traversal) | Validar paths extraídos com `path.resolve` + `startsWith(destDir)` |
-| RCON password leak | Cada server tem RCON pwd random armazenado encrypted no DB (já tem `RCON_KEY` env) |
-| Server zumbi (criou mas falhou) | Status 'failed' com motivo, botão "limpar" deleta tudo |
+| Risco                                       | Mitigação                                                                          |
+| ------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Socket-proxy + IMAGES+VOLUMES amplia ataque | Container Forja roda non-root, sem capabilities extras                             |
+| Port collision MC                           | Auto-aloca primeira livre, valida com `docker ps` antes                            |
+| Modpack zip malicioso (path traversal)      | Validar paths extraídos com `path.resolve` + `startsWith(destDir)`                 |
+| RCON password leak                          | Cada server tem RCON pwd random armazenado encrypted no DB (já tem `RCON_KEY` env) |
+| Server zumbi (criou mas falhou)             | Status 'failed' com motivo, botão "limpar" deleta tudo                             |
 
 ## Métricas de sucesso
 

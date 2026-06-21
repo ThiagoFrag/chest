@@ -50,7 +50,9 @@ async function collectHost(
       const stats = await getOneShotStats(s.containerName);
       let playersOnline: number | null = null;
       if (s.hostPort) {
-        const mc = await getStatus('host.docker.internal', s.hostPort, 2000).catch(() => null);
+        const mc = await getStatus('host.docker.internal', s.hostPort, 2000).catch(
+          () => null
+        );
         if (mc?.online) playersOnline = mc.players.online;
       }
 

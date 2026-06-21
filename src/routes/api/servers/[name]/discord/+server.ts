@@ -5,7 +5,11 @@ import { requireServerPermission } from '$lib/auth/require-server-permission';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (event) => {
-  const { server } = await requireServerPermission(event, event.params.name!, 'manage_discord');
+  const { server } = await requireServerPermission(
+    event,
+    event.params.name!,
+    'manage_discord'
+  );
 
   return json({ channelId: server.discordChannelId ?? null });
 };

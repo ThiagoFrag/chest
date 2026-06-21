@@ -165,7 +165,8 @@ export async function proxyToMap(
 
       const notModifiedHeaders: Record<string, string> = {};
       if (etagNormalized) notModifiedHeaders['etag'] = `"${etagNormalized}"`;
-      if (upstreamLastModified) notModifiedHeaders['last-modified'] = upstreamLastModified;
+      if (upstreamLastModified)
+        notModifiedHeaders['last-modified'] = upstreamLastModified;
       const cacheControl = res.headers.get('cache-control');
       if (cacheControl) notModifiedHeaders['cache-control'] = cacheControl;
 

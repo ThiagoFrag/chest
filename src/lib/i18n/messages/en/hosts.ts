@@ -39,12 +39,15 @@ export const hostsMessages: Dict = {
   'hosts.form.name.placeholder': 'home-lab',
   'hosts.form.endpoint.label': 'endpoint',
   'hosts.form.endpoint.placeholder': 'tcp://10.0.0.5:2376',
-  'hosts.form.endpoint.help': 'tcp://host:port for a remote daemon or unix:///var/run/docker.sock for local',
+  'hosts.form.endpoint.help':
+    'tcp://host:port for a remote daemon or unix:///var/run/docker.sock for local',
   'hosts.form.hostAddress.label': 'public address (optional)',
   'hosts.form.hostAddress.placeholder': 'mc.example.com',
-  'hosts.form.hostAddress.help': 'hostname/IP shown to players to connect. Empty = uses the global one.',
+  'hosts.form.hostAddress.help':
+    'hostname/IP shown to players to connect. Empty = uses the global one.',
   'hosts.form.tls.title': 'TLS (optional)',
-  'hosts.form.tls.help': 'paste the PEMs to connect over mutual TLS to an exposed remote daemon',
+  'hosts.form.tls.help':
+    'paste the PEMs to connect over mutual TLS to an exposed remote daemon',
   'hosts.form.tlsCa.label': 'CA certificate (ca.pem)',
   'hosts.form.tlsCert.label': 'client certificate (cert.pem)',
   'hosts.form.tlsKey.label': 'client key (key.pem)',

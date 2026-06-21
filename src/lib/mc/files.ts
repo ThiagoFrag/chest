@@ -7,7 +7,9 @@ export async function readContainerFile(
   pathInContainer: string
 ): Promise<string> {
   const container = (await dockerForContainer(containerName)).getContainer(containerName);
-  const stream = (await container.getArchive({ path: pathInContainer })) as unknown as NodeJS.ReadableStream;
+  const stream = (await container.getArchive({
+    path: pathInContainer
+  })) as unknown as NodeJS.ReadableStream;
   const chunks: Buffer[] = [];
   for await (const c of stream as AsyncIterable<Buffer>) chunks.push(c);
   const buf = Buffer.concat(chunks);
@@ -34,7 +36,14 @@ function makeSingleFileTar(name: string, content: Buffer): Buffer {
   header.write('0000000', 108, 7, 'ascii');
   header.write('0000000', 116, 7, 'ascii');
   header.write(content.length.toString(8).padStart(11, '0'), 124, 11, 'ascii');
-  header.write(Math.floor(Date.now() / 1000).toString(8).padStart(11, '0'), 136, 11, 'ascii');
+  header.write(
+    Math.floor(Date.now() / 1000)
+      .toString(8)
+      .padStart(11, '0'),
+    136,
+    11,
+    'ascii'
+  );
   header.write('        ', 148, 8, 'ascii');
   header.write('0', 156, 1, 'ascii');
   header.write('ustar', 257, 5, 'ascii');
@@ -54,7 +63,11 @@ function extractSingleFileFromTar(buf: Buffer): string {
     const header = buf.subarray(offset, offset + 512);
     const name = header.subarray(0, 100).toString('ascii').replace(/\0+$/, '');
     if (!name) break;
-    const sizeStr = header.subarray(124, 135).toString('ascii').replace(/\0+$/, '').trim();
+    const sizeStr = header
+      .subarray(124, 135)
+      .toString('ascii')
+      .replace(/\0+$/, '')
+      .trim();
     const size = parseInt(sizeStr, 8);
     if (isNaN(size)) break;
     const typeflag = header.subarray(156, 157).toString('ascii');
@@ -84,9 +97,11 @@ export function parseProperties(content: string): ServerProperties {
 }
 
 export function serializeProperties(props: ServerProperties): string {
-  return Object.entries(props)
-    .map(([k, v]) => `${k}=${v}`)
-    .join('\n') + '\n';
+  return (
+    Object.entries(props)
+      .map(([k, v]) => `${k}=${v}`)
+      .join('\n') + '\n'
+  );
 }
 
 export function mergeProperties(originalText: string, updates: ServerProperties): string {

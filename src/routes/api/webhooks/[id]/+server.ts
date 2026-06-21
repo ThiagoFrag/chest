@@ -22,7 +22,8 @@ export const PATCH: RequestHandler = async (event) => {
 
   const body = await request.json().catch(() => null);
   const parsed = updateSchema.safeParse(body);
-  if (!parsed.success) throw error(400, parsed.error.issues[0]?.message ?? 'body inválido');
+  if (!parsed.success)
+    throw error(400, parsed.error.issues[0]?.message ?? 'body inválido');
 
   const exists = await db()
     .select()
@@ -34,7 +35,8 @@ export const PATCH: RequestHandler = async (event) => {
   const updates: Partial<typeof schema.webhookEndpoints.$inferInsert> = {};
   if (parsed.data.name !== undefined) updates.name = parsed.data.name;
   if (parsed.data.url !== undefined) updates.url = parsed.data.url;
-  if (parsed.data.events !== undefined) updates.eventsJson = JSON.stringify(parsed.data.events);
+  if (parsed.data.events !== undefined)
+    updates.eventsJson = JSON.stringify(parsed.data.events);
   if (parsed.data.enabled !== undefined) {
     updates.enabled = parsed.data.enabled;
     if (parsed.data.enabled) updates.consecutiveFailures = 0;
@@ -67,7 +69,9 @@ export const DELETE: RequestHandler = async (event) => {
     .get();
   if (!exists) throw error(404, 'webhook não encontrado');
 
-  await db().delete(schema.webhookEndpoints).where(eq(schema.webhookEndpoints.id, params.id));
+  await db()
+    .delete(schema.webhookEndpoints)
+    .where(eq(schema.webhookEndpoints.id, params.id));
 
   await logAudit(event, {
     action: 'webhook.deleted',

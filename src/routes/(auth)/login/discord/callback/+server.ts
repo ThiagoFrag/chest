@@ -3,7 +3,11 @@ import type { RequestHandler } from './$types';
 import { db, schema } from '$lib/db';
 import { eq, sql } from 'drizzle-orm';
 import { getSetting } from '$lib/settings';
-import { exchangeCode, fetchDiscordUser, fetchUserGuildIds } from '$lib/auth/discord-oauth';
+import {
+  exchangeCode,
+  fetchDiscordUser,
+  fetchUserGuildIds
+} from '$lib/auth/discord-oauth';
 import { generateSessionToken, createSession } from '$lib/auth/session';
 import { logAudit } from '$lib/audit';
 
@@ -128,7 +132,11 @@ export const GET: RequestHandler = async (event) => {
           discordUsername: discord.username,
           discordAvatar: discord.avatar
         });
-        user = await db().select().from(schema.users).where(eq(schema.users.id, id)).get();
+        user = await db()
+          .select()
+          .from(schema.users)
+          .where(eq(schema.users.id, id))
+          .get();
         outcome = 'register';
       } else {
         const guildId = await getSetting('discord.oauth_guild_id');
@@ -155,7 +163,11 @@ export const GET: RequestHandler = async (event) => {
           discordUsername: discord.username,
           discordAvatar: discord.avatar
         });
-        user = await db().select().from(schema.users).where(eq(schema.users.id, id)).get();
+        user = await db()
+          .select()
+          .from(schema.users)
+          .where(eq(schema.users.id, id))
+          .get();
         outcome = 'register';
       }
     }

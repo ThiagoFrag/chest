@@ -81,7 +81,9 @@ export async function createBackup(
     const sourcePath = scope === 'world' ? '/data/world' : '/data';
     let archiveStream: NodeJS.ReadableStream;
     try {
-      archiveStream = (await container.getArchive({ path: sourcePath })) as unknown as NodeJS.ReadableStream;
+      archiveStream = (await container.getArchive({
+        path: sourcePath
+      })) as unknown as NodeJS.ReadableStream;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       if (msg.includes('404') || msg.includes('Could not find')) {
@@ -116,7 +118,9 @@ export async function createBackup(
     containerName,
     scope
   };
-  discord.backupCreated(containerName, scope, sizeBytes / 1024 / 1024).catch(() => undefined);
+  discord
+    .backupCreated(containerName, scope, sizeBytes / 1024 / 1024)
+    .catch(() => undefined);
   emitBackupEvent('backup.created', containerName, {
     backupId: id,
     filename,
@@ -182,7 +186,11 @@ export async function getBackupPath(id: string): Promise<string | null> {
 export async function getBackupStream(
   id: string,
   containerName: string
-): Promise<{ stream: NodeJS.ReadableStream; sizeBytes: number; filename: string } | null> {
+): Promise<{
+  stream: NodeJS.ReadableStream;
+  sizeBytes: number;
+  filename: string;
+} | null> {
   if (!isValidBackupId(id)) return null;
   if (!id.startsWith(`${containerName}__`)) return null;
   const storage = await getStorage();
@@ -202,7 +210,8 @@ export async function deleteBackup(id: string): Promise<void> {
 
 export async function restoreBackup(id: string, containerName: string): Promise<void> {
   if (!isValidBackupId(id)) throw new Error('backup id inválido');
-  if (!id.startsWith(`${containerName}__`)) throw new Error('backup não pertence a este container');
+  if (!id.startsWith(`${containerName}__`))
+    throw new Error('backup não pertence a este container');
 
   const storage = await getStorage();
   const filename = `${id}.tar.gz`;
@@ -227,7 +236,11 @@ export async function restoreBackup(id: string, containerName: string): Promise<
 
   const scope = id.endsWith('__full') ? 'full' : 'world';
   if (scope === 'world') {
-    await execInContainer(containerName, ['sh', '-c', 'rm -rf /data/world /data/world_nether /data/world_the_end']);
+    await execInContainer(containerName, [
+      'sh',
+      '-c',
+      'rm -rf /data/world /data/world_nether /data/world_the_end'
+    ]);
   }
 
   const remoteStream = await storage.get(filename);
@@ -240,9 +253,12 @@ export async function restoreBackup(id: string, containerName: string): Promise<
     remoteStream.on('error', reject);
   });
   const tarBuf = Buffer.concat(chunks);
-  await container.putArchive(Readable.from([tarBuf]) as unknown as NodeJS.ReadableStream, {
-    path: '/data'
-  });
+  await container.putArchive(
+    Readable.from([tarBuf]) as unknown as NodeJS.ReadableStream,
+    {
+      path: '/data'
+    }
+  );
 
   await container.restart({ t: 10 });
 

@@ -52,11 +52,13 @@ function parseField(s: string, min: number, max: number): Set<number> {
       for (let i = min; i <= max; i += step) out.add(i);
     } else if (item.includes('-')) {
       const [a, b] = item.split('-').map(Number);
-      if (!Number.isFinite(a) || !Number.isFinite(b)) throw new Error(`range inválido: ${item}`);
+      if (!Number.isFinite(a) || !Number.isFinite(b))
+        throw new Error(`range inválido: ${item}`);
       for (let i = a; i <= b; i++) out.add(i);
     } else {
       const n = Number(item);
-      if (!Number.isInteger(n) || n < min || n > max) throw new Error(`valor fora do range: ${item}`);
+      if (!Number.isInteger(n) || n < min || n > max)
+        throw new Error(`valor fora do range: ${item}`);
       out.add(n);
     }
   }

@@ -17,7 +17,9 @@ export interface WorldInfo {
 }
 
 export async function getWorldInfo(containerName: string): Promise<WorldInfo> {
-  const raw = await readContainerFile(containerName, '/data/server.properties').catch(() => '');
+  const raw = await readContainerFile(containerName, '/data/server.properties').catch(
+    () => ''
+  );
   const props = parseProperties(raw);
   return {
     seed: props['level-seed'] || null,
@@ -33,7 +35,11 @@ export async function setSeed(containerName: string, seed: string): Promise<void
   const raw = await readContainerFile(containerName, '/data/server.properties');
   const props = parseProperties(raw);
   props['level-seed'] = seed.trim();
-  await writeContainerFile(containerName, '/data/server.properties', serializeProperties(props));
+  await writeContainerFile(
+    containerName,
+    '/data/server.properties',
+    serializeProperties(props)
+  );
 }
 
 interface ResetOptions {
@@ -66,7 +72,9 @@ export async function resetWorld(
     await container.stop({ t: 30 });
   }
 
-  const raw = await readContainerFile(containerName, '/data/server.properties').catch(() => '');
+  const raw = await readContainerFile(containerName, '/data/server.properties').catch(
+    () => ''
+  );
   const props = parseProperties(raw);
   const levelName = props['level-name'] || 'world';
 
@@ -82,10 +90,17 @@ export async function resetWorld(
   await execInContainer(containerName, ['rm', '-rf', ...pathsToRemove]);
 
   if (opts.newSeed !== undefined) {
-    const propsRaw = await readContainerFile(containerName, '/data/server.properties').catch(() => raw);
+    const propsRaw = await readContainerFile(
+      containerName,
+      '/data/server.properties'
+    ).catch(() => raw);
     const newProps = parseProperties(propsRaw);
     newProps['level-seed'] = opts.newSeed.trim();
-    await writeContainerFile(containerName, '/data/server.properties', serializeProperties(newProps));
+    await writeContainerFile(
+      containerName,
+      '/data/server.properties',
+      serializeProperties(newProps)
+    );
   }
 
   await container.restart({ t: 10 });

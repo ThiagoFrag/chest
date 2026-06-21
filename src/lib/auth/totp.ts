@@ -59,7 +59,10 @@ export function generateBackupCodes(count = 10): string[] {
   return out;
 }
 
-export function consumeBackupCode(codesJson: string | null, code: string): { ok: boolean; remaining: string[] } {
+export function consumeBackupCode(
+  codesJson: string | null,
+  code: string
+): { ok: boolean; remaining: string[] } {
   if (!codesJson) return { ok: false, remaining: [] };
   let codes: string[];
   try {

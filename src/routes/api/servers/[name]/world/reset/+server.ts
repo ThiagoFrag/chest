@@ -1,4 +1,4 @@
-import { requireServerPermission } from "$lib/auth/require-server-permission";
+import { requireServerPermission } from '$lib/auth/require-server-permission';
 import { json, error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { resetWorld } from '$lib/mc/world';
@@ -13,7 +13,7 @@ const schema = z.object({
 
 export const POST: RequestHandler = async (event) => {
   if (!event.params.name) throw error(400);
-  await requireServerPermission(event, event.params.name, "edit_world");
+  await requireServerPermission(event, event.params.name, 'edit_world');
 
   const body = await event.request.json().catch(() => null);
   const parsed = schema.safeParse(body);

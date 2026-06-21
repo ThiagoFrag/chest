@@ -27,7 +27,9 @@ export const actions: Actions = {
     if (!locals.user) throw error(401);
 
     if (!locals.user.discordId) {
-      return fail(400, { unlink: tServer(locals.locale, 'serverrors.security.discordNotLinked') });
+      return fail(400, {
+        unlink: tServer(locals.locale, 'serverrors.security.discordNotLinked')
+      });
     }
 
     if (!locals.user.passwordHash) {

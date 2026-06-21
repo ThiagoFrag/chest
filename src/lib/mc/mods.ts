@@ -12,7 +12,9 @@ export interface ModFile {
 export async function listMods(containerName: string): Promise<ModFile[]> {
   const container = (await dockerForContainer(containerName)).getContainer(containerName);
   try {
-    const stream = (await container.getArchive({ path: '/data/mods/' })) as unknown as NodeJS.ReadableStream;
+    const stream = (await container.getArchive({
+      path: '/data/mods/'
+    })) as unknown as NodeJS.ReadableStream;
     const chunks: Buffer[] = [];
     for await (const c of stream as AsyncIterable<Buffer>) chunks.push(c);
     return parseTarMods(Buffer.concat(chunks));
@@ -32,9 +34,17 @@ function parseTarMods(buf: Buffer): ModFile[] {
       offset += 512;
       continue;
     }
-    const sizeStr = header.subarray(124, 135).toString('ascii').replace(/\0+$/, '').trim();
+    const sizeStr = header
+      .subarray(124, 135)
+      .toString('ascii')
+      .replace(/\0+$/, '')
+      .trim();
     const size = parseInt(sizeStr, 8) || 0;
-    const mtimeStr = header.subarray(136, 147).toString('ascii').replace(/\0+$/, '').trim();
+    const mtimeStr = header
+      .subarray(136, 147)
+      .toString('ascii')
+      .replace(/\0+$/, '')
+      .trim();
     const mtime = parseInt(mtimeStr, 8) || 0;
     const typeflag = header.subarray(156, 157).toString('ascii');
     offset += 512 + Math.ceil(size / 512) * 512;
@@ -68,7 +78,9 @@ export async function installMod(
     throw new Error('arquivo não é jar válido (magic bytes ausentes)');
   }
   const container = (await dockerForContainer(containerName)).getContainer(containerName);
-  await container.putArchive(makeSingleFileTar(filename, content), { path: '/data/mods' });
+  await container.putArchive(makeSingleFileTar(filename, content), {
+    path: '/data/mods'
+  });
 }
 
 const SAFE_MOD_FILENAME = /^[A-Za-z0-9._-]+$/;
@@ -131,7 +143,9 @@ export async function toggleMod(
   }
 }
 
-export async function getServerMcInfo(slug: string): Promise<{ mcVersion: string; loader: string }> {
+export async function getServerMcInfo(
+  slug: string
+): Promise<{ mcVersion: string; loader: string }> {
   const server = await db()
     .select()
     .from(schema.servers)
@@ -153,7 +167,14 @@ function makeSingleFileTar(name: string, content: Buffer): Buffer {
   header.write('0000000', 108, 7, 'ascii');
   header.write('0000000', 116, 7, 'ascii');
   header.write(content.length.toString(8).padStart(11, '0'), 124, 11, 'ascii');
-  header.write(Math.floor(Date.now() / 1000).toString(8).padStart(11, '0'), 136, 11, 'ascii');
+  header.write(
+    Math.floor(Date.now() / 1000)
+      .toString(8)
+      .padStart(11, '0'),
+    136,
+    11,
+    'ascii'
+  );
   header.write('        ', 148, 8, 'ascii');
   header.write('0', 156, 1, 'ascii');
   header.write('ustar', 257, 5, 'ascii');

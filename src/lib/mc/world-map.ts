@@ -24,11 +24,13 @@ const SAFE_PATH = /^\/[A-Za-z0-9._/-]*$/;
 async function execList(containerName: string, dir: string): Promise<string[]> {
   if (!SAFE_PATH.test(dir)) return [];
   try {
-    const exec = await (await dockerForContainer(containerName)).getContainer(containerName).exec({
-      Cmd: ['ls', '-1', dir],
-      AttachStdout: true,
-      AttachStderr: true
-    });
+    const exec = await (await dockerForContainer(containerName))
+      .getContainer(containerName)
+      .exec({
+        Cmd: ['ls', '-1', dir],
+        AttachStdout: true,
+        AttachStderr: true
+      });
     const stream = await exec.start({});
     const chunks: Buffer[] = [];
     await new Promise<void>((resolve) => {
@@ -44,7 +46,10 @@ async function execList(containerName: string, dir: string): Promise<string[]> {
       out += buf.subarray(8, 8 + size).toString('utf8');
       buf = buf.subarray(8 + size);
     }
-    return out.split('\n').map((l) => l.trim()).filter(Boolean);
+    return out
+      .split('\n')
+      .map((l) => l.trim())
+      .filter(Boolean);
   } catch {
     return [];
   }
@@ -74,7 +79,9 @@ const BLUEMAP_HTTP_PORT_RANGE_START = 8100;
 const BLUEMAP_HTTP_PORT_RANGE_END = 8200;
 
 export async function allocateMapPort(containerName: string): Promise<number> {
-  const containers = await (await dockerForContainer(containerName)).listContainers({ all: true });
+  const containers = await (
+    await dockerForContainer(containerName)
+  ).listContainers({ all: true });
   const used = new Set<number>();
   for (const c of containers) {
     for (const p of c.Ports ?? []) {
@@ -84,7 +91,9 @@ export async function allocateMapPort(containerName: string): Promise<number> {
   for (let p = BLUEMAP_HTTP_PORT_RANGE_START; p <= BLUEMAP_HTTP_PORT_RANGE_END; p++) {
     if (!used.has(p)) return p;
   }
-  throw new Error(`sem portas livres no range ${BLUEMAP_HTTP_PORT_RANGE_START}-${BLUEMAP_HTTP_PORT_RANGE_END} pra o mapa`);
+  throw new Error(
+    `sem portas livres no range ${BLUEMAP_HTTP_PORT_RANGE_START}-${BLUEMAP_HTTP_PORT_RANGE_END} pra o mapa`
+  );
 }
 
 async function probeHttp(url: string, timeoutMs = 2500): Promise<boolean> {
@@ -105,7 +114,9 @@ async function probeHttp(url: string, timeoutMs = 2500): Promise<boolean> {
 export async function getMapStatus(
   containerName: string,
   publicHost: string | null
-): Promise<MapStatus & { mode: 'embedded' | 'sidecar' | null; sidecarState?: string | null }> {
+): Promise<
+  MapStatus & { mode: 'embedded' | 'sidecar' | null; sidecarState?: string | null }
+> {
   const row = await db()
     .select()
     .from(schema.servers)
@@ -129,7 +140,8 @@ export async function getMapStatus(
     mode = 'embedded';
   }
 
-  const installed = !!row?.mapInstalled || detected !== null || (sidecar?.exists ?? false);
+  const installed =
+    !!row?.mapInstalled || detected !== null || (sidecar?.exists ?? false);
   const type = row?.mapType ?? detected;
 
   // Probe from inside the Chest container — host.docker.internal is always
@@ -206,9 +218,8 @@ export async function installBlueMap(
   // sidecar mode — works for both managed (DB row) and external containers
   if (opts.sidecarPort == null) throw new Error('sidecarPort não foi alocada');
 
-  const { createBlueMapSidecar, sidecarName, resolveServerDataMount } = await import(
-    './world-map-sidecar'
-  );
+  const { createBlueMapSidecar, sidecarName, resolveServerDataMount } =
+    await import('./world-map-sidecar');
 
   const row = await db()
     .select()

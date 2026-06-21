@@ -81,7 +81,11 @@ export const PUT: RequestHandler = async (event) => {
   if (row.totpEnabledAt) throw error(409, '2FA já ativo');
 
   if (!verifyCode(row.totpSecret, parsed.data.code)) {
-    await logAudit(event, { action: 'auth.totp.enable', status: 'fail', details: 'invalid_code' });
+    await logAudit(event, {
+      action: 'auth.totp.enable',
+      status: 'fail',
+      details: 'invalid_code'
+    });
     throw error(400, 'código inválido');
   }
 
@@ -91,7 +95,11 @@ export const PUT: RequestHandler = async (event) => {
     .set({ totpEnabledAt: new Date(), backupCodesJson: JSON.stringify(backupCodes) })
     .where(eq(schema.users.id, locals.user.id));
 
-  await logAudit(event, { action: 'auth.totp.enabled', resourceType: 'user', resourceId: locals.user.id });
+  await logAudit(event, {
+    action: 'auth.totp.enabled',
+    resourceType: 'user',
+    resourceId: locals.user.id
+  });
 
   return json({ ok: true, backupCodes });
 };
@@ -106,7 +114,8 @@ export const DELETE: RequestHandler = async (event) => {
 
   const body = await event.request.json().catch(() => null);
   const parsed = disableSchema.safeParse(body);
-  if (!parsed.success) throw error(400, 'body inválido — informe code atual pra confirmar');
+  if (!parsed.success)
+    throw error(400, 'body inválido — informe code atual pra confirmar');
 
   const row = await db()
     .select()
@@ -126,7 +135,11 @@ export const DELETE: RequestHandler = async (event) => {
     .set({ totpSecret: null, totpEnabledAt: null, backupCodesJson: null })
     .where(eq(schema.users.id, locals.user.id));
 
-  await logAudit(event, { action: 'auth.totp.disabled', resourceType: 'user', resourceId: locals.user.id });
+  await logAudit(event, {
+    action: 'auth.totp.disabled',
+    resourceType: 'user',
+    resourceId: locals.user.id
+  });
 
   return json({ ok: true });
 };

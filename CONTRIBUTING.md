@@ -34,6 +34,7 @@ bun test         # vitest suite (currently 107 tests)
 ## Reporting bugs
 
 Use GitHub issues with the bug template. Include:
+
 - What you expected to happen
 - What actually happened
 - Steps to reproduce

@@ -27,7 +27,9 @@ let client: Client | null = null;
 let currentToken: string | null = null;
 let ready = false;
 let connecting = false;
-const messageHandlers = new Set<(channelId: string, author: string, content: string) => void>();
+const messageHandlers = new Set<
+  (channelId: string, author: string, content: string) => void
+>();
 
 export interface BotStatus {
   configured: boolean;
@@ -37,7 +39,6 @@ export interface BotStatus {
   inviteUrl: string | null;
   guilds: Array<{ id: string; name: string; iconUrl: string | null }>;
 }
-
 
 export async function ensureBot(): Promise<Client | null> {
   const token = await getSetting('discord.bot_token');
@@ -130,7 +131,10 @@ export async function ensureBot(): Promise<Client | null> {
 
     return client;
   } catch (err) {
-    console.error('[discord-bot] login failed:', err instanceof Error ? err.message : err);
+    console.error(
+      '[discord-bot] login failed:',
+      err instanceof Error ? err.message : err
+    );
     client = null;
     ready = false;
     currentToken = null;
@@ -306,14 +310,19 @@ export async function notifyServerLifecycle(
     case 'started': {
       embed.setColor(COLOR_OK).setTitle(`🟢 ${name} online`);
       const fields: { name: string; value: string; inline: boolean }[] = [];
-      if (event.version) fields.push({ name: 'versão', value: event.version, inline: true });
-      if (event.hostPort) fields.push({ name: 'porta', value: String(event.hostPort), inline: true });
+      if (event.version)
+        fields.push({ name: 'versão', value: event.version, inline: true });
+      if (event.hostPort)
+        fields.push({ name: 'porta', value: String(event.hostPort), inline: true });
       if (fields.length) embed.addFields(fields);
       embed.setDescription('server pronto, players podem conectar');
       break;
     }
     case 'stopped':
-      embed.setColor(COLOR_NEUTRAL).setTitle(`⚪ ${name} offline`).setDescription('parado manualmente');
+      embed
+        .setColor(COLOR_NEUTRAL)
+        .setTitle(`⚪ ${name} offline`)
+        .setDescription('parado manualmente');
       break;
     case 'restarted':
       embed.setColor(COLOR_INFO).setTitle(`🔄 ${name} reiniciado`);
@@ -322,7 +331,11 @@ export async function notifyServerLifecycle(
       embed.setColor(COLOR_ERR).setTitle(`💥 ${name} crashou`);
       embed.setDescription('container saiu inesperadamente');
       if (event.exitCode !== undefined) {
-        embed.addFields({ name: 'exit code', value: String(event.exitCode), inline: true });
+        embed.addFields({
+          name: 'exit code',
+          value: String(event.exitCode),
+          inline: true
+        });
       }
       break;
   }
@@ -345,4 +358,9 @@ export async function notifyAdminDM(content: string, embed?: APIEmbed): Promise<
   }
 }
 
-export const lifecycleColors = { ok: COLOR_OK, info: COLOR_INFO, warn: COLOR_WARN, err: COLOR_ERR };
+export const lifecycleColors = {
+  ok: COLOR_OK,
+  info: COLOR_INFO,
+  warn: COLOR_WARN,
+  err: COLOR_ERR
+};

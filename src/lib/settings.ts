@@ -52,20 +52,19 @@ export async function getSetting(key: SettingKey): Promise<string | null> {
 }
 
 export async function setSetting(key: SettingKey, value: string): Promise<void> {
-  await db()
-    .insert(schema.settings)
-    .values({ key, value })
-    .onConflictDoUpdate({
-      target: schema.settings.key,
-      set: { value }
-    });
+  await db().insert(schema.settings).values({ key, value }).onConflictDoUpdate({
+    target: schema.settings.key,
+    set: { value }
+  });
 }
 
 export async function deleteSetting(key: SettingKey): Promise<void> {
   await db().delete(schema.settings).where(eq(schema.settings.key, key));
 }
 
-export async function getAllSettings(): Promise<Record<string, { value: string; isSecret: boolean }>> {
+export async function getAllSettings(): Promise<
+  Record<string, { value: string; isSecret: boolean }>
+> {
   const rows = await db().select().from(schema.settings);
   const out: Record<string, { value: string; isSecret: boolean }> = {};
   for (const r of rows) {

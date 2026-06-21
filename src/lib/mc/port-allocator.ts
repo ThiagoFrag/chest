@@ -88,15 +88,29 @@ export async function allocatePorts(hostId: string = LOCAL_HOST_ID): Promise<Por
   const alsoUsed = new Set<number>();
   const probeHost = hostId === LOCAL_HOST_ID;
 
-  const http = await findFreePort(MC_RANGE_START, MC_RANGE_END, dockerUsed, alsoUsed, probeHost);
+  const http = await findFreePort(
+    MC_RANGE_START,
+    MC_RANGE_END,
+    dockerUsed,
+    alsoUsed,
+    probeHost
+  );
   if (http === null) {
     throw new Error(`sem portas MC livres no range ${MC_RANGE_START}-${MC_RANGE_END}`);
   }
   alsoUsed.add(http);
 
-  const rcon = await findFreePort(RCON_RANGE_START, RCON_RANGE_END, dockerUsed, alsoUsed, probeHost);
+  const rcon = await findFreePort(
+    RCON_RANGE_START,
+    RCON_RANGE_END,
+    dockerUsed,
+    alsoUsed,
+    probeHost
+  );
   if (rcon === null) {
-    throw new Error(`sem portas RCON livres no range ${RCON_RANGE_START}-${RCON_RANGE_END}`);
+    throw new Error(
+      `sem portas RCON livres no range ${RCON_RANGE_START}-${RCON_RANGE_END}`
+    );
   }
 
   return { http, rcon };

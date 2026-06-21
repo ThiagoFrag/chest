@@ -13,11 +13,13 @@ export function buildJvmOpts(draslUrl: string): string {
 
 export async function ensureAuthlibInjector(containerName: string): Promise<void> {
   try {
-    const exec = await (await dockerForContainer(containerName)).getContainer(containerName).exec({
-      Cmd: ['sh', '-c', `test -f ${AUTHLIB_INJECTOR_PATH} && echo ok || echo missing`],
-      AttachStdout: true,
-      AttachStderr: true
-    });
+    const exec = await (await dockerForContainer(containerName))
+      .getContainer(containerName)
+      .exec({
+        Cmd: ['sh', '-c', `test -f ${AUTHLIB_INJECTOR_PATH} && echo ok || echo missing`],
+        AttachStdout: true,
+        AttachStderr: true
+      });
     const stream = await exec.start({});
     const chunks: Buffer[] = [];
     await new Promise<void>((resolve) => {

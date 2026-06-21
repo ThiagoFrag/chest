@@ -1,7 +1,13 @@
 import { requireServerPermission } from '$lib/auth/require-server-permission';
 import { json, error } from '@sveltejs/kit';
 import { z } from 'zod';
-import { listDir, readFile, writeFile, isSafePath, isTextFile } from '$lib/mc/file-browser';
+import {
+  listDir,
+  readFile,
+  writeFile,
+  isSafePath,
+  isTextFile
+} from '$lib/mc/file-browser';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (event) => {
@@ -16,7 +22,8 @@ export const GET: RequestHandler = async (event) => {
 
   try {
     if (mode === 'read') {
-      if (!isTextFile(path)) throw error(415, 'arquivo binário, não pode ser editado aqui');
+      if (!isTextFile(path))
+        throw error(415, 'arquivo binário, não pode ser editado aqui');
       const { content, truncated } = await readFile(params.name, path);
       return json({ content, truncated, isText: true });
     }

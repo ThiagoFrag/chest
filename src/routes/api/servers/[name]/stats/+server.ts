@@ -15,7 +15,9 @@ export const GET: RequestHandler = async (event) => {
     throw error(404);
   }
 
-  const statsStream = (await container.stats({ stream: true })) as unknown as NodeJS.ReadableStream;
+  const statsStream = (await container.stats({
+    stream: true
+  })) as unknown as NodeJS.ReadableStream;
 
   const HEARTBEAT_MS = 20_000;
   let heartbeat: ReturnType<typeof setInterval> | undefined;

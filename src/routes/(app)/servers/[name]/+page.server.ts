@@ -35,8 +35,10 @@ export const load: PageServerLoad = async ({ params, locals }) => {
   let baseHostname: string | null = null;
   if (baseUrl && cfToken && cnameTarget) {
     try {
-      baseHostname = new URL(baseUrl.startsWith('http') ? baseUrl : `https://${baseUrl}`)
-        .hostname.split('.')
+      baseHostname = new URL(
+        baseUrl.startsWith('http') ? baseUrl : `https://${baseUrl}`
+      ).hostname
+        .split('.')
         .slice(-2)
         .join('.');
     } catch {

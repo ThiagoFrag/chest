@@ -12,7 +12,9 @@ export interface AuthModeStatus {
 }
 
 export async function detectAuthMode(containerName: string): Promise<AuthModeStatus> {
-  const info = await (await dockerForContainer(containerName)).getContainer(containerName).inspect();
+  const info = await (await dockerForContainer(containerName))
+    .getContainer(containerName)
+    .inspect();
   const envArr = info.Config.Env ?? [];
   const env: Record<string, string> = {};
   for (const e of envArr) {

@@ -5,7 +5,12 @@ import {
 } from 'discord.js';
 import { eq } from 'drizzle-orm';
 import { db, schema } from '$lib/db';
-import { listManagedServers, startServer, stopServer, restartServer } from '$lib/docker/server-actions';
+import {
+  listManagedServers,
+  startServer,
+  stopServer,
+  restartServer
+} from '$lib/docker/server-actions';
 import { getStatus } from '$lib/mc/monitor';
 import { sendCommand, listPlayers } from '$lib/mc/rcon';
 import { createBackup } from '$lib/mc/backup';
@@ -23,19 +28,31 @@ export const COMMANDS = [
     .setName('status')
     .setDescription('mostra status detalhado de um server')
     .addStringOption((opt) =>
-      opt.setName('server').setDescription('nome do container').setRequired(true).setAutocomplete(true)
+      opt
+        .setName('server')
+        .setDescription('nome do container')
+        .setRequired(true)
+        .setAutocomplete(true)
     ),
   new SlashCommandBuilder()
     .setName('list')
     .setDescription('lista players online em um server')
     .addStringOption((opt) =>
-      opt.setName('server').setDescription('nome do container').setRequired(true).setAutocomplete(true)
+      opt
+        .setName('server')
+        .setDescription('nome do container')
+        .setRequired(true)
+        .setAutocomplete(true)
     ),
   new SlashCommandBuilder()
     .setName('say')
     .setDescription('envia mensagem ao chat in-game')
     .addStringOption((opt) =>
-      opt.setName('server').setDescription('nome do container').setRequired(true).setAutocomplete(true)
+      opt
+        .setName('server')
+        .setDescription('nome do container')
+        .setRequired(true)
+        .setAutocomplete(true)
     )
     .addStringOption((opt) =>
       opt.setName('mensagem').setDescription('mensagem').setRequired(true)
@@ -44,7 +61,11 @@ export const COMMANDS = [
     .setName('backup')
     .setDescription('cria backup do server')
     .addStringOption((opt) =>
-      opt.setName('server').setDescription('nome do container').setRequired(true).setAutocomplete(true)
+      opt
+        .setName('server')
+        .setDescription('nome do container')
+        .setRequired(true)
+        .setAutocomplete(true)
     )
     .addStringOption((opt) =>
       opt
@@ -56,31 +77,50 @@ export const COMMANDS = [
     .setName('start')
     .setDescription('inicia um server')
     .addStringOption((opt) =>
-      opt.setName('server').setDescription('nome do container').setRequired(true).setAutocomplete(true)
+      opt
+        .setName('server')
+        .setDescription('nome do container')
+        .setRequired(true)
+        .setAutocomplete(true)
     ),
   new SlashCommandBuilder()
     .setName('stop')
     .setDescription('para um server')
     .addStringOption((opt) =>
-      opt.setName('server').setDescription('nome do container').setRequired(true).setAutocomplete(true)
+      opt
+        .setName('server')
+        .setDescription('nome do container')
+        .setRequired(true)
+        .setAutocomplete(true)
     ),
   new SlashCommandBuilder()
     .setName('restart')
     .setDescription('reinicia um server')
     .addStringOption((opt) =>
-      opt.setName('server').setDescription('nome do container').setRequired(true).setAutocomplete(true)
+      opt
+        .setName('server')
+        .setDescription('nome do container')
+        .setRequired(true)
+        .setAutocomplete(true)
     )
 ].map((c) => c.toJSON());
 
-export async function autocompleteServers(query: string): Promise<Array<{ name: string; value: string }>> {
+export async function autocompleteServers(
+  query: string
+): Promise<Array<{ name: string; value: string }>> {
   const servers = await listManagedServers().catch(() => []);
   return servers
     .filter((s) => s.containerName.toLowerCase().includes(query.toLowerCase()))
     .slice(0, 25)
-    .map((s) => ({ name: `${s.displayName} (${s.containerName})`.slice(0, 100), value: s.containerName }));
+    .map((s) => ({
+      name: `${s.displayName} (${s.containerName})`.slice(0, 100),
+      value: s.containerName
+    }));
 }
 
-export async function handleSlashCommand(interaction: ChatInputCommandInteraction): Promise<void> {
+export async function handleSlashCommand(
+  interaction: ChatInputCommandInteraction
+): Promise<void> {
   const { commandName } = interaction;
   await interaction.deferReply();
 
@@ -117,7 +157,12 @@ export async function handleSlashCommand(interaction: ChatInputCommandInteractio
     const msg = err instanceof Error ? err.message : String(err);
     await interaction
       .editReply({
-        embeds: [new EmbedBuilder().setColor(COLOR_ERR).setTitle('❌ erro').setDescription(msg.slice(0, 1000))]
+        embeds: [
+          new EmbedBuilder()
+            .setColor(COLOR_ERR)
+            .setTitle('❌ erro')
+            .setDescription(msg.slice(0, 1000))
+        ]
       })
       .catch(() => undefined);
   }
@@ -218,7 +263,11 @@ async function handleBackup(i: ChatInputCommandInteraction): Promise<void> {
       .setDescription(`\`${name}\` (${scope})`)
       .addFields(
         { name: 'tamanho', value: `${sizeMb} MB`, inline: true },
-        { name: 'data', value: new Date(entry.createdAt * 1000).toLocaleString('pt-BR'), inline: true }
+        {
+          name: 'data',
+          value: new Date(entry.createdAt * 1000).toLocaleString('pt-BR'),
+          inline: true
+        }
       );
     await i.editReply({ embeds: [embed] });
   } catch (err) {

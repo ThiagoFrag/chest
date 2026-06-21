@@ -26,30 +26,30 @@ Chest is the alternative. A modern SvelteKit and Bun stack for speed and small b
 
 ## Features
 
-| Feature | Description |
-|---|---|
-| Container-first deploy | Single `docker compose up -d`. Zero host dependencies, no scripts to install. |
-| Server templates (eggs) | JSON-defined server presets for Vanilla, Paper, Fabric, Forge, NeoForge, Purpur, Spigot, Quilt, modpacks, and Cobblemon. |
-| 5-step new-server wizard | Pick template, name, port range, memory, public exposure mode. Server is running in under a minute. |
-| Live console with RCON | Server-Sent Events stream of container stdout plus a command box backed by a pooled RCON client. |
-| Real-time and historical metrics | CPU, RAM, and player count graphs with 1h / 6h / 24h / 7d windows. |
-| Modrinth integration | Search mods live, filtered automatically by MC version and loader. One-click install, toggle, delete. |
-| Modpack install | Full Modrinth `.mrpack` support, including overrides and dependency index. |
-| Embedded BlueMap | Sidecar BlueMap container per world, surfaced through an iframe directly in the panel. |
-| File manager | Browse, edit, upload, download, and delete files in the server volume with a safe path resolver. |
-| `server.properties` editor | Typed form for every vanilla property, with validation and inline help. |
-| World tools | Reset world (preserves mods, config, whitelist, ops), change seed, regenerate map. |
-| Backups | Tarball backups with scope `world` or `full`, save-flush before snapshot, download / restore / delete. |
-| Storage drivers | Local volume by default. Optional S3 or Cloudflare R2 driver for offsite backup retention. |
-| Scheduler | Built-in cron parser, seven presets plus custom expressions. Tasks: backup, restart, RCON command. |
-| Granular RBAC | Per-server roles and permissions, plus a subusers panel to delegate access without sharing admin. |
-| TOTP 2FA | Per-user TOTP enrolment with QR code, recovery codes, and an audited disable flow. |
-| Audit log | Append-only log of every privileged action, with actor, target, IP, and diff. |
-| Webhooks | Outbound HMAC-signed webhooks on server lifecycle, backup, and security events. |
-| Drasl auth integration | Toggle `authlib-injector` per server and point it at a self-hosted Drasl instance for offline-friendly auth. |
-| Discord bot bridge | Bidirectional bridge: chat to and from a Discord channel, plus server status embeds. |
-| Hardened Docker access | Talks to Docker through `docker-socket-proxy` with the minimum endpoint set. No bind-mounted socket. |
-| Argon2id sessions | Argon2id password hashing, hashed session tokens, httpOnly + secure cookies. |
+| Feature                          | Description                                                                                                              |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Container-first deploy           | Single `docker compose up -d`. Zero host dependencies, no scripts to install.                                            |
+| Server templates (eggs)          | JSON-defined server presets for Vanilla, Paper, Fabric, Forge, NeoForge, Purpur, Spigot, Quilt, modpacks, and Cobblemon. |
+| 5-step new-server wizard         | Pick template, name, port range, memory, public exposure mode. Server is running in under a minute.                      |
+| Live console with RCON           | Server-Sent Events stream of container stdout plus a command box backed by a pooled RCON client.                         |
+| Real-time and historical metrics | CPU, RAM, and player count graphs with 1h / 6h / 24h / 7d windows.                                                       |
+| Modrinth integration             | Search mods live, filtered automatically by MC version and loader. One-click install, toggle, delete.                    |
+| Modpack install                  | Full Modrinth `.mrpack` support, including overrides and dependency index.                                               |
+| Embedded BlueMap                 | Sidecar BlueMap container per world, surfaced through an iframe directly in the panel.                                   |
+| File manager                     | Browse, edit, upload, download, and delete files in the server volume with a safe path resolver.                         |
+| `server.properties` editor       | Typed form for every vanilla property, with validation and inline help.                                                  |
+| World tools                      | Reset world (preserves mods, config, whitelist, ops), change seed, regenerate map.                                       |
+| Backups                          | Tarball backups with scope `world` or `full`, save-flush before snapshot, download / restore / delete.                   |
+| Storage drivers                  | Local volume by default. Optional S3 or Cloudflare R2 driver for offsite backup retention.                               |
+| Scheduler                        | Built-in cron parser, seven presets plus custom expressions. Tasks: backup, restart, RCON command.                       |
+| Granular RBAC                    | Per-server roles and permissions, plus a subusers panel to delegate access without sharing admin.                        |
+| TOTP 2FA                         | Per-user TOTP enrolment with QR code, recovery codes, and an audited disable flow.                                       |
+| Audit log                        | Append-only log of every privileged action, with actor, target, IP, and diff.                                            |
+| Webhooks                         | Outbound HMAC-signed webhooks on server lifecycle, backup, and security events.                                          |
+| Drasl auth integration           | Toggle `authlib-injector` per server and point it at a self-hosted Drasl instance for offline-friendly auth.             |
+| Discord bot bridge               | Bidirectional bridge: chat to and from a Discord channel, plus server status embeds.                                     |
+| Hardened Docker access           | Talks to Docker through `docker-socket-proxy` with the minimum endpoint set. No bind-mounted socket.                     |
+| Argon2id sessions                | Argon2id password hashing, hashed session tokens, httpOnly + secure cookies.                                             |
 
 ---
 
@@ -231,29 +231,29 @@ Point your reverse proxy at the `chest` container on port `3000` and you are don
 
 ### Environment variables
 
-| Variable | Default | Description |
-|---|---|---|
-| `DATABASE_URL` | `file:/app/data/db.sqlite` | SQLite file location inside the container. |
-| `SESSION_SECRET` | required | 32+ byte base64 secret used to sign session tokens. |
-| `RCON_KEY` | auto-generated | 32+ byte key used to encrypt per-server RCON passwords at rest. |
-| `DOCKER_HOST` | `tcp://chest-socket-proxy:2375` | Docker API endpoint. Always prefer the socket-proxy. |
-| `ORIGIN` | `https://panel.example.com` | Public origin for cookie scoping and CSRF. |
-| `PROTOCOL_HEADER` | `x-forwarded-proto` | Reverse-proxy protocol header. |
-| `ADMIN_USERNAME` | `admin` | Username for the auto-seeded first admin. |
-| `TZ` | container default | Timezone used by the scheduler. |
+| Variable          | Default                         | Description                                                     |
+| ----------------- | ------------------------------- | --------------------------------------------------------------- |
+| `DATABASE_URL`    | `file:/app/data/db.sqlite`      | SQLite file location inside the container.                      |
+| `SESSION_SECRET`  | required                        | 32+ byte base64 secret used to sign session tokens.             |
+| `RCON_KEY`        | auto-generated                  | 32+ byte key used to encrypt per-server RCON passwords at rest. |
+| `DOCKER_HOST`     | `tcp://chest-socket-proxy:2375` | Docker API endpoint. Always prefer the socket-proxy.            |
+| `ORIGIN`          | `https://panel.example.com`     | Public origin for cookie scoping and CSRF.                      |
+| `PROTOCOL_HEADER` | `x-forwarded-proto`             | Reverse-proxy protocol header.                                  |
+| `ADMIN_USERNAME`  | `admin`                         | Username for the auto-seeded first admin.                       |
+| `TZ`              | container default               | Timezone used by the scheduler.                                 |
 
 ### Settings (configured in the UI)
 
-| Key | Description |
-|---|---|
-| `chest.storage.driver` | `local`, `s3`, or `r2`. Selects the backup storage backend. |
-| `chest.storage.bucket` | Bucket name for S3 or R2 backups. |
-| `chest.storage.endpoint` | Custom endpoint URL (R2 or self-hosted S3). |
-| `drasl.url` | Base URL of the Drasl auth server, e.g. `https://auth.example.com`. |
-| `drasl.admin_token` | Admin token for Drasl integration. |
-| `discord.bot_token` | Token for the Discord bridge bot. |
-| `discord.guild_id` | Discord guild used by the bridge. |
-| `webhooks.*` | Per-endpoint configuration, including secret used for HMAC signing. |
+| Key                      | Description                                                         |
+| ------------------------ | ------------------------------------------------------------------- |
+| `chest.storage.driver`   | `local`, `s3`, or `r2`. Selects the backup storage backend.         |
+| `chest.storage.bucket`   | Bucket name for S3 or R2 backups.                                   |
+| `chest.storage.endpoint` | Custom endpoint URL (R2 or self-hosted S3).                         |
+| `drasl.url`              | Base URL of the Drasl auth server, e.g. `https://auth.example.com`. |
+| `drasl.admin_token`      | Admin token for Drasl integration.                                  |
+| `discord.bot_token`      | Token for the Discord bridge bot.                                   |
+| `discord.guild_id`       | Discord guild used by the bridge.                                   |
+| `webhooks.*`             | Per-endpoint configuration, including secret used for HMAC signing. |
 
 Sensitive settings are encrypted with `RCON_KEY` before being written to SQLite.
 

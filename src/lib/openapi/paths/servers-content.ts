@@ -29,13 +29,15 @@ export const serverscontentPaths: PathsModule = {
           name: 'mode',
           in: 'query',
           required: false,
-          description: 'Operação: "list" lista o diretório, "read" lê um arquivo de texto.',
+          description:
+            'Operação: "list" lista o diretório, "read" lê um arquivo de texto.',
           schema: { type: 'string', enum: ['list', 'read'], default: 'list' }
         }
       ],
       responses: {
         '200': {
-          description: 'Lista de entradas (mode=list) ou conteúdo do arquivo (mode=read).',
+          description:
+            'Lista de entradas (mode=list) ou conteúdo do arquivo (mode=read).',
           content: {
             'application/json': {
               schema: {
@@ -64,26 +66,35 @@ export const serverscontentPaths: PathsModule = {
         },
         '400': {
           description: 'Caminho inválido ou nome ausente.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão (`manage_files`).',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '415': {
           description: 'Arquivo binário, não pode ser lido como texto.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     },
     put: {
       tags: ['Files'],
       summary: 'Escreve o conteúdo de um arquivo',
-      description: 'Grava `content` no arquivo indicado por `path`. Requer a permissão `manage_files` no servidor.',
+      description:
+        'Grava `content` no arquivo indicado por `path`. Requer a permissão `manage_files` no servidor.',
       operationId: 'writeServerFile',
       parameters: [nameParam],
       requestBody: {
@@ -94,7 +105,11 @@ export const serverscontentPaths: PathsModule = {
               type: 'object',
               required: ['path', 'content'],
               properties: {
-                path: { type: 'string', minLength: 1, description: 'Caminho do arquivo a escrever.' },
+                path: {
+                  type: 'string',
+                  minLength: 1,
+                  description: 'Caminho do arquivo a escrever.'
+                },
                 content: { type: 'string', description: 'Conteúdo de texto do arquivo.' }
               }
             }
@@ -116,15 +131,21 @@ export const serverscontentPaths: PathsModule = {
         },
         '400': {
           description: 'Body inválido.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão (`manage_files`).',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     }
@@ -133,7 +154,8 @@ export const serverscontentPaths: PathsModule = {
     get: {
       tags: ['Mods'],
       summary: 'Lista os mods instalados',
-      description: 'Retorna os mods instalados no servidor. Requer a permissão `manage_files` no servidor.',
+      description:
+        'Retorna os mods instalados no servidor. Requer a permissão `manage_files` no servidor.',
       operationId: 'listServerMods',
       parameters: [nameParam],
       responses: {
@@ -151,11 +173,15 @@ export const serverscontentPaths: PathsModule = {
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão (`manage_files`).',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     },
@@ -174,7 +200,11 @@ export const serverscontentPaths: PathsModule = {
               type: 'object',
               required: ['projectId'],
               properties: {
-                projectId: { type: 'string', minLength: 1, description: 'ID do projeto no Modrinth.' }
+                projectId: {
+                  type: 'string',
+                  minLength: 1,
+                  description: 'ID do projeto no Modrinth.'
+                }
               }
             }
           }
@@ -199,19 +229,27 @@ export const serverscontentPaths: PathsModule = {
         },
         '400': {
           description: 'projectId ausente.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão (`manage_files`).',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '409': {
           description: 'Nenhuma versão compatível com a versão/loader do servidor.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     }
@@ -220,7 +258,8 @@ export const serverscontentPaths: PathsModule = {
     delete: {
       tags: ['Mods'],
       summary: 'Remove um mod',
-      description: 'Remove o arquivo de mod indicado por `filename`. Requer a permissão `manage_files` no servidor.',
+      description:
+        'Remove o arquivo de mod indicado por `filename`. Requer a permissão `manage_files` no servidor.',
       operationId: 'deleteServerMod',
       parameters: [
         nameParam,
@@ -247,11 +286,15 @@ export const serverscontentPaths: PathsModule = {
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão (`manage_files`).',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     },
@@ -300,15 +343,21 @@ export const serverscontentPaths: PathsModule = {
         },
         '400': {
           description: 'Body inválido.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão (`manage_files`).',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     }
@@ -329,7 +378,11 @@ export const serverscontentPaths: PathsModule = {
               type: 'object',
               required: ['projectId'],
               properties: {
-                projectId: { type: 'string', minLength: 1, description: 'ID do projeto no Modrinth.' }
+                projectId: {
+                  type: 'string',
+                  minLength: 1,
+                  description: 'ID do projeto no Modrinth.'
+                }
               }
             }
           }
@@ -344,15 +397,21 @@ export const serverscontentPaths: PathsModule = {
         },
         '400': {
           description: 'projectId ausente.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão (`manage_files`).',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     }
@@ -361,7 +420,8 @@ export const serverscontentPaths: PathsModule = {
     get: {
       tags: ['World'],
       summary: 'Detalha o mundo do servidor',
-      description: 'Retorna informações do mundo do servidor. Requer a permissão `view_logs` no servidor.',
+      description:
+        'Retorna informações do mundo do servidor. Requer a permissão `view_logs` no servidor.',
       operationId: 'getServerWorld',
       parameters: [nameParam],
       responses: {
@@ -373,18 +433,23 @@ export const serverscontentPaths: PathsModule = {
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão (`view_logs`).',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     },
     patch: {
       tags: ['World'],
       summary: 'Define a seed do mundo',
-      description: 'Atualiza a seed do mundo do servidor. Requer a permissão `edit_world` no servidor.',
+      description:
+        'Atualiza a seed do mundo do servidor. Requer a permissão `edit_world` no servidor.',
       operationId: 'updateServerWorldSeed',
       parameters: [nameParam],
       requestBody: {
@@ -395,7 +460,12 @@ export const serverscontentPaths: PathsModule = {
               type: 'object',
               required: ['seed'],
               properties: {
-                seed: { type: 'string', minLength: 1, maxLength: 32, description: 'Nova seed do mundo.' }
+                seed: {
+                  type: 'string',
+                  minLength: 1,
+                  maxLength: 32,
+                  description: 'Nova seed do mundo.'
+                }
               }
             }
           }
@@ -416,15 +486,21 @@ export const serverscontentPaths: PathsModule = {
         },
         '400': {
           description: 'Seed inválida ou ausente.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão (`edit_world`).',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     }
@@ -445,10 +521,26 @@ export const serverscontentPaths: PathsModule = {
               type: 'object',
               required: ['confirm'],
               properties: {
-                newSeed: { type: 'string', maxLength: 32, description: 'Seed do novo mundo (opcional).' },
-                resetNether: { type: 'boolean', default: true, description: 'Reseta também o Nether.' },
-                resetEnd: { type: 'boolean', default: true, description: 'Reseta também o End.' },
-                confirm: { type: 'boolean', enum: [true], description: 'Confirmação obrigatória do reset.' }
+                newSeed: {
+                  type: 'string',
+                  maxLength: 32,
+                  description: 'Seed do novo mundo (opcional).'
+                },
+                resetNether: {
+                  type: 'boolean',
+                  default: true,
+                  description: 'Reseta também o Nether.'
+                },
+                resetEnd: {
+                  type: 'boolean',
+                  default: true,
+                  description: 'Reseta também o End.'
+                },
+                confirm: {
+                  type: 'boolean',
+                  enum: [true],
+                  description: 'Confirmação obrigatória do reset.'
+                }
               }
             }
           }
@@ -469,15 +561,21 @@ export const serverscontentPaths: PathsModule = {
         },
         '400': {
           description: 'Confirmação ausente ou body inválido.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão (`edit_world`).',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     }

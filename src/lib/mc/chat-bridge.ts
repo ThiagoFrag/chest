@@ -1,7 +1,12 @@
 import { dockerForContainer } from '$lib/docker/client';
 import { db, schema } from '$lib/db';
 import { eq, isNotNull } from 'drizzle-orm';
-import { sendToChannel, sendEmbedToChannel, onMessage, ensureBot } from '$lib/discord/bot';
+import {
+  sendToChannel,
+  sendEmbedToChannel,
+  onMessage,
+  ensureBot
+} from '$lib/discord/bot';
 import { EmbedBuilder } from 'discord.js';
 import { sendCommand } from './rcon';
 import { emitEvent } from '$lib/webhooks/dispatcher';
@@ -23,7 +28,8 @@ let started = false;
 let reconciling = false;
 let unsubDiscord: (() => void) | null = null;
 
-const CHAT_REGEX = /\[(?:Server|Async Chat) thread\/INFO\]:?\s*(?:\[Not Secure\]\s*)?<([^>]+)>\s*(.+)$/;
+const CHAT_REGEX =
+  /\[(?:Server|Async Chat) thread\/INFO\]:?\s*(?:\[Not Secure\]\s*)?<([^>]+)>\s*(.+)$/;
 const JOIN_REGEX = /\[Server thread\/INFO\]:?\s*([A-Za-z0-9_]+)\s+joined the game/;
 const LEAVE_REGEX = /\[Server thread\/INFO\]:?\s*([A-Za-z0-9_]+)\s+left the game/;
 const DEATH_PATTERNS = [
@@ -73,7 +79,10 @@ export function startChatBridge(): void {
         reconciling = false;
       });
   }, 30_000);
-  setTimeout(() => reconcile().catch((e) => console.error('[chat-bridge] reconcile failed:', e)), 8_000);
+  setTimeout(
+    () => reconcile().catch((e) => console.error('[chat-bridge] reconcile failed:', e)),
+    8_000
+  );
 }
 
 async function reconcile(): Promise<void> {
@@ -103,7 +112,11 @@ async function reconcile(): Promise<void> {
   }
 }
 
-async function startBridge(containerName: string, channelId: string, slug: string): Promise<void> {
+async function startBridge(
+  containerName: string,
+  channelId: string,
+  slug: string
+): Promise<void> {
   const existing = bridgeLocks.get(containerName);
   if (existing) await existing.catch(() => undefined);
 
@@ -117,7 +130,10 @@ async function startBridge(containerName: string, channelId: string, slug: strin
       container = d.getContainer(containerName);
       info = await container.inspect();
     } catch (e) {
-      console.error(`[chat-bridge] could not reach host for ${containerName}, skipping:`, e);
+      console.error(
+        `[chat-bridge] could not reach host for ${containerName}, skipping:`,
+        e
+      );
       return;
     }
     if (!info.State.Running) return;
@@ -245,7 +261,9 @@ function handleLogLine(state: BridgeState, line: string): void {
         .setDescription(`💀 ${deathMsg}`)
         .setTimestamp(new Date());
       if (player) {
-        embed.setThumbnail(`https://mc-heads.net/avatar/${encodeURIComponent(player)}/64/nohelm`);
+        embed.setThumbnail(
+          `https://mc-heads.net/avatar/${encodeURIComponent(player)}/64/nohelm`
+        );
       }
       sendEmbedToChannel(state.channelId, embed.toJSON()).catch(() => undefined);
     }

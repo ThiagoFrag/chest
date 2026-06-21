@@ -175,7 +175,11 @@ async function recordSuccess(id: string, message: string): Promise<void> {
     .where(eq(schema.webhookEndpoints.id, id));
 }
 
-async function recordFailure(id: string, message: string, failureCount: number): Promise<void> {
+async function recordFailure(
+  id: string,
+  message: string,
+  failureCount: number
+): Promise<void> {
   const shouldDisable = failureCount >= DISABLE_AFTER_CONSECUTIVE_FAILURES;
   const db = await getDb();
   await db()

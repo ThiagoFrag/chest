@@ -106,11 +106,11 @@ Tarefas listadas em **ordem de execução**. Cada uma idealmente é commitável 
 
 ## Riscos da Slice 1
 
-| Risco | Mitigação |
-|---|---|
-| Bun + dockerode incompatível | Validar T15 cedo; fallback Node 22 |
-| docker-socket-proxy não tem endpoints necessários | Listar endpoints exatos antes de T31, ajustar env vars |
-| Primeira deploy quebra dungeon-heroes | Label `forja.managed=true` é só leitura; ações vão por API com confirmação UI |
+| Risco                                             | Mitigação                                                                     |
+| ------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Bun + dockerode incompatível                      | Validar T15 cedo; fallback Node 22                                            |
+| docker-socket-proxy não tem endpoints necessários | Listar endpoints exatos antes de T31, ajustar env vars                        |
+| Primeira deploy quebra dungeon-heroes             | Label `forja.managed=true` é só leitura; ações vão por API com confirmação UI |
 
 ## Ordem de validação
 

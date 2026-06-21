@@ -5,7 +5,10 @@ import { downloadFile, getVersions } from '$lib/modrinth/client';
 interface ModrinthPackFile {
   path: string;
   hashes: { sha1: string; sha512?: string };
-  env?: { client: 'required' | 'optional' | 'unsupported'; server: 'required' | 'optional' | 'unsupported' };
+  env?: {
+    client: 'required' | 'optional' | 'unsupported';
+    server: 'required' | 'optional' | 'unsupported';
+  };
   downloads: string[];
   fileSize: number;
 }
@@ -20,8 +23,8 @@ interface ModrinthPackIndex {
   dependencies: {
     minecraft?: string;
     'fabric-loader'?: string;
-    'forge'?: string;
-    'neoforge'?: string;
+    forge?: string;
+    neoforge?: string;
     'quilt-loader'?: string;
   };
 }
@@ -43,20 +46,24 @@ export async function installModrinthModpack(
     throw new Error('modpack sem versões publicadas');
   }
   const v = versions[0];
-  const mrpackFile = v.files.find((f) => f.filename.endsWith('.mrpack') && f.primary)
-    ?? v.files.find((f) => f.filename.endsWith('.mrpack'));
+  const mrpackFile =
+    v.files.find((f) => f.filename.endsWith('.mrpack') && f.primary) ??
+    v.files.find((f) => f.filename.endsWith('.mrpack'));
   if (!mrpackFile) throw new Error('versão sem .mrpack');
 
   const packBuf = await downloadFile(mrpackFile.url);
   const index = await extractPackIndex(packBuf);
 
   const mcVersion = index.dependencies.minecraft ?? '1.21.1';
-  const loader =
-    index.dependencies['fabric-loader'] ? 'fabric'
-    : index.dependencies['neoforge'] ? 'neoforge'
-    : index.dependencies['forge'] ? 'forge'
-    : index.dependencies['quilt-loader'] ? 'quilt'
-    : 'vanilla';
+  const loader = index.dependencies['fabric-loader']
+    ? 'fabric'
+    : index.dependencies['neoforge']
+      ? 'neoforge'
+      : index.dependencies['forge']
+        ? 'forge'
+        : index.dependencies['quilt-loader']
+          ? 'quilt'
+          : 'vanilla';
 
   const result: InstallModpackResult = {
     installed: 0,
@@ -84,7 +91,10 @@ export async function installModrinthModpack(
       await putModFile(containerName, filename, content);
       result.installed += 1;
     } catch (err) {
-      result.errors.push({ path: file.path, reason: err instanceof Error ? err.message : String(err) });
+      result.errors.push({
+        path: file.path,
+        reason: err instanceof Error ? err.message : String(err)
+      });
     }
   }
 
@@ -117,19 +127,22 @@ async function extractOverrides(buf: Buffer, containerName: string): Promise<voi
     const filename = relativePath.substring(relativePath.lastIndexOf('/') + 1);
 
     try {
-      await container.exec({
-        Cmd: ['mkdir', '-p', destDir],
-        AttachStdout: false,
-        AttachStderr: false
-      }).then((e) =>
-        new Promise<void>((resolve) => {
-          e.start({}, (_err, stream) => {
-            if (!stream) return resolve();
-            stream.on('end', () => resolve());
-            stream.on('error', () => resolve());
-          });
+      await container
+        .exec({
+          Cmd: ['mkdir', '-p', destDir],
+          AttachStdout: false,
+          AttachStderr: false
         })
-      );
+        .then(
+          (e) =>
+            new Promise<void>((resolve) => {
+              e.start({}, (_err, stream) => {
+                if (!stream) return resolve();
+                stream.on('end', () => resolve());
+                stream.on('error', () => resolve());
+              });
+            })
+        );
       const tarBuf = makeSingleFileTar(filename, content);
       await container.putArchive(tarBuf, { path: destDir });
     } catch {
@@ -138,7 +151,11 @@ async function extractOverrides(buf: Buffer, containerName: string): Promise<voi
   }
 }
 
-async function putModFile(containerName: string, filename: string, content: Buffer): Promise<void> {
+async function putModFile(
+  containerName: string,
+  filename: string,
+  content: Buffer
+): Promise<void> {
   const container = (await dockerForContainer(containerName)).getContainer(containerName);
   const tarBuf = makeSingleFileTar(filename, content);
   await container.putArchive(tarBuf, { path: '/data/mods' });
@@ -151,7 +168,14 @@ function makeSingleFileTar(name: string, content: Buffer): Buffer {
   header.write('0000000', 108, 7, 'ascii');
   header.write('0000000', 116, 7, 'ascii');
   header.write(content.length.toString(8).padStart(11, '0'), 124, 11, 'ascii');
-  header.write(Math.floor(Date.now() / 1000).toString(8).padStart(11, '0'), 136, 11, 'ascii');
+  header.write(
+    Math.floor(Date.now() / 1000)
+      .toString(8)
+      .padStart(11, '0'),
+    136,
+    11,
+    'ascii'
+  );
   header.write('        ', 148, 8, 'ascii');
   header.write('0', 156, 1, 'ascii');
   header.write('ustar', 257, 5, 'ascii');

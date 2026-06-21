@@ -40,7 +40,10 @@ function listRoutePaths(apiRoot: string): string[] {
 // A documented {param} segment can resolve to either [param] or [...param] on
 // disk. Return true if any candidate +server.ts exists.
 function specPathHasRoute(apiPath: string): boolean {
-  const segments = apiPath.replace(/^\/api\/?/, '').split('/').filter(Boolean);
+  const segments = apiPath
+    .replace(/^\/api\/?/, '')
+    .split('/')
+    .filter(Boolean);
   const expand = (i: number, acc: string[]): string[][] => {
     if (i === segments.length) return [acc];
     const seg = segments[i];

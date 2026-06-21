@@ -1,4 +1,4 @@
-import { requireRole } from "$lib/auth/permissions";
+import { requireRole } from '$lib/auth/permissions';
 import { json, error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
@@ -17,12 +17,13 @@ const schemaBody = z.object({
 });
 
 export const POST: RequestHandler = async ({ params, request, locals }) => {
-  requireRole(locals.user, "admin");
+  requireRole(locals.user, 'admin');
   if (!params.name) throw error(400);
 
   const body = await request.json().catch(() => null);
   const parsed = schemaBody.safeParse(body);
-  if (!parsed.success) throw error(400, parsed.error.issues[0]?.message ?? 'subdomain inválido');
+  if (!parsed.success)
+    throw error(400, parsed.error.issues[0]?.message ?? 'subdomain inválido');
 
   const server = await db()
     .select()
@@ -39,10 +40,13 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
   ]);
 
   if (!token) throw error(400, 'cloudflare.api_token não configurado em Settings');
-  if (!cnameTarget) throw error(400, 'cloudflare.cname_target não configurado em Settings');
+  if (!cnameTarget)
+    throw error(400, 'cloudflare.cname_target não configurado em Settings');
   if (!baseUrl) throw error(400, 'forja.public_base_url não configurado em Settings');
 
-  const zoneApex = new URL(baseUrl.startsWith('http') ? baseUrl : `https://${baseUrl}`).hostname
+  const zoneApex = new URL(
+    baseUrl.startsWith('http') ? baseUrl : `https://${baseUrl}`
+  ).hostname
     .split('.')
     .slice(-2)
     .join('.');

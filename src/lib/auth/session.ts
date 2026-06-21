@@ -1,9 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { sha256 } from '@oslojs/crypto/sha2';
-import {
-  encodeBase32LowerCaseNoPadding,
-  encodeHexLowerCase
-} from '@oslojs/encoding';
+import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from '@oslojs/encoding';
 import { db, schema } from '$lib/db';
 import type { User } from '$lib/db/schema';
 
@@ -26,17 +23,22 @@ export async function createSession(
   opts: { needs2fa?: boolean } = {}
 ): Promise<void> {
   const id = hashToken(token);
-  await db().insert(schema.sessions).values({
-    id,
-    userId,
-    expiresAt: new Date(Date.now() + SESSION_DURATION_MS),
-    passed2fa: !opts.needs2fa
-  });
+  await db()
+    .insert(schema.sessions)
+    .values({
+      id,
+      userId,
+      expiresAt: new Date(Date.now() + SESSION_DURATION_MS),
+      passed2fa: !opts.needs2fa
+    });
 }
 
 export async function markSession2faPassed(token: string): Promise<void> {
   const id = hashToken(token);
-  await db().update(schema.sessions).set({ passed2fa: true }).where(eq(schema.sessions.id, id));
+  await db()
+    .update(schema.sessions)
+    .set({ passed2fa: true })
+    .where(eq(schema.sessions.id, id));
 }
 
 export async function validateSession(

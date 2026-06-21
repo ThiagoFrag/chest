@@ -41,7 +41,8 @@ interface DiscordWebhookPayload {
   }>;
 }
 
-const DEFAULT_AVATAR = 'https://cdn.jsdelivr.net/gh/InventivetalentDev/minecraft-assets@1.21.1/assets/minecraft/textures/block/grass_block_top.png';
+const DEFAULT_AVATAR =
+  'https://cdn.jsdelivr.net/gh/InventivetalentDev/minecraft-assets@1.21.1/assets/minecraft/textures/block/grass_block_top.png';
 const FOOTER_TEXT = 'Chest · painel de servidores minecraft';
 
 export async function sendEmbed(embed: EmbedInput): Promise<boolean> {
@@ -51,7 +52,10 @@ export async function sendEmbed(embed: EmbedInput): Promise<boolean> {
   return sendEmbedTo(webhookUrl, embed);
 }
 
-export async function sendEmbedTo(webhookUrl: string, embed: EmbedInput): Promise<boolean> {
+export async function sendEmbedTo(
+  webhookUrl: string,
+  embed: EmbedInput
+): Promise<boolean> {
   const payload: DiscordWebhookPayload = {
     username: 'Chest',
     avatar_url: DEFAULT_AVATAR,
@@ -102,7 +106,10 @@ export const events = {
       title: `⚠ ${name} crashou`,
       description: 'container saiu inesperadamente',
       color: 'danger',
-      fields: exitCode !== undefined ? [{ name: 'exit code', value: String(exitCode), inline: true }] : undefined
+      fields:
+        exitCode !== undefined
+          ? [{ name: 'exit code', value: String(exitCode), inline: true }]
+          : undefined
     }),
 
   serverRestarted: (name: string) =>

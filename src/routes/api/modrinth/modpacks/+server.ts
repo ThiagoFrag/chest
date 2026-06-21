@@ -1,16 +1,27 @@
-import { requireRole } from "$lib/auth/permissions";
+import { requireRole } from '$lib/auth/permissions';
 import { json, error } from '@sveltejs/kit';
 import { searchModpacks } from '$lib/modrinth/modpacks';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
-  requireRole(locals.user, "viewer");
+  requireRole(locals.user, 'viewer');
 
   const query = url.searchParams.get('q') ?? '';
-  const loader = url.searchParams.get('loader') as 'fabric' | 'forge' | 'neoforge' | 'quilt' | null;
+  const loader = url.searchParams.get('loader') as
+    | 'fabric'
+    | 'forge'
+    | 'neoforge'
+    | 'quilt'
+    | null;
   const mcVersion = url.searchParams.get('mc') ?? undefined;
   const category = url.searchParams.get('category') ?? undefined;
-  const sort = url.searchParams.get('sort') as 'relevance' | 'downloads' | 'follows' | 'newest' | 'updated' | null;
+  const sort = url.searchParams.get('sort') as
+    | 'relevance'
+    | 'downloads'
+    | 'follows'
+    | 'newest'
+    | 'updated'
+    | null;
   const offset = Number(url.searchParams.get('offset') ?? '0');
 
   try {

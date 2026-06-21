@@ -67,7 +67,8 @@ export const serverconfigMessages: Dict = {
   'serverconfig.props.retry': 'try again',
   'serverconfig.props.changes': '{n} changes',
   'serverconfig.props.modified': 'modified',
-  'serverconfig.props.footer.dirty': '{n} property(ies) modified. saving requires a server restart to apply.',
+  'serverconfig.props.footer.dirty':
+    '{n} property(ies) modified. saving requires a server restart to apply.',
   'serverconfig.props.footer.saved': '✓ saved!',
   'serverconfig.props.footer.restartNeeded': '⚠ restart the server to apply',
   'serverconfig.props.footer.clean': 'no changes',
@@ -89,21 +90,25 @@ export const serverconfigMessages: Dict = {
   'serverconfig.world.seedPlaceholder': '(random)',
   'serverconfig.world.randomTitle': 'random',
   'serverconfig.world.saveSeed': 'save seed',
-  'serverconfig.world.seedHint': 'applies to new chunks. for the whole world, use reset below.',
-  'serverconfig.world.seedSaved': 'seed saved! applies on the next chunk generation (or world reset).',
+  'serverconfig.world.seedHint':
+    'applies to new chunks. for the whole world, use reset below.',
+  'serverconfig.world.seedSaved':
+    'seed saved! applies on the next chunk generation (or world reset).',
 
   // WorldPanel — reset
   'serverconfig.world.reset.title': 'RESET WORLD',
   'serverconfig.world.reset.subtitle': 'wipes the world, keeps mods',
   'serverconfig.world.reset.willDelete': 'will delete:',
   'serverconfig.world.reset.preserves': 'keeps:',
-  'serverconfig.world.reset.preservesList': 'mods, config, server.properties, whitelist, ops, player data',
+  'serverconfig.world.reset.preservesList':
+    'mods, config, server.properties, whitelist, ops, player data',
   'serverconfig.world.reset.deleteNether': 'delete nether too',
   'serverconfig.world.reset.deleteEnd': 'delete end too',
   'serverconfig.world.reset.useNewSeed': 'use a new seed',
   'serverconfig.world.reset.confirmLabel': 'type RESET to confirm',
   'serverconfig.world.reset.confirm': 'reset world',
-  'serverconfig.world.reset.done': 'world reset! server restarting with a fresh world. mods preserved.',
+  'serverconfig.world.reset.done':
+    'world reset! server restarting with a fresh world. mods preserved.',
   'serverconfig.world.reset.error': 'error: {message}',
 
   // VersionPicker
@@ -162,19 +167,22 @@ export const serverconfigMessages: Dict = {
   'serverconfig.network.access.subtitle': 'how players connect',
   'serverconfig.network.access.copyTitle': 'copy',
   'serverconfig.network.access.mode': 'mode:',
-  'serverconfig.network.access.connectHint': 'players paste this address in Minecraft to connect.',
+  'serverconfig.network.access.connectHint':
+    'players paste this address in Minecraft to connect.',
   'serverconfig.network.access.none': '⚠ server has no public access configured yet',
 
   // NetworkPanel — cloudflare
   'serverconfig.network.cf.title': 'EXPOSE VIA CLOUDFLARE',
   'serverconfig.network.cf.subtitle': 'creates a CNAME automatically',
   'serverconfig.network.cf.notConfigured': 'Cloudflare not configured',
-  'serverconfig.network.cf.notConfiguredHint': 'Set API token, zone ID and CNAME target in',
+  'serverconfig.network.cf.notConfiguredHint':
+    'Set API token, zone ID and CNAME target in',
   'serverconfig.network.cf.settingsLink': 'Settings',
   'serverconfig.network.cf.toEnable': 'to enable.',
   'serverconfig.network.cf.subdomain': 'subdomain',
   'serverconfig.network.cf.subdomainPlaceholder': 'my-server',
-  'serverconfig.network.cf.subdomainHint': 'letters, numbers and hyphens only. creates a CNAME pointing to the configured target.',
+  'serverconfig.network.cf.subdomainHint':
+    'letters, numbers and hyphens only. creates a CNAME pointing to the configured target.',
   'serverconfig.network.cf.creatingDns': 'creating DNS...',
   'serverconfig.network.cf.updateDns': 'update DNS',
   'serverconfig.network.cf.expose': 'expose publicly',

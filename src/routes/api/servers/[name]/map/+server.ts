@@ -107,7 +107,10 @@ export const POST: RequestHandler = async (event) => {
           action: 'server.map.install',
           resourceType: 'server',
           resourceId: params.name,
-          details: { mode: 'embedded', file: 'filename' in result ? result.filename : null }
+          details: {
+            mode: 'embedded',
+            file: 'filename' in result ? result.filename : null
+          }
         });
       }
       if (!mapPort) {
@@ -199,7 +202,9 @@ export const DELETE: RequestHandler = async (event) => {
 
 async function detectInternalNetwork(containerName: string): Promise<string | null> {
   try {
-    const info = await (await dockerForContainer(containerName)).getContainer(containerName).inspect();
+    const info = await (await dockerForContainer(containerName))
+      .getContainer(containerName)
+      .inspect();
     // host network mode can't be shared with a separate container with port bindings
     if (info.HostConfig?.NetworkMode === 'host') return null;
     const networks = Object.keys(info.NetworkSettings?.Networks ?? {});
@@ -211,7 +216,10 @@ async function detectInternalNetwork(containerName: string): Promise<string | nu
   }
 }
 
-async function rebindContainerPorts(containerName: string, mapPort: number): Promise<void> {
+async function rebindContainerPorts(
+  containerName: string,
+  mapPort: number
+): Promise<void> {
   const d = await dockerForContainer(containerName);
   const container = d.getContainer(containerName);
   const info = await container.inspect();

@@ -34,7 +34,9 @@ async function getConn(slug: string): Promise<Rcon> {
     .where(or(eq(schema.servers.slug, slug), eq(schema.servers.containerName, slug)))
     .get();
   if (!server) {
-    throw new Error('RCON disponível só pra servers criados pela Chest (esse foi adicionado via label apenas)');
+    throw new Error(
+      'RCON disponível só pra servers criados pela Chest (esse foi adicionado via label apenas)'
+    );
   }
 
   const password = await decrypt(server.rconPasswordEncrypted);
@@ -70,5 +72,8 @@ export async function listPlayers(slug: string): Promise<string[]> {
   const response = await sendCommand(slug, 'list');
   const match = response.match(/:\s*(.+)$/);
   if (!match || !match[1].trim()) return [];
-  return match[1].split(',').map((s) => s.trim()).filter(Boolean);
+  return match[1]
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
 }

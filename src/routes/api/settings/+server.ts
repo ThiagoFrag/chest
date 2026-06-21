@@ -1,11 +1,16 @@
-import { requireRole } from "$lib/auth/permissions";
+import { requireRole } from '$lib/auth/permissions';
 import { json, error } from '@sveltejs/kit';
 import { z } from 'zod';
-import { getAllSettings, setSetting, deleteSetting, type SettingKey } from '$lib/settings';
+import {
+  getAllSettings,
+  setSetting,
+  deleteSetting,
+  type SettingKey
+} from '$lib/settings';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ locals }) => {
-  requireRole(locals.user, "admin");
+  requireRole(locals.user, 'admin');
   const settings = await getAllSettings();
   return json({ settings });
 };
@@ -34,7 +39,7 @@ const putSchema = z.object({
 });
 
 export const PUT: RequestHandler = async ({ request, locals }) => {
-  requireRole(locals.user, "admin");
+  requireRole(locals.user, 'admin');
   const body = await request.json().catch(() => null);
   const parsed = putSchema.safeParse(body);
   if (!parsed.success) throw error(400, 'key/value inválidos');

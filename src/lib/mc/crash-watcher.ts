@@ -46,7 +46,9 @@ async function tick(): Promise<void> {
       if (!wasManual) {
         const exitCode = await getExitCode(s.containerName);
         discord.serverCrashed(s.containerName, exitCode).catch(() => undefined);
-        notifyServerLifecycle(s.containerName, { type: 'crashed', exitCode }).catch(() => undefined);
+        notifyServerLifecycle(s.containerName, { type: 'crashed', exitCode }).catch(
+          () => undefined
+        );
         notifyAdminDM(
           `💥 Server **${s.displayName || s.containerName}** crashou${
             exitCode !== undefined ? ` (exit code ${exitCode})` : ''
@@ -72,7 +74,10 @@ async function tick(): Promise<void> {
   }
 
   for (const [name, entry] of lastState) {
-    if (!servers.find((s) => s.containerName === name) && now - entry.lastSeen > 5 * 60_000) {
+    if (
+      !servers.find((s) => s.containerName === name) &&
+      now - entry.lastSeen > 5 * 60_000
+    ) {
       lastState.delete(name);
     }
   }

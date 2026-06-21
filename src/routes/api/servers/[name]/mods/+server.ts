@@ -1,4 +1,4 @@
-import { requireServerPermission } from "$lib/auth/require-server-permission";
+import { requireServerPermission } from '$lib/auth/require-server-permission';
 import { json, error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { listMods, installMod, getServerMcInfo } from '$lib/mc/mods';
@@ -8,7 +8,7 @@ import type { RequestHandler } from './$types';
 export const GET: RequestHandler = async (event) => {
   const { params } = event;
   if (!params.name) throw error(400);
-  await requireServerPermission(event, params.name, "manage_files");
+  await requireServerPermission(event, params.name, 'manage_files');
   try {
     const mods = await listMods(params.name);
     return json({ mods });
@@ -24,7 +24,7 @@ const installSchema = z.object({
 export const POST: RequestHandler = async (event) => {
   const { params, request } = event;
   if (!params.name) throw error(400);
-  await requireServerPermission(event, params.name, "manage_files");
+  await requireServerPermission(event, params.name, 'manage_files');
 
   const body = await request.json().catch(() => null);
   const parsed = installSchema.safeParse(body);
@@ -37,7 +37,10 @@ export const POST: RequestHandler = async (event) => {
       loader: info.loader === 'vanilla' ? undefined : info.loader
     });
     if (versions.length === 0) {
-      throw error(409, `nenhuma versão compatível com MC ${info.mcVersion} + ${info.loader}`);
+      throw error(
+        409,
+        `nenhuma versão compatível com MC ${info.mcVersion} + ${info.loader}`
+      );
     }
     const v = versions[0];
     const file = v.files.find((f) => f.primary) ?? v.files[0];
@@ -45,7 +48,11 @@ export const POST: RequestHandler = async (event) => {
 
     const content = await downloadFile(file.url);
     await installMod(params.name, file.filename, content);
-    return json({ filename: file.filename, version: v.version_number, sizeBytes: file.size });
+    return json({
+      filename: file.filename,
+      version: v.version_number,
+      sizeBytes: file.size
+    });
   } catch (err) {
     if (err && typeof err === 'object' && 'status' in err) throw err;
     throw error(500, err instanceof Error ? err.message : 'falha');

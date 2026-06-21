@@ -25,7 +25,8 @@ export const serverdetailMessages: Dict = {
   'serverdetail.console.placeholder.offline': 'server must be online',
   'serverdetail.console.rconError': '(error: {message})',
   'serverdetail.settings.dangerZone': 'DANGER ZONE',
-  'serverdetail.settings.dangerDesc': 'deleting the server removes the container + volume permanently. world lost.',
+  'serverdetail.settings.dangerDesc':
+    'deleting the server removes the container + volume permanently. world lost.',
   'serverdetail.settings.confirmPlaceholder': 'type {name} to confirm',
   'serverdetail.settings.deleteButton': 'delete server',
 
@@ -64,9 +65,11 @@ export const serverdetailMessages: Dict = {
   'serverdetail.step2.heading': 'MODLOADER & VERSION',
   'serverdetail.step2.typeLabel': 'type',
   'serverdetail.step2.versionLabel': 'MC version',
-  'serverdetail.step2.versionHint': 'any Mojang version (release or snapshot). itzg/minecraft-server downloads it on the fly.',
+  'serverdetail.step2.versionHint':
+    'any Mojang version (release or snapshot). itzg/minecraft-server downloads it on the fly.',
   'serverdetail.step2.clientWarning': 'the Minecraft client must be EXACTLY on',
-  'serverdetail.step2.clientWarningRest': 'mismatched versions disconnect with "Failed to decode packet". in your launcher (Prism Launcher/official/Modrinth), create or edit the profile for this version before connecting.',
+  'serverdetail.step2.clientWarningRest':
+    'mismatched versions disconnect with "Failed to decode packet". in your launcher (Prism Launcher/official/Modrinth), create or edit the profile for this version before connecting.',
   'serverdetail.step3.heading': 'RESOURCES',
   'serverdetail.step3.ramLabel': 'RAM:',
   'serverdetail.step3.maxPlayersLabel': 'max players',
@@ -92,25 +95,32 @@ export const serverdetailMessages: Dict = {
   'serverdetail.step4.playitConfigureRest': 'for an automatic tunnel.',
   'serverdetail.step4.draslLabel': 'use Drasl for custom authentication',
   'serverdetail.step4.draslUrl': 'URL:',
-  'serverdetail.step4.draslHint': 'players without a Microsoft account can join via a compatible launcher (Prism Launcher, FjordLauncher, HMCL).',
+  'serverdetail.step4.draslHint':
+    'players without a Microsoft account can join via a compatible launcher (Prism Launcher, FjordLauncher, HMCL).',
   'serverdetail.step4.draslMissingTitle': 'Drasl not configured',
-  'serverdetail.step4.draslMissingDesc': 'Set the Drasl URL in Settings to enable custom authentication (players without a Microsoft account).',
+  'serverdetail.step4.draslMissingDesc':
+    'Set the Drasl URL in Settings to enable custom authentication (players without a Microsoft account).',
   'serverdetail.step4.draslConfigureNow': 'set up Drasl now →',
   'serverdetail.step4.discordHeading': 'DISCORD CHAT BRIDGE (optional)',
   'serverdetail.step4.discordBotMissing': 'Discord bot not configured',
   'serverdetail.step4.discordConfigureBot': 'set up bot →',
-  'serverdetail.step4.discordTokenError': '⚠ token configured but the bot did not connect. check the token in Settings.',
-  'serverdetail.step4.discordNoGuilds': "bot connected but it isn't in any Discord server.",
+  'serverdetail.step4.discordTokenError':
+    '⚠ token configured but the bot did not connect. check the token in Settings.',
+  'serverdetail.step4.discordNoGuilds':
+    "bot connected but it isn't in any Discord server.",
   'serverdetail.step4.discordAddBot': 'add the bot to a server →',
-  'serverdetail.step4.discordIntro': 'MC and Discord players chat in the same channel. join/leave/death events show up too.',
+  'serverdetail.step4.discordIntro':
+    'MC and Discord players chat in the same channel. join/leave/death events show up too.',
   'serverdetail.step4.discordGuildLabel': 'Discord server',
   'serverdetail.step4.discordNoBridge': '— no bridge —',
   'serverdetail.step4.discordChannelLabel': 'text channel',
   'serverdetail.step4.discordSelectGuildFirst': 'pick a server first',
   'serverdetail.step4.discordLoadingChannels': 'loading...',
-  'serverdetail.step4.discordNoChannels': 'no accessible channels. the bot needs View Channel + Send Messages.',
+  'serverdetail.step4.discordNoChannels':
+    'no accessible channels. the bot needs View Channel + Send Messages.',
   'serverdetail.step4.discordChoose': '— choose —',
-  'serverdetail.step4.discordBridgeReady': '✓ the bridge will be enabled automatically after creating the server',
+  'serverdetail.step4.discordBridgeReady':
+    '✓ the bridge will be enabled automatically after creating the server',
   'serverdetail.step5.heading': 'CONFIRM',
   'serverdetail.confirm.name': 'name',
   'serverdetail.confirm.host': 'host',
@@ -126,7 +136,8 @@ export const serverdetailMessages: Dict = {
   'serverdetail.confirm.yes': 'yes',
   'serverdetail.confirm.no': 'no',
   'serverdetail.confirm.discordBridge': 'Discord bridge',
-  'serverdetail.confirm.summary': "I'll create the container, pull the image (if needed), allocate a free port, and start the server.",
+  'serverdetail.confirm.summary':
+    "I'll create the container, pull the image (if needed), allocate a free port, and start the server.",
   'serverdetail.nav.back': 'back',
   'serverdetail.nav.next': 'next',
   'serverdetail.nav.creating': 'creating...',
@@ -139,7 +150,8 @@ export const serverdetailMessages: Dict = {
   'serverdetail.templates.subtitleEmpty': 'modpacks to spin up a server in 1 click',
   'serverdetail.templates.featured': 'FEATURED',
   'serverdetail.templates.explore': 'EXPLORE MODRINTH',
-  'serverdetail.templates.searchPlaceholder': 'ATM, RPG, optimization, vanilla+, performance...',
+  'serverdetail.templates.searchPlaceholder':
+    'ATM, RPG, optimization, vanilla+, performance...',
   'serverdetail.templates.allLoaders': 'all loaders',
   'serverdetail.templates.allVersions': 'all MC versions',
   'serverdetail.templates.allCategories': 'all categories',

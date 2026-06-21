@@ -1,4 +1,4 @@
-import { requireServerPermission } from "$lib/auth/require-server-permission";
+import { requireServerPermission } from '$lib/auth/require-server-permission';
 import { json, error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { readContainerFile, parseProperties, mergeProperties } from '$lib/mc/files';
@@ -8,7 +8,7 @@ import type { RequestHandler } from './$types';
 export const GET: RequestHandler = async (event) => {
   const { params } = event;
   if (!params.name) throw error(400);
-  await requireServerPermission(event, params.name, "edit_config");
+  await requireServerPermission(event, params.name, 'edit_config');
   try {
     const raw = await readContainerFile(params.name, '/data/server.properties');
     return json({ properties: parseProperties(raw), raw });
@@ -25,7 +25,7 @@ const putSchema = z.object({
 export const PUT: RequestHandler = async (event) => {
   const { params, request } = event;
   if (!params.name) throw error(400);
-  await requireServerPermission(event, params.name, "edit_config");
+  await requireServerPermission(event, params.name, 'edit_config');
 
   const body = await request.json().catch(() => null);
   const parsed = putSchema.safeParse(body);

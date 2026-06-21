@@ -1,11 +1,11 @@
-import { requireRole } from "$lib/auth/permissions";
+import { requireRole } from '$lib/auth/permissions';
 import { json, error } from '@sveltejs/kit';
 import { getSetting } from '$lib/settings';
 import { sendEmbedTo } from '$lib/discord/notifier';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ locals }) => {
-  requireRole(locals.user, "admin");
+  requireRole(locals.user, 'admin');
 
   const url = await getSetting('discord.webhook_url');
   if (!url) throw error(400, 'discord.webhook_url não configurado');

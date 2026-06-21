@@ -1,4 +1,4 @@
-import { requireServerPermission } from "$lib/auth/require-server-permission";
+import { requireServerPermission } from '$lib/auth/require-server-permission';
 import { json, error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { listBackups, createBackup } from '$lib/mc/backup';
@@ -7,7 +7,7 @@ import type { RequestHandler } from './$types';
 export const GET: RequestHandler = async (event) => {
   const { params } = event;
   if (!params.name) throw error(400);
-  await requireServerPermission(event, params.name, "manage_backups");
+  await requireServerPermission(event, params.name, 'manage_backups');
   try {
     const backups = await listBackups(params.name);
     return json({ backups });
@@ -23,7 +23,7 @@ const createSchema = z.object({
 export const POST: RequestHandler = async (event) => {
   const { params, request } = event;
   if (!params.name) throw error(400);
-  await requireServerPermission(event, params.name, "manage_backups");
+  await requireServerPermission(event, params.name, 'manage_backups');
 
   const body = await request.json().catch(() => ({}));
   const parsed = createSchema.safeParse(body);

@@ -1,4 +1,4 @@
-import { requireServerPermission } from "$lib/auth/require-server-permission";
+import { requireServerPermission } from '$lib/auth/require-server-permission';
 import { json, error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
@@ -15,7 +15,7 @@ const patchSchema = z.object({
 
 export const PATCH: RequestHandler = async (event) => {
   const { params, request } = event;
-  await requireServerPermission(event, params.name!, "manage_scheduled");
+  await requireServerPermission(event, params.name!, 'manage_scheduled');
   if (!params.id) throw error(400);
 
   const body = await request.json().catch(() => null);
@@ -32,7 +32,8 @@ export const PATCH: RequestHandler = async (event) => {
     updates.cronExpr = parsed.data.cronExpr;
     updates.nextRunAt = nextRunAt(parsed.data.cronExpr);
   }
-  if (parsed.data.params !== undefined) updates.params = JSON.stringify(parsed.data.params);
+  if (parsed.data.params !== undefined)
+    updates.params = JSON.stringify(parsed.data.params);
   if (parsed.data.enabled !== undefined) updates.enabled = parsed.data.enabled;
 
   await db()
@@ -57,7 +58,7 @@ export const PATCH: RequestHandler = async (event) => {
 
 export const DELETE: RequestHandler = async (event) => {
   const { params } = event;
-  await requireServerPermission(event, params.name!, "manage_scheduled");
+  await requireServerPermission(event, params.name!, 'manage_scheduled');
   if (!params.id) throw error(400);
   await db().delete(schema.scheduledTasks).where(eq(schema.scheduledTasks.id, params.id));
 

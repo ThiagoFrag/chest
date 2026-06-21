@@ -39,11 +39,15 @@ describe('eggSchema', () => {
   it('clamps memoryGb to valid range', () => {
     expect(() => eggSchema.parse({ ...baseEgg, defaults: { memoryGb: 0 } })).toThrow();
     expect(() => eggSchema.parse({ ...baseEgg, defaults: { memoryGb: 999 } })).toThrow();
-    expect(eggSchema.parse({ ...baseEgg, defaults: { memoryGb: 16 } }).defaults.memoryGb).toBe(16);
+    expect(
+      eggSchema.parse({ ...baseEgg, defaults: { memoryGb: 16 } }).defaults.memoryGb
+    ).toBe(16);
   });
 
   it('accepts icon as URL or absolute path', () => {
-    expect(() => eggSchema.parse({ ...baseEgg, icon: 'https://example.com/x.png' })).not.toThrow();
+    expect(() =>
+      eggSchema.parse({ ...baseEgg, icon: 'https://example.com/x.png' })
+    ).not.toThrow();
     expect(() => eggSchema.parse({ ...baseEgg, icon: '/textures/x.png' })).not.toThrow();
     expect(() => eggSchema.parse({ ...baseEgg, icon: 'relative/path.png' })).toThrow();
   });

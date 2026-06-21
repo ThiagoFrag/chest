@@ -6,11 +6,13 @@ Versionamento [Semver](https://semver.org/).
 ## [Unreleased]
 
 ### Pilar B (em construção)
+
 - Cloudflare API integration pra DNS auto
 - Playit.gg API integration pra túnel auto
 - SRV record auto pra conectar sem porta
 
 ### Pilar C (em construção)
+
 - LICENSE AGPL-3.0 ✓
 - README com features e docs ✓
 - CONTRIBUTING.md ✓
@@ -24,6 +26,7 @@ Versionamento [Semver](https://semver.org/).
 ### Adicionado
 
 #### Slice 1 — MVP esqueleto
+
 - Login admin com Argon2id + sessions httpOnly
 - Listagem de servers MC via Docker label `forja.managed=true`
 - Status (running/stopped) + uptime + versão MC via SLP ping
@@ -34,6 +37,7 @@ Versionamento [Semver](https://semver.org/).
 - AES-256-GCM cifra passwords RCON no DB
 
 #### Slice 2 — Multi-server + Console + RCON + Tema MC
+
 - Tema visual Minecraft completo: font Monocraft, paleta MC, botões 3D vanilla
 - Wizard "Novo Server" com 5 steps (info, modloader, recursos, acesso, confirmar)
 - Suporte 8 modloaders: Vanilla, Paper, Fabric, Forge, NeoForge, Purpur, Spigot, Quilt
@@ -47,6 +51,7 @@ Versionamento [Semver](https://semver.org/).
 - Schema DB estendido (modloader, version, memory, ports, drasl, status)
 
 #### Slice 3 — Community Edition (em andamento)
+
 - Ícones MC custom SVG (grass, diamond, pickaxe, chest, sword, redstone torch)
 - Player avatars via mc-heads.net
 - Texturas estilo stone pattern no background

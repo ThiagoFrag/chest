@@ -11,7 +11,8 @@ export const platformPaths: PathsModule = {
     get: {
       tags: ['Settings'],
       summary: 'Lista todas as configurações globais',
-      description: 'Retorna o mapa de configurações persistidas do painel. Requer role `admin`.',
+      description:
+        'Retorna o mapa de configurações persistidas do painel. Requer role `admin`.',
       operationId: 'getSettings',
       responses: {
         '200': {
@@ -52,7 +53,8 @@ export const platformPaths: PathsModule = {
               properties: {
                 key: {
                   type: 'string',
-                  description: 'Chave de configuração. Somente chaves conhecidas são aceitas.',
+                  description:
+                    'Chave de configuração. Somente chaves conhecidas são aceitas.',
                   enum: [
                     'drasl.url',
                     'drasl.admin_token',
@@ -106,7 +108,8 @@ export const platformPaths: PathsModule = {
       operationId: 'pingStorage',
       responses: {
         '200': {
-          description: 'Resultado do ping. Em falha, `ok` é false e `message` descreve o erro.',
+          description:
+            'Resultado do ping. Em falha, `ok` é false e `message` descreve o erro.',
           content: {
             'application/json': {
               schema: {
@@ -115,7 +118,10 @@ export const platformPaths: PathsModule = {
                 properties: {
                   ok: { type: 'boolean' },
                   driver: { type: 'string', description: 'Driver de storage ativo.' },
-                  message: { type: 'string', description: 'Mensagem de erro quando ok=false.' }
+                  message: {
+                    type: 'string',
+                    description: 'Mensagem de erro quando ok=false.'
+                  }
                 },
                 additionalProperties: true
               }
@@ -151,7 +157,10 @@ export const platformPaths: PathsModule = {
                       properties: {
                         id: { type: 'string' },
                         name: { type: 'string' },
-                        url: { type: 'string', description: 'URL mascarada (apenas protocolo + host).' },
+                        url: {
+                          type: 'string',
+                          description: 'URL mascarada (apenas protocolo + host).'
+                        },
                         enabled: { type: 'boolean' },
                         events: { type: 'array', items: { type: 'string' } },
                         serverId: { type: 'string', nullable: true },
@@ -220,7 +229,10 @@ export const platformPaths: PathsModule = {
             }
           }
         },
-        '400': { description: 'Body inválido ou serverId inexistente.', content: errorJson },
+        '400': {
+          description: 'Body inválido ou serverId inexistente.',
+          content: errorJson
+        },
         '401': { description: 'Não autenticado.', content: errorJson },
         '403': { description: 'Sem permissão (requer role admin).', content: errorJson }
       }
@@ -235,7 +247,13 @@ export const platformPaths: PathsModule = {
         'Atualiza campos de um webhook existente. Pelo menos um campo deve ser enviado. Reativar zera o contador de falhas. Requer role `admin`.',
       operationId: 'updateWebhook',
       parameters: [
-        { name: 'id', in: 'path', required: true, description: 'ID do webhook.', schema: { type: 'string' } }
+        {
+          name: 'id',
+          in: 'path',
+          required: true,
+          description: 'ID do webhook.',
+          schema: { type: 'string' }
+        }
       ],
       requestBody: {
         required: true,
@@ -267,7 +285,10 @@ export const platformPaths: PathsModule = {
             }
           }
         },
-        '400': { description: 'Body inválido ou nenhum campo enviado.', content: errorJson },
+        '400': {
+          description: 'Body inválido ou nenhum campo enviado.',
+          content: errorJson
+        },
         '401': { description: 'Não autenticado.', content: errorJson },
         '403': { description: 'Sem permissão (requer role admin).', content: errorJson },
         '404': { description: 'Webhook não encontrado.', content: errorJson }
@@ -279,7 +300,13 @@ export const platformPaths: PathsModule = {
       description: 'Exclui um endpoint de webhook. Requer role `admin`.',
       operationId: 'deleteWebhook',
       parameters: [
-        { name: 'id', in: 'path', required: true, description: 'ID do webhook.', schema: { type: 'string' } }
+        {
+          name: 'id',
+          in: 'path',
+          required: true,
+          description: 'ID do webhook.',
+          schema: { type: 'string' }
+        }
       ],
       responses: {
         '200': {
@@ -310,7 +337,13 @@ export const platformPaths: PathsModule = {
         'Envia um payload de teste assinado (HMAC) para o endpoint e registra o resultado da entrega. Requer role `admin`.',
       operationId: 'testWebhook',
       parameters: [
-        { name: 'id', in: 'path', required: true, description: 'ID do webhook.', schema: { type: 'string' } }
+        {
+          name: 'id',
+          in: 'path',
+          required: true,
+          description: 'ID do webhook.',
+          schema: { type: 'string' }
+        }
       ],
       responses: {
         '200': {
@@ -322,7 +355,10 @@ export const platformPaths: PathsModule = {
                 required: ['ok', 'status'],
                 properties: {
                   ok: { type: 'boolean', description: 'Se o endpoint respondeu 2xx.' },
-                  status: { type: 'integer', description: 'HTTP status retornado pelo endpoint.' }
+                  status: {
+                    type: 'integer',
+                    description: 'HTTP status retornado pelo endpoint.'
+                  }
                 }
               }
             }
@@ -332,7 +368,10 @@ export const platformPaths: PathsModule = {
         '401': { description: 'Não autenticado.', content: errorJson },
         '403': { description: 'Sem permissão (requer role admin).', content: errorJson },
         '404': { description: 'Webhook não encontrado.', content: errorJson },
-        '502': { description: 'Falha ao entregar o teste (timeout ou erro de rede).', content: errorJson }
+        '502': {
+          description: 'Falha ao entregar o teste (timeout ou erro de rede).',
+          content: errorJson
+        }
       }
     }
   },
@@ -367,7 +406,10 @@ export const platformPaths: PathsModule = {
         },
         '401': { description: 'Não autenticado.', content: errorJson },
         '403': { description: 'Sem permissão (requer role viewer).', content: errorJson },
-        '502': { description: 'Falha ao consultar o manifesto da Mojang.', content: errorJson }
+        '502': {
+          description: 'Falha ao consultar o manifesto da Mojang.',
+          content: errorJson
+        }
       }
     }
   },
@@ -438,10 +480,17 @@ export const platformPaths: PathsModule = {
     get: {
       tags: ['Platform'],
       summary: 'Busca modpacks no Modrinth',
-      description: 'Pesquisa modpacks no Modrinth com filtros e paginação. Requer role `viewer`.',
+      description:
+        'Pesquisa modpacks no Modrinth com filtros e paginação. Requer role `viewer`.',
       operationId: 'searchModrinthModpacks',
       parameters: [
-        { name: 'q', in: 'query', required: false, description: 'Termo de busca.', schema: { type: 'string' } },
+        {
+          name: 'q',
+          in: 'query',
+          required: false,
+          description: 'Termo de busca.',
+          schema: { type: 'string' }
+        },
         {
           name: 'loader',
           in: 'query',
@@ -558,7 +607,8 @@ export const platformPaths: PathsModule = {
     get: {
       tags: ['Platform'],
       summary: 'Status do bot do Discord',
-      description: 'Retorna o estado atual da integração do bot do Discord. Requer role `admin`.',
+      description:
+        'Retorna o estado atual da integração do bot do Discord. Requer role `admin`.',
       operationId: 'getDiscordStatus',
       responses: {
         '200': {
@@ -595,7 +645,10 @@ export const platformPaths: PathsModule = {
             }
           }
         },
-        '400': { description: 'discord.webhook_url não configurado.', content: errorJson },
+        '400': {
+          description: 'discord.webhook_url não configurado.',
+          content: errorJson
+        },
         '401': { description: 'Não autenticado.', content: errorJson },
         '403': { description: 'Sem permissão (requer role admin).', content: errorJson },
         '502': { description: 'O webhook respondeu com erro.', content: errorJson }
@@ -607,7 +660,8 @@ export const platformPaths: PathsModule = {
     get: {
       tags: ['Platform'],
       summary: 'Lista canais de texto de um servidor Discord',
-      description: 'Retorna os canais de texto da guild informada via bot. Requer role `operator`.',
+      description:
+        'Retorna os canais de texto da guild informada via bot. Requer role `operator`.',
       operationId: 'listDiscordChannels',
       parameters: [
         {
@@ -635,7 +689,10 @@ export const platformPaths: PathsModule = {
         },
         '400': { description: 'guildId ausente.', content: errorJson },
         '401': { description: 'Não autenticado.', content: errorJson },
-        '403': { description: 'Sem permissão (requer role operator).', content: errorJson }
+        '403': {
+          description: 'Sem permissão (requer role operator).',
+          content: errorJson
+        }
       }
     }
   }

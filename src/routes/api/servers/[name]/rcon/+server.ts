@@ -1,4 +1,4 @@
-import { requireServerPermission } from "$lib/auth/require-server-permission";
+import { requireServerPermission } from '$lib/auth/require-server-permission';
 import { json, error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { sendCommand } from '$lib/mc/rcon';
@@ -12,7 +12,7 @@ export const POST: RequestHandler = async (event) => {
   const { params, request } = event;
   if (!params.name) throw error(400, 'slug obrigatório');
 
-  await requireServerPermission(event, params.name, "console");
+  await requireServerPermission(event, params.name, 'console');
 
   const body = await request.json().catch(() => null);
   const parsed = bodySchema.safeParse(body);

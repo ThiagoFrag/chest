@@ -1,20 +1,27 @@
-import { S3Client, GetObjectCommand, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command, HeadBucketCommand } from "@aws-sdk/client-s3";
-import { Upload } from "@aws-sdk/lib-storage";
-import type { Readable } from "node:stream";
-import type { BackupStorage, BackupObject } from "./storage";
+import {
+  S3Client,
+  GetObjectCommand,
+  PutObjectCommand,
+  DeleteObjectCommand,
+  ListObjectsV2Command,
+  HeadBucketCommand
+} from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
+import type { Readable } from 'node:stream';
+import type { BackupStorage, BackupObject } from './storage';
 
 export interface S3Config {
-  endpoint?: string;     // optional for R2/B2/MinIO
+  endpoint?: string; // optional for R2/B2/MinIO
   region: string;
   bucket: string;
   accessKeyId: string;
   secretAccessKey: string;
-  pathPrefix?: string;   // e.g. "chest-backups/"
+  pathPrefix?: string; // e.g. "chest-backups/"
   forcePathStyle?: boolean; // true for MinIO
 }
 
 export class S3Storage implements BackupStorage {
-  readonly driver = "s3";
+  readonly driver = 's3';
   private client: S3Client;
   private prefix: string;
 
@@ -25,7 +32,7 @@ export class S3Storage implements BackupStorage {
       credentials: { accessKeyId: cfg.accessKeyId, secretAccessKey: cfg.secretAccessKey },
       forcePathStyle: cfg.forcePathStyle ?? false
     });
-    this.prefix = cfg.pathPrefix ? cfg.pathPrefix.replace(/^\/+|\/+$/g, "") + "/" : "";
+    this.prefix = cfg.pathPrefix ? cfg.pathPrefix.replace(/^\/+|\/+$/g, '') + '/' : '';
   }
 
   private k(key: string): string {
@@ -39,30 +46,42 @@ export class S3Storage implements BackupStorage {
     });
     await upload.done();
     // get size with HEAD
-    const head = await this.client.send(new ListObjectsV2Command({ Bucket: this.cfg.bucket, Prefix: this.k(key), MaxKeys: 1 }));
+    const head = await this.client.send(
+      new ListObjectsV2Command({
+        Bucket: this.cfg.bucket,
+        Prefix: this.k(key),
+        MaxKeys: 1
+      })
+    );
     const obj = head.Contents?.[0];
     return { sizeBytes: obj?.Size ?? 0 };
   }
 
   async get(key: string): Promise<NodeJS.ReadableStream> {
-    const res = await this.client.send(new GetObjectCommand({ Bucket: this.cfg.bucket, Key: this.k(key) }));
-    if (!res.Body) throw new Error("S3 GetObject: empty body");
+    const res = await this.client.send(
+      new GetObjectCommand({ Bucket: this.cfg.bucket, Key: this.k(key) })
+    );
+    if (!res.Body) throw new Error('S3 GetObject: empty body');
     return res.Body as NodeJS.ReadableStream;
   }
 
   async list(prefixFilter?: string): Promise<BackupObject[]> {
-    const fullPrefix = this.prefix + (prefixFilter ?? "");
+    const fullPrefix = this.prefix + (prefixFilter ?? '');
     const out: BackupObject[] = [];
     let continuationToken: string | undefined;
     do {
-      const res = await this.client.send(new ListObjectsV2Command({
-        Bucket: this.cfg.bucket,
-        Prefix: fullPrefix,
-        ContinuationToken: continuationToken
-      }));
+      const res = await this.client.send(
+        new ListObjectsV2Command({
+          Bucket: this.cfg.bucket,
+          Prefix: fullPrefix,
+          ContinuationToken: continuationToken
+        })
+      );
       for (const obj of res.Contents ?? []) {
         if (!obj.Key) continue;
-        const stripped = obj.Key.startsWith(this.prefix) ? obj.Key.slice(this.prefix.length) : obj.Key;
+        const stripped = obj.Key.startsWith(this.prefix)
+          ? obj.Key.slice(this.prefix.length)
+          : obj.Key;
         out.push({
           key: stripped,
           sizeBytes: obj.Size ?? 0,
@@ -75,16 +94,21 @@ export class S3Storage implements BackupStorage {
   }
 
   async delete(key: string): Promise<void> {
-    await this.client.send(new DeleteObjectCommand({ Bucket: this.cfg.bucket, Key: this.k(key) }));
+    await this.client.send(
+      new DeleteObjectCommand({ Bucket: this.cfg.bucket, Key: this.k(key) })
+    );
   }
 
   async ping(): Promise<{ ok: boolean; message: string }> {
     try {
       await this.client.send(new HeadBucketCommand({ Bucket: this.cfg.bucket }));
-      const endpointTag = this.cfg.endpoint ? ` (${this.cfg.endpoint})` : "";
-      return { ok: true, message: `s3${endpointTag}: bucket ${this.cfg.bucket} reachable` };
+      const endpointTag = this.cfg.endpoint ? ` (${this.cfg.endpoint})` : '';
+      return {
+        ok: true,
+        message: `s3${endpointTag}: bucket ${this.cfg.bucket} reachable`
+      };
     } catch (err) {
-      return { ok: false, message: err instanceof Error ? err.message : "unknown" };
+      return { ok: false, message: err instanceof Error ? err.message : 'unknown' };
     }
   }
 }

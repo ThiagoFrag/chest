@@ -41,7 +41,7 @@ export const load: PageServerLoad = async ({ url }) => {
 
   const templateSlug = url.searchParams.get('template');
   const curatedTemplate = templateSlug
-    ? CURATED_TEMPLATES.find((t) => t.slug === templateSlug) ?? null
+    ? (CURATED_TEMPLATES.find((t) => t.slug === templateSlug) ?? null)
     : null;
 
   const modrinthId = url.searchParams.get('modrinthId');
@@ -53,7 +53,14 @@ export const load: PageServerLoad = async ({ url }) => {
         description: '',
         iconUrl: url.searchParams.get('icon') ?? '',
         loader: (url.searchParams.get('loader') ?? 'FABRIC') as
-          | 'VANILLA' | 'PAPER' | 'FABRIC' | 'FORGE' | 'NEOFORGE' | 'PURPUR' | 'SPIGOT' | 'QUILT',
+          | 'VANILLA'
+          | 'PAPER'
+          | 'FABRIC'
+          | 'FORGE'
+          | 'NEOFORGE'
+          | 'PURPUR'
+          | 'SPIGOT'
+          | 'QUILT',
         mcVersion: url.searchParams.get('mc') ?? '1.21.1',
         memoryGb: Number(url.searchParams.get('ram') ?? '6'),
         category: 'kitchen-sink' as const,

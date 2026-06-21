@@ -6,7 +6,10 @@ import { sendCommand } from '$lib/mc/rcon';
 import { dockerForContainer } from '$lib/docker/client';
 import type { RequestHandler } from './$types';
 
-interface WhitelistEntry { uuid?: string; name: string }
+interface WhitelistEntry {
+  uuid?: string;
+  name: string;
+}
 interface BanEntry {
   uuid?: string;
   name?: string;
@@ -16,7 +19,12 @@ interface BanEntry {
   expires?: string;
   reason?: string;
 }
-interface OpEntry { uuid?: string; name: string; level: number; bypassesPlayerLimit?: boolean }
+interface OpEntry {
+  uuid?: string;
+  name: string;
+  level: number;
+  bypassesPlayerLimit?: boolean;
+}
 
 async function readJsonSafe<T>(name: string, path: string, fallback: T): Promise<T> {
   try {
@@ -111,75 +119,111 @@ export const POST: RequestHandler = async (event) => {
 
   try {
     if (d.list === 'whitelist') {
-      const cmd = d.action === 'add' ? `whitelist add ${d.player}` : `whitelist remove ${d.player}`;
-      await runOrWrite(cn, cmd, [{
-        path: '/data/whitelist.json',
-        transform: (raw) => {
-          const list = (JSON.parse(raw || '[]') as WhitelistEntry[]) ?? [];
-          if (d.action === 'add' && !list.find((e) => e.name.toLowerCase() === d.player.toLowerCase())) {
-            list.push({ name: d.player });
-          } else if (d.action === 'remove') {
-            return JSON.stringify(list.filter((e) => e.name.toLowerCase() !== d.player.toLowerCase()), null, 2);
+      const cmd =
+        d.action === 'add' ? `whitelist add ${d.player}` : `whitelist remove ${d.player}`;
+      await runOrWrite(cn, cmd, [
+        {
+          path: '/data/whitelist.json',
+          transform: (raw) => {
+            const list = (JSON.parse(raw || '[]') as WhitelistEntry[]) ?? [];
+            if (
+              d.action === 'add' &&
+              !list.find((e) => e.name.toLowerCase() === d.player.toLowerCase())
+            ) {
+              list.push({ name: d.player });
+            } else if (d.action === 'remove') {
+              return JSON.stringify(
+                list.filter((e) => e.name.toLowerCase() !== d.player.toLowerCase()),
+                null,
+                2
+              );
+            }
+            return JSON.stringify(list, null, 2);
           }
-          return JSON.stringify(list, null, 2);
         }
-      }]);
+      ]);
     } else if (d.list === 'ops') {
       const cmd = d.action === 'add' ? `op ${d.player}` : `deop ${d.player}`;
-      await runOrWrite(cn, cmd, [{
-        path: '/data/ops.json',
-        transform: (raw) => {
-          const list = (JSON.parse(raw || '[]') as OpEntry[]) ?? [];
-          if (d.action === 'add' && !list.find((e) => e.name.toLowerCase() === d.player.toLowerCase())) {
-            list.push({ name: d.player, level: 4 });
-          } else if (d.action === 'remove') {
-            return JSON.stringify(list.filter((e) => e.name.toLowerCase() !== d.player.toLowerCase()), null, 2);
+      await runOrWrite(cn, cmd, [
+        {
+          path: '/data/ops.json',
+          transform: (raw) => {
+            const list = (JSON.parse(raw || '[]') as OpEntry[]) ?? [];
+            if (
+              d.action === 'add' &&
+              !list.find((e) => e.name.toLowerCase() === d.player.toLowerCase())
+            ) {
+              list.push({ name: d.player, level: 4 });
+            } else if (d.action === 'remove') {
+              return JSON.stringify(
+                list.filter((e) => e.name.toLowerCase() !== d.player.toLowerCase()),
+                null,
+                2
+              );
+            }
+            return JSON.stringify(list, null, 2);
           }
-          return JSON.stringify(list, null, 2);
         }
-      }]);
+      ]);
     } else if (d.list === 'bans') {
       const reason = d.reason ? ` ${escapeForJson(d.reason)}` : '';
       const cmd = d.action === 'add' ? `ban ${d.player}${reason}` : `pardon ${d.player}`;
-      await runOrWrite(cn, cmd, [{
-        path: '/data/banned-players.json',
-        transform: (raw) => {
-          const list = (JSON.parse(raw || '[]') as BanEntry[]) ?? [];
-          if (d.action === 'add' && !list.find((e) => e.name?.toLowerCase() === d.player.toLowerCase())) {
-            list.push({
-              name: d.player,
-              created: new Date().toISOString().replace('T', ' ').slice(0, 19) + ' +0000',
-              source: 'Chest',
-              expires: 'forever',
-              reason: d.reason ?? 'Banned by an operator.'
-            });
-          } else if (d.action === 'remove') {
-            return JSON.stringify(list.filter((e) => e.name?.toLowerCase() !== d.player.toLowerCase()), null, 2);
+      await runOrWrite(cn, cmd, [
+        {
+          path: '/data/banned-players.json',
+          transform: (raw) => {
+            const list = (JSON.parse(raw || '[]') as BanEntry[]) ?? [];
+            if (
+              d.action === 'add' &&
+              !list.find((e) => e.name?.toLowerCase() === d.player.toLowerCase())
+            ) {
+              list.push({
+                name: d.player,
+                created:
+                  new Date().toISOString().replace('T', ' ').slice(0, 19) + ' +0000',
+                source: 'Chest',
+                expires: 'forever',
+                reason: d.reason ?? 'Banned by an operator.'
+              });
+            } else if (d.action === 'remove') {
+              return JSON.stringify(
+                list.filter((e) => e.name?.toLowerCase() !== d.player.toLowerCase()),
+                null,
+                2
+              );
+            }
+            return JSON.stringify(list, null, 2);
           }
-          return JSON.stringify(list, null, 2);
         }
-      }]);
+      ]);
     } else if (d.list === 'banIps') {
       const reason = d.reason ? ` ${escapeForJson(d.reason)}` : '';
       const cmd = d.action === 'add' ? `ban-ip ${d.ip}${reason}` : `pardon-ip ${d.ip}`;
-      await runOrWrite(cn, cmd, [{
-        path: '/data/banned-ips.json',
-        transform: (raw) => {
-          const list = (JSON.parse(raw || '[]') as BanEntry[]) ?? [];
-          if (d.action === 'add' && !list.find((e) => e.ip === d.ip)) {
-            list.push({
-              ip: d.ip,
-              created: new Date().toISOString().replace('T', ' ').slice(0, 19) + ' +0000',
-              source: 'Chest',
-              expires: 'forever',
-              reason: d.reason ?? 'Banned by an operator.'
-            });
-          } else if (d.action === 'remove') {
-            return JSON.stringify(list.filter((e) => e.ip !== d.ip), null, 2);
+      await runOrWrite(cn, cmd, [
+        {
+          path: '/data/banned-ips.json',
+          transform: (raw) => {
+            const list = (JSON.parse(raw || '[]') as BanEntry[]) ?? [];
+            if (d.action === 'add' && !list.find((e) => e.ip === d.ip)) {
+              list.push({
+                ip: d.ip,
+                created:
+                  new Date().toISOString().replace('T', ' ').slice(0, 19) + ' +0000',
+                source: 'Chest',
+                expires: 'forever',
+                reason: d.reason ?? 'Banned by an operator.'
+              });
+            } else if (d.action === 'remove') {
+              return JSON.stringify(
+                list.filter((e) => e.ip !== d.ip),
+                null,
+                2
+              );
+            }
+            return JSON.stringify(list, null, 2);
           }
-          return JSON.stringify(list, null, 2);
         }
-      }]);
+      ]);
     }
 
     return json({ ok: true });

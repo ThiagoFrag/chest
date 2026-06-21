@@ -29,21 +29,21 @@ Construir um painel web de controle de servidores Minecraft self-hosted que subs
 
 ### Decisões e razões
 
-| Camada | Escolha | Alternativas consideradas | Razão da escolha |
-|---|---|---|---|
-| **Runtime** | Bun 1.x | Node 22 LTS, Deno | 3-4× mais rápido, builtin TS, smaller Docker image. Fallback Node 22 se aparecer incompat em lib crítica |
-| **Framework** | SvelteKit | Next.js, Nuxt, Remix | Menos boilerplate, bundle 3× menor que Next, fullstack (UI + API + WS num só app) |
-| **UI** | Tailwind 4 + shadcn-svelte | Material, Mantine, Park UI | Componentes copy-paste (zero dep), full control, sem cara de AI |
-| **DB** | SQLite + Drizzle ORM | Postgres, MariaDB | Zero infra, file-based, backup = `cp`. Migrar pra PG depois é trivial com Drizzle |
-| **Realtime** | WebSocket nativo (`ws` package) | SSE, Socket.IO | Bidirecional (precisa enviar comandos), padrão, menos overhead |
-| **Docker API** | dockerode | docker CLI subprocess, raw HTTP | Lib mais madura Node/Bun, stream nativo de logs/stats |
-| **MC RCON** | rcon-client (npm) | Implementar do zero | Já testado, suporta 1.21, fire-and-forget |
-| **Auth admin** | better-auth | Lucia (deprecated), Auth.js, custom | Substituto moderno do Lucia, sessions httpOnly cookie, simples |
-| **Drasl integration** | Cliente HTTP da API REST do Drasl | Reimplementar | Drasl expõe REST documentada |
-| **Discord** | discord.js v14 | Webhook puro, Eris | Quer eventos bidirecionais (slash commands futuros) |
-| **Métricas MC** | Spark mod + `/spark tps` via RCON | mod custom, mc-monitor | Padrão da comunidade; Spark instalado no MC server, Forja invoca `/spark tps` via RCON e parseia. Quando Spark indisponível, fallback pra apenas Docker stats (CPU/RAM) sem TPS |
-| **Backup** | restic em sidecar container | borg, duplicati, custom | Snapshot incremental + dedup + S3/B2 opcional |
-| **Build & deploy** | Docker multi-stage | Compose puro, Nix | Imagem final <80MB, deploy `docker compose up -d` |
+| Camada                | Escolha                           | Alternativas consideradas           | Razão da escolha                                                                                                                                                                |
+| --------------------- | --------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Runtime**           | Bun 1.x                           | Node 22 LTS, Deno                   | 3-4× mais rápido, builtin TS, smaller Docker image. Fallback Node 22 se aparecer incompat em lib crítica                                                                        |
+| **Framework**         | SvelteKit                         | Next.js, Nuxt, Remix                | Menos boilerplate, bundle 3× menor que Next, fullstack (UI + API + WS num só app)                                                                                               |
+| **UI**                | Tailwind 4 + shadcn-svelte        | Material, Mantine, Park UI          | Componentes copy-paste (zero dep), full control, sem cara de AI                                                                                                                 |
+| **DB**                | SQLite + Drizzle ORM              | Postgres, MariaDB                   | Zero infra, file-based, backup = `cp`. Migrar pra PG depois é trivial com Drizzle                                                                                               |
+| **Realtime**          | WebSocket nativo (`ws` package)   | SSE, Socket.IO                      | Bidirecional (precisa enviar comandos), padrão, menos overhead                                                                                                                  |
+| **Docker API**        | dockerode                         | docker CLI subprocess, raw HTTP     | Lib mais madura Node/Bun, stream nativo de logs/stats                                                                                                                           |
+| **MC RCON**           | rcon-client (npm)                 | Implementar do zero                 | Já testado, suporta 1.21, fire-and-forget                                                                                                                                       |
+| **Auth admin**        | better-auth                       | Lucia (deprecated), Auth.js, custom | Substituto moderno do Lucia, sessions httpOnly cookie, simples                                                                                                                  |
+| **Drasl integration** | Cliente HTTP da API REST do Drasl | Reimplementar                       | Drasl expõe REST documentada                                                                                                                                                    |
+| **Discord**           | discord.js v14                    | Webhook puro, Eris                  | Quer eventos bidirecionais (slash commands futuros)                                                                                                                             |
+| **Métricas MC**       | Spark mod + `/spark tps` via RCON | mod custom, mc-monitor              | Padrão da comunidade; Spark instalado no MC server, Forja invoca `/spark tps` via RCON e parseia. Quando Spark indisponível, fallback pra apenas Docker stats (CPU/RAM) sem TPS |
+| **Backup**            | restic em sidecar container       | borg, duplicati, custom             | Snapshot incremental + dedup + S3/B2 opcional                                                                                                                                   |
+| **Build & deploy**    | Docker multi-stage                | Compose puro, Nix                   | Imagem final <80MB, deploy `docker compose up -d`                                                                                                                               |
 
 ### Versões pinadas
 
@@ -203,6 +203,7 @@ Forja conecta no socket-proxy via rede interna, nunca no socket direto.
 ### Comunicação realtime (WebSocket)
 
 Canais:
+
 - `/ws/server/:id/logs` — stream de `docker logs -f` filtrado pra esse container
 - `/ws/server/:id/stats` — CPU%/RAM% a cada 2s via Docker stats API
 - `/ws/server/:id/rcon` — entrada de comandos + resposta
@@ -483,16 +484,19 @@ forja/
 ## 9. Testes
 
 ### Unitários (vitest)
+
 - `lib/mc/properties.ts` — parser/serializer
 - `lib/mc/log-parser.ts` — extração de eventos
 - `lib/auth/password.ts` — bcrypt wrap
 - `lib/utils/crypto.ts` — AES encrypt/decrypt
 
 ### Integração
+
 - Drizzle queries com SQLite em memória
 - Drasl client com mock server
 
 ### E2E (playwright)
+
 - Fluxo de login
 - Listar servers (com Docker socket mockado)
 - Enviar comando RCON e ver resposta
@@ -515,8 +519,8 @@ services:
     container_name: forja
     restart: unless-stopped
     networks:
-      - proxy           # rede externa do NPM
-      - forja-internal  # interna pra falar com socket-proxy
+      - proxy # rede externa do NPM
+      - forja-internal # interna pra falar com socket-proxy
     environment:
       DATABASE_URL: file:./data/db.sqlite
       ADMIN_USERNAME: ${ADMIN_USERNAME}
@@ -561,27 +565,27 @@ networks:
 
 ### Variáveis de ambiente obrigatórias
 
-| Var | Descrição |
-|---|---|
-| `ADMIN_USERNAME` | nome do admin |
-| `ADMIN_PASSWORD_HASH` | bcrypt da senha (gerado fora) |
-| `SESSION_SECRET` | random 32+ bytes pra assinar sessões |
-| `RCON_KEY` | random 32 bytes pra cifrar passwords RCON no DB |
-| `DRASL_BASE_URL` | URL do Drasl |
-| `DOCKER_HOST` | endpoint do socket-proxy |
+| Var                   | Descrição                                       |
+| --------------------- | ----------------------------------------------- |
+| `ADMIN_USERNAME`      | nome do admin                                   |
+| `ADMIN_PASSWORD_HASH` | bcrypt da senha (gerado fora)                   |
+| `SESSION_SECRET`      | random 32+ bytes pra assinar sessões            |
+| `RCON_KEY`            | random 32 bytes pra cifrar passwords RCON no DB |
+| `DRASL_BASE_URL`      | URL do Drasl                                    |
+| `DOCKER_HOST`         | endpoint do socket-proxy                        |
 
 ---
 
 ## 11. Riscos e mitigações
 
-| Risco | Probabilidade | Impacto | Mitigação |
-|---|---|---|---|
-| Socket Docker comprometido = RCE no host | baixa | crítico | socket-proxy com endpoints mínimos, container forja sem capabilities extras |
-| SQLite corrompido | baixa | médio | Backup automático do DB junto com server backups, WAL mode ligado |
-| Bun com bug em lib crítica | média | alto | Fallback documentado pra Node 22 LTS, tests rodam em ambas |
-| WebSocket scaling com muitos servers | baixa (uso pessoal) | baixo | MVP single-process, se escalar futuramente: Redis pub/sub |
-| Drasl mudando API breaking | baixa | médio | Pin de versão do Drasl no compose, testes contra versão fixa |
-| Upload de mod malicioso | média | alto | Validar magic bytes do jar, sandbox de leitura, sem execução no painel |
+| Risco                                    | Probabilidade       | Impacto | Mitigação                                                                   |
+| ---------------------------------------- | ------------------- | ------- | --------------------------------------------------------------------------- |
+| Socket Docker comprometido = RCE no host | baixa               | crítico | socket-proxy com endpoints mínimos, container forja sem capabilities extras |
+| SQLite corrompido                        | baixa               | médio   | Backup automático do DB junto com server backups, WAL mode ligado           |
+| Bun com bug em lib crítica               | média               | alto    | Fallback documentado pra Node 22 LTS, tests rodam em ambas                  |
+| WebSocket scaling com muitos servers     | baixa (uso pessoal) | baixo   | MVP single-process, se escalar futuramente: Redis pub/sub                   |
+| Drasl mudando API breaking               | baixa               | médio   | Pin de versão do Drasl no compose, testes contra versão fixa                |
+| Upload de mod malicioso                  | média               | alto    | Validar magic bytes do jar, sandbox de leitura, sem execução no painel      |
 
 ---
 
@@ -605,6 +609,7 @@ Após release 1:
 ## 13. Próximos passos
 
 Após aprovação deste design:
+
 1. Invocar skill `writing-plans` pra criar plano de implementação detalhado (issues, ordem, milestones)
 2. Setup do repo (init git, GitHub privado)
 3. Scaffold do projeto (SvelteKit + Bun + shadcn-svelte)

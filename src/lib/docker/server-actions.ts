@@ -17,9 +17,12 @@ async function lookupServerId(containerName: string): Promise<string | null> {
   return row?.id ?? null;
 }
 
-async function lookupServerMeta(
-  containerName: string
-): Promise<{ id: string; displayName: string; mcVersion: string; hostPort: number } | null> {
+async function lookupServerMeta(containerName: string): Promise<{
+  id: string;
+  displayName: string;
+  mcVersion: string;
+  hostPort: number;
+} | null> {
   const row = await db()
     .select({
       id: schema.servers.id,
@@ -119,9 +122,7 @@ export async function listManagedServers(): Promise<ManagedServer[]> {
   return listManagedServersAllHosts();
 }
 
-export async function getServer(
-  containerName: string
-): Promise<ManagedServer | null> {
+export async function getServer(containerName: string): Promise<ManagedServer | null> {
   const d = await dockerForContainer(containerName);
   const containers = await d.listContainers({
     all: true,
@@ -177,10 +178,7 @@ export async function stopServer(containerName: string, timeout = 60): Promise<v
   emitLifecycle('server.stopped', containerName, { manual: true }).catch(() => undefined);
 }
 
-export async function restartServer(
-  containerName: string,
-  timeout = 60
-): Promise<void> {
+export async function restartServer(containerName: string, timeout = 60): Promise<void> {
   await assertManaged(containerName);
   recordManualStop(containerName);
   const d = await dockerForContainer(containerName);
@@ -199,7 +197,10 @@ async function assertManaged(containerName: string): Promise<void> {
   }
 }
 
-function toManagedServer(c: ContainerInfo, hostId: string = LOCAL_HOST_ID): ManagedServer {
+function toManagedServer(
+  c: ContainerInfo,
+  hostId: string = LOCAL_HOST_ID
+): ManagedServer {
   const name = c.Names[0]?.replace(/^\//, '') ?? 'unknown';
   const labels = c.Labels ?? {};
   const startedAt = c.State === 'running' ? extractUptime(c.Status) : null;

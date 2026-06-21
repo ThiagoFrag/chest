@@ -56,7 +56,9 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 const addSchema = z.object({
   username: z.string().min(1).max(32),
-  permissions: z.array(z.enum([...SERVER_PERMISSIONS] as [string, ...string[]])).default([])
+  permissions: z
+    .array(z.enum([...SERVER_PERMISSIONS] as [string, ...string[]]))
+    .default([])
 });
 
 function newId(): string {
@@ -75,7 +77,8 @@ export const POST: RequestHandler = async (event) => {
 
   const body = await request.json().catch(() => null);
   const parsed = addSchema.safeParse(body);
-  if (!parsed.success) throw error(400, parsed.error.issues[0]?.message ?? 'body inválido');
+  if (!parsed.success)
+    throw error(400, parsed.error.issues[0]?.message ?? 'body inválido');
 
   const target = await db()
     .select()
@@ -83,22 +86,30 @@ export const POST: RequestHandler = async (event) => {
     .where(eq(schema.users.username, parsed.data.username))
     .get();
   if (!target) throw error(404, `usuário "${parsed.data.username}" não existe`);
-  if (target.role === 'admin') throw error(400, 'admins já tem acesso global, não precisa subuser');
+  if (target.role === 'admin')
+    throw error(400, 'admins já tem acesso global, não precisa subuser');
 
   const existing = await db()
     .select()
     .from(schema.serverUsers)
-    .where(and(eq(schema.serverUsers.serverId, server.id), eq(schema.serverUsers.userId, target.id)))
+    .where(
+      and(
+        eq(schema.serverUsers.serverId, server.id),
+        eq(schema.serverUsers.userId, target.id)
+      )
+    )
     .get();
   if (existing) throw error(409, 'este usuário já tem acesso a este server');
 
-  await db().insert(schema.serverUsers).values({
-    id: newId(),
-    serverId: server.id,
-    userId: target.id,
-    permissions: serializePermissions(parsed.data.permissions as never),
-    addedBy: locals.user!.id
-  });
+  await db()
+    .insert(schema.serverUsers)
+    .values({
+      id: newId(),
+      serverId: server.id,
+      userId: target.id,
+      permissions: serializePermissions(parsed.data.permissions as never),
+      addedBy: locals.user!.id
+    });
 
   await logAudit(event, {
     action: 'server.subuser.add',
@@ -125,7 +136,8 @@ export const PUT: RequestHandler = async (event) => {
 
   const body = await request.json().catch(() => null);
   const parsed = updateSchema.safeParse(body);
-  if (!parsed.success) throw error(400, parsed.error.issues[0]?.message ?? 'body inválido');
+  if (!parsed.success)
+    throw error(400, parsed.error.issues[0]?.message ?? 'body inválido');
 
   const existingRow = await db()
     .select()

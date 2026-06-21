@@ -1,4 +1,4 @@
-import { requireRole } from "$lib/auth/permissions";
+import { requireRole } from '$lib/auth/permissions';
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
@@ -50,7 +50,7 @@ async function fetchVersions(): Promise<CacheEntry['data']> {
 }
 
 export const GET: RequestHandler = async ({ locals }) => {
-  requireRole(locals.user, "viewer");
+  requireRole(locals.user, 'viewer');
   try {
     const data = await fetchVersions();
     return json(data, {

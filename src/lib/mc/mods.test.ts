@@ -1,7 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const execMock = vi.fn();
-const startMock = vi.fn((_opts: unknown, cb: (err: Error | null, stream: null) => void) => cb(null, null));
+const startMock = vi.fn((_opts: unknown, cb: (err: Error | null, stream: null) => void) =>
+  cb(null, null)
+);
 const getContainerMock = vi.fn(() => ({
   exec: execMock
 }));
@@ -53,7 +55,12 @@ describe('toggleMod filename validation', () => {
     expect(cmd).not.toContain('sh');
     expect(cmd).not.toContain('-c');
     // os argumentos do mv são paths literais, não uma string de shell interpolada
-    expect(cmd).toEqual(['mv', '-f', '/data/mods/sodium.jar.disabled', '/data/mods/sodium.jar']);
+    expect(cmd).toEqual([
+      'mv',
+      '-f',
+      '/data/mods/sodium.jar.disabled',
+      '/data/mods/sodium.jar'
+    ]);
   });
 
   it('swallows mv failure (source missing) instead of rejecting', async () => {

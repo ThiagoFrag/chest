@@ -5,7 +5,8 @@ export const examplePaths: PathsModule = {
     get: {
       tags: ['Servers'],
       summary: 'Lista todos os eggs disponíveis',
-      description: 'Retorna o resumo de cada egg carregado. Use `?refresh=1` para recarregar do disco.',
+      description:
+        'Retorna o resumo de cada egg carregado. Use `?refresh=1` para recarregar do disco.',
       operationId: 'listEggs',
       parameters: [
         {

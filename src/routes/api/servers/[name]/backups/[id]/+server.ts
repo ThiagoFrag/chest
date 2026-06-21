@@ -1,4 +1,4 @@
-import { requireServerPermission } from "$lib/auth/require-server-permission";
+import { requireServerPermission } from '$lib/auth/require-server-permission';
 import { error } from '@sveltejs/kit';
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
@@ -6,7 +6,7 @@ import { getBackupPath, deleteBackup } from '$lib/mc/backup';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (event) => {
-  await requireServerPermission(event, event.params.name, "manage_backups");
+  await requireServerPermission(event, event.params.name, 'manage_backups');
   const { params } = event;
   if (!params.id) throw error(400);
 
@@ -26,7 +26,7 @@ export const GET: RequestHandler = async (event) => {
 };
 
 export const DELETE: RequestHandler = async (event) => {
-  await requireServerPermission(event, event.params.name, "manage_backups");
+  await requireServerPermission(event, event.params.name, 'manage_backups');
   const { params } = event;
   if (!params.id) throw error(400);
 

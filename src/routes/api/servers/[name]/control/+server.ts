@@ -1,11 +1,7 @@
-import { requireServerPermission } from "$lib/auth/require-server-permission";
+import { requireServerPermission } from '$lib/auth/require-server-permission';
 import { json, error } from '@sveltejs/kit';
 import { z } from 'zod';
-import {
-  startServer,
-  stopServer,
-  restartServer
-} from '$lib/docker/server-actions';
+import { startServer, stopServer, restartServer } from '$lib/docker/server-actions';
 import { logAudit } from '$lib/audit';
 import type { RequestHandler } from './$types';
 

@@ -3,18 +3,32 @@ import { resolveHeadSource, resolveDraslSkinUrl } from './skin';
 
 describe('resolveHeadSource', () => {
   it('online + uuid -> mc-heads by uuid', () => {
-    const r = resolveHeadSource({ mode: 'mojang', uuid: 'abc-123', name: 'Steve', size: 32 });
-    expect(r).toEqual({ kind: 'url', url: 'https://mc-heads.net/avatar/abc-123/32/nohelm' });
+    const r = resolveHeadSource({
+      mode: 'mojang',
+      uuid: 'abc-123',
+      name: 'Steve',
+      size: 32
+    });
+    expect(r).toEqual({
+      kind: 'url',
+      url: 'https://mc-heads.net/avatar/abc-123/32/nohelm'
+    });
   });
 
   it('online without uuid -> mc-heads by name', () => {
     const r = resolveHeadSource({ mode: 'mojang', name: 'Notch', size: 16 });
-    expect(r).toEqual({ kind: 'url', url: 'https://mc-heads.net/avatar/Notch/16/nohelm' });
+    expect(r).toEqual({
+      kind: 'url',
+      url: 'https://mc-heads.net/avatar/Notch/16/nohelm'
+    });
   });
 
   it('unspecified mode (backward compat name-only) -> mc-heads by name', () => {
     const r = resolveHeadSource({ name: 'Herobrine', size: 32 });
-    expect(r).toEqual({ kind: 'url', url: 'https://mc-heads.net/avatar/Herobrine/32/nohelm' });
+    expect(r).toEqual({
+      kind: 'url',
+      url: 'https://mc-heads.net/avatar/Herobrine/32/nohelm'
+    });
   });
 
   it('drasl -> proxy url with uuid, name and size', () => {
@@ -51,11 +65,19 @@ describe('resolveHeadSource', () => {
 
   it('clamps invalid size to default', () => {
     const r = resolveHeadSource({ mode: 'mojang', name: 'Steve', size: -5 });
-    expect(r).toEqual({ kind: 'url', url: 'https://mc-heads.net/avatar/Steve/32/nohelm' });
+    expect(r).toEqual({
+      kind: 'url',
+      url: 'https://mc-heads.net/avatar/Steve/32/nohelm'
+    });
   });
 
   it('encodes container name in proxy url', () => {
-    const r = resolveHeadSource({ mode: 'drasl', name: 'D', containerName: 'mc test', size: 32 });
+    const r = resolveHeadSource({
+      mode: 'drasl',
+      name: 'D',
+      containerName: 'mc test',
+      size: 32
+    });
     if (r.kind !== 'proxy') throw new Error('expected proxy');
     expect(r.url).toContain('/api/servers/mc%20test/players/skin?');
   });
@@ -81,12 +103,17 @@ describe('resolveDraslSkinUrl', () => {
   });
 
   it('returns null for malformed uuid', async () => {
-    const url = await resolveDraslSkinUrl('https://d/', 'not-a-uuid', fakeProfileFetch('x'));
+    const url = await resolveDraslSkinUrl(
+      'https://d/',
+      'not-a-uuid',
+      fakeProfileFetch('x')
+    );
     expect(url).toBeNull();
   });
 
   it('returns null on non-ok response', async () => {
-    const fetchFn = (async () => new Response('', { status: 404 })) as unknown as typeof fetch;
+    const fetchFn = (async () =>
+      new Response('', { status: 404 })) as unknown as typeof fetch;
     const url = await resolveDraslSkinUrl(
       'https://d/',
       'aaaaaaaabbbbccccddddeeeeeeeeeeee',
@@ -97,7 +124,9 @@ describe('resolveDraslSkinUrl', () => {
 
   it('returns null when textures property is missing', async () => {
     const fetchFn = (async () =>
-      new Response(JSON.stringify({ properties: [] }), { status: 200 })) as unknown as typeof fetch;
+      new Response(JSON.stringify({ properties: [] }), {
+        status: 200
+      })) as unknown as typeof fetch;
     const url = await resolveDraslSkinUrl(
       'https://d/',
       'aaaaaaaabbbbccccddddeeeeeeeeeeee',

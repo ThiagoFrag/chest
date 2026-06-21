@@ -44,9 +44,7 @@ export const sessions = sqliteTable('sessions', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
-  passed2fa: integer('passed_2fa', { mode: 'boolean' })
-    .notNull()
-    .default(true),
+  passed2fa: integer('passed_2fa', { mode: 'boolean' }).notNull().default(true),
   createdAt: integer('created_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`)
@@ -101,9 +99,7 @@ export const servers = sqliteTable('servers', {
   mapType: text('map_type', { enum: ['bluemap', 'dynmap', 'squaremap', 'pl3xmap'] }),
   dataVolume: text('data_volume').notNull(),
   rconPasswordEncrypted: text('rcon_password_encrypted').notNull(),
-  draslEnabled: integer('drasl_enabled', { mode: 'boolean' })
-    .notNull()
-    .default(false),
+  draslEnabled: integer('drasl_enabled', { mode: 'boolean' }).notNull().default(false),
   status: text('status', {
     enum: ['creating', 'running', 'stopped', 'failed', 'deleting']
   })

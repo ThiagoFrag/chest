@@ -28,21 +28,22 @@ export const PERMISSION_LABELS: Record<ServerPermission, string> = {
   delete: 'deletar este server'
 };
 
-export const ROLE_DEFAULTS: Record<'admin' | 'operator' | 'viewer', ServerPermission[]> = {
-  admin: [...SERVER_PERMISSIONS],
-  operator: [
-    'control',
-    'console',
-    'edit_config',
-    'manage_backups',
-    'manage_files',
-    'manage_players',
-    'manage_scheduled',
-    'manage_discord',
-    'view_logs'
-  ],
-  viewer: ['view_logs']
-};
+export const ROLE_DEFAULTS: Record<'admin' | 'operator' | 'viewer', ServerPermission[]> =
+  {
+    admin: [...SERVER_PERMISSIONS],
+    operator: [
+      'control',
+      'console',
+      'edit_config',
+      'manage_backups',
+      'manage_files',
+      'manage_players',
+      'manage_scheduled',
+      'manage_discord',
+      'view_logs'
+    ],
+    viewer: ['view_logs']
+  };
 
 export function parsePermissions(json: string | null | undefined): ServerPermission[] {
   if (!json) return [];
@@ -58,8 +59,6 @@ export function parsePermissions(json: string | null | undefined): ServerPermiss
 }
 
 export function serializePermissions(perms: ServerPermission[]): string {
-  const unique = Array.from(new Set(perms)).filter((p) =>
-    SERVER_PERMISSIONS.includes(p)
-  );
+  const unique = Array.from(new Set(perms)).filter((p) => SERVER_PERMISSIONS.includes(p));
   return JSON.stringify(unique);
 }

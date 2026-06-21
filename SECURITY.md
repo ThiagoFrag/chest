@@ -27,11 +27,11 @@ You can find the maintainer's contact in the repository profile or `package.json
 
 Chest is in active early development. Only the latest `main` branch and the most recent tagged release receive security updates.
 
-| Version       | Supported          |
-| ------------- | ------------------ |
-| `main`        | Yes                |
-| Latest tag    | Yes                |
-| Older tags    | No                 |
+| Version    | Supported |
+| ---------- | --------- |
+| `main`     | Yes       |
+| Latest tag | Yes       |
+| Older tags | No        |
 
 ## Scope
 

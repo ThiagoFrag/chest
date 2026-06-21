@@ -37,9 +37,16 @@ function getKey(): Buffer {
   try {
     mkdirSync(dirname(KEY_FILE), { recursive: true });
     writeFileSync(KEY_FILE, cachedKey);
-    try { chmodSync(KEY_FILE, 0o600); } catch { /* best effort */ }
+    try {
+      chmodSync(KEY_FILE, 0o600);
+    } catch {
+      /* best effort */
+    }
   } catch (err) {
-    console.warn('[crypto] could not persist auto-generated RCON_KEY, will regen on restart:', err);
+    console.warn(
+      '[crypto] could not persist auto-generated RCON_KEY, will regen on restart:',
+      err
+    );
   }
   return cachedKey;
 }

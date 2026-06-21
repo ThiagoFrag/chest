@@ -18,10 +18,7 @@ const db = drizzle(sqlite);
 
 const username = process.env.ADMIN_USERNAME ?? 'admin';
 
-const existing = await db
-  .select()
-  .from(users)
-  .where(eq(users.username, username));
+const existing = await db.select().from(users).where(eq(users.username, username));
 if (existing.length > 0) {
   console.log(`[seed-admin] admin "${username}" já existe.`);
   sqlite.close();

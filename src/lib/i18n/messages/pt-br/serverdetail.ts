@@ -25,7 +25,8 @@ export const serverdetailMessages: Dict = {
   'serverdetail.console.placeholder.offline': 'server precisa estar online',
   'serverdetail.console.rconError': '(erro: {message})',
   'serverdetail.settings.dangerZone': 'DANGER ZONE',
-  'serverdetail.settings.dangerDesc': 'deletar server remove container + volume permanentemente. mundo perdido.',
+  'serverdetail.settings.dangerDesc':
+    'deletar server remove container + volume permanentemente. mundo perdido.',
   'serverdetail.settings.confirmPlaceholder': 'digite {name} pra confirmar',
   'serverdetail.settings.deleteButton': 'deletar server',
 
@@ -64,9 +65,11 @@ export const serverdetailMessages: Dict = {
   'serverdetail.step2.heading': 'MODLOADER & VERSÃO',
   'serverdetail.step2.typeLabel': 'tipo',
   'serverdetail.step2.versionLabel': 'versão MC',
-  'serverdetail.step2.versionHint': 'qualquer versão Mojang (release ou snapshot). itzg/minecraft-server baixa na hora.',
+  'serverdetail.step2.versionHint':
+    'qualquer versão Mojang (release ou snapshot). itzg/minecraft-server baixa na hora.',
   'serverdetail.step2.clientWarning': 'cliente Minecraft precisa estar EXATAMENTE em',
-  'serverdetail.step2.clientWarningRest': 'versões diferentes desconectam com "Failed to decode packet". no launcher (Prism Launcher/oficial/Modrinth), crie/edite o perfil pra essa versão antes de conectar.',
+  'serverdetail.step2.clientWarningRest':
+    'versões diferentes desconectam com "Failed to decode packet". no launcher (Prism Launcher/oficial/Modrinth), crie/edite o perfil pra essa versão antes de conectar.',
   'serverdetail.step3.heading': 'RECURSOS',
   'serverdetail.step3.ramLabel': 'RAM:',
   'serverdetail.step3.maxPlayersLabel': 'max players',
@@ -76,7 +79,8 @@ export const serverdetailMessages: Dict = {
   'serverdetail.step4.heading': 'ACESSO PÚBLICO',
   'serverdetail.step4.subtitle': 'como players vão conectar',
   'serverdetail.step4.localTitle': 'Local apenas',
-  'serverdetail.step4.localDesc': 'acesso por IP do host + porta. recomendado pra LAN/IPv6.',
+  'serverdetail.step4.localDesc':
+    'acesso por IP do host + porta. recomendado pra LAN/IPv6.',
   'serverdetail.step4.domainTitle': 'Domínio próprio',
   'serverdetail.step4.cfOk': '✓ CF configurado',
   'serverdetail.step4.cfMissing': '⚠ CF não configurado',
@@ -92,25 +96,32 @@ export const serverdetailMessages: Dict = {
   'serverdetail.step4.playitConfigureRest': 'pra túnel automático.',
   'serverdetail.step4.draslLabel': 'usar Drasl pra autenticação custom',
   'serverdetail.step4.draslUrl': 'URL:',
-  'serverdetail.step4.draslHint': 'players sem conta Microsoft podem entrar via launcher compatível (Prism Launcher, FjordLauncher, HMCL).',
+  'serverdetail.step4.draslHint':
+    'players sem conta Microsoft podem entrar via launcher compatível (Prism Launcher, FjordLauncher, HMCL).',
   'serverdetail.step4.draslMissingTitle': 'Drasl não configurado',
-  'serverdetail.step4.draslMissingDesc': 'Configure a URL do Drasl em Configurações pra liberar autenticação custom (players sem conta Microsoft).',
+  'serverdetail.step4.draslMissingDesc':
+    'Configure a URL do Drasl em Configurações pra liberar autenticação custom (players sem conta Microsoft).',
   'serverdetail.step4.draslConfigureNow': 'configurar Drasl agora →',
   'serverdetail.step4.discordHeading': 'CHAT BRIDGE COM DISCORD (opcional)',
   'serverdetail.step4.discordBotMissing': 'bot Discord não configurado',
   'serverdetail.step4.discordConfigureBot': 'configurar bot →',
-  'serverdetail.step4.discordTokenError': '⚠ token configurado mas bot não conectou. cheque token em Settings.',
-  'serverdetail.step4.discordNoGuilds': 'bot conectado mas não está em nenhum servidor Discord.',
+  'serverdetail.step4.discordTokenError':
+    '⚠ token configurado mas bot não conectou. cheque token em Settings.',
+  'serverdetail.step4.discordNoGuilds':
+    'bot conectado mas não está em nenhum servidor Discord.',
   'serverdetail.step4.discordAddBot': 'adicionar bot a um servidor →',
-  'serverdetail.step4.discordIntro': 'players do MC e do Discord conversam no mesmo chat. join/leave/morte também aparecem.',
+  'serverdetail.step4.discordIntro':
+    'players do MC e do Discord conversam no mesmo chat. join/leave/morte também aparecem.',
   'serverdetail.step4.discordGuildLabel': 'servidor Discord',
   'serverdetail.step4.discordNoBridge': '— sem bridge —',
   'serverdetail.step4.discordChannelLabel': 'canal de texto',
   'serverdetail.step4.discordSelectGuildFirst': 'selecione servidor primeiro',
   'serverdetail.step4.discordLoadingChannels': 'carregando...',
-  'serverdetail.step4.discordNoChannels': 'sem canais acessíveis. bot precisa View Channel + Send Messages.',
+  'serverdetail.step4.discordNoChannels':
+    'sem canais acessíveis. bot precisa View Channel + Send Messages.',
   'serverdetail.step4.discordChoose': '— escolha —',
-  'serverdetail.step4.discordBridgeReady': '✓ bridge será ativada automaticamente após criar o server',
+  'serverdetail.step4.discordBridgeReady':
+    '✓ bridge será ativada automaticamente após criar o server',
   'serverdetail.step5.heading': 'CONFIRMAR',
   'serverdetail.confirm.name': 'nome',
   'serverdetail.confirm.host': 'host',
@@ -126,7 +137,8 @@ export const serverdetailMessages: Dict = {
   'serverdetail.confirm.yes': 'sim',
   'serverdetail.confirm.no': 'não',
   'serverdetail.confirm.discordBridge': 'Discord bridge',
-  'serverdetail.confirm.summary': 'Vou criar o container, baixar a imagem (se necessário), alocar porta livre, iniciar o server.',
+  'serverdetail.confirm.summary':
+    'Vou criar o container, baixar a imagem (se necessário), alocar porta livre, iniciar o server.',
   'serverdetail.nav.back': 'voltar',
   'serverdetail.nav.next': 'avançar',
   'serverdetail.nav.creating': 'criando...',
@@ -139,7 +151,8 @@ export const serverdetailMessages: Dict = {
   'serverdetail.templates.subtitleEmpty': 'modpacks pra criar server em 1 click',
   'serverdetail.templates.featured': 'FEATURED',
   'serverdetail.templates.explore': 'EXPLORAR MODRINTH',
-  'serverdetail.templates.searchPlaceholder': 'ATM, RPG, optimization, vanilla+, performance...',
+  'serverdetail.templates.searchPlaceholder':
+    'ATM, RPG, optimization, vanilla+, performance...',
   'serverdetail.templates.allLoaders': 'todos loaders',
   'serverdetail.templates.allVersions': 'todas versões MC',
   'serverdetail.templates.allCategories': 'todas categorias',

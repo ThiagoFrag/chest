@@ -1,6 +1,13 @@
 export type MapType = 'bluemap' | 'dynmap' | 'squaremap' | 'pl3xmap';
 export type LoaderType =
-  | 'VANILLA' | 'PAPER' | 'FABRIC' | 'FORGE' | 'NEOFORGE' | 'PURPUR' | 'SPIGOT' | 'QUILT';
+  | 'VANILLA'
+  | 'PAPER'
+  | 'FABRIC'
+  | 'FORGE'
+  | 'NEOFORGE'
+  | 'PURPUR'
+  | 'SPIGOT'
+  | 'QUILT';
 
 export interface MapStatus {
   installed: boolean;

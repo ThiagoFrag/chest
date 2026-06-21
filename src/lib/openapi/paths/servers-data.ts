@@ -6,7 +6,8 @@ export const serversdataPaths: PathsModule = {
     get: {
       tags: ['Backups'],
       summary: 'Lista os backups de um servidor',
-      description: 'Retorna todos os backups registrados para o servidor. Requer a permissão `manage_backups`.',
+      description:
+        'Retorna todos os backups registrados para o servidor. Requer a permissão `manage_backups`.',
       operationId: 'listServerBackups',
       security: defaultSecurity,
       parameters: [
@@ -35,22 +36,29 @@ export const serversdataPaths: PathsModule = {
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão `manage_backups`.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '404': {
           description: 'Servidor não encontrado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     },
     post: {
       tags: ['Backups'],
       summary: 'Cria um backup do servidor',
-      description: 'Cria um novo backup. `scope` controla se é só o mundo (`world`) ou completo (`full`). Requer a permissão `manage_backups`.',
+      description:
+        'Cria um novo backup. `scope` controla se é só o mundo (`world`) ou completo (`full`). Requer a permissão `manage_backups`.',
       operationId: 'createServerBackup',
       security: defaultSecurity,
       parameters: [
@@ -91,19 +99,27 @@ export const serversdataPaths: PathsModule = {
         },
         '400': {
           description: 'scope inválido.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão `manage_backups`.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '404': {
           description: 'Servidor não encontrado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     }
@@ -112,7 +128,8 @@ export const serversdataPaths: PathsModule = {
     get: {
       tags: ['Backups'],
       summary: 'Baixa um backup',
-      description: 'Faz o download do arquivo do backup como `application/gzip` (anexo `.tar.gz`). Requer a permissão `manage_backups`.',
+      description:
+        'Faz o download do arquivo do backup como `application/gzip` (anexo `.tar.gz`). Requer a permissão `manage_backups`.',
       operationId: 'downloadServerBackup',
       security: defaultSecurity,
       parameters: [
@@ -142,15 +159,21 @@ export const serversdataPaths: PathsModule = {
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão `manage_backups`.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '404': {
           description: 'Backup não encontrado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     },
@@ -182,15 +205,21 @@ export const serversdataPaths: PathsModule = {
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão `manage_backups`.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '404': {
           description: 'Backup não encontrado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     }
@@ -199,7 +228,8 @@ export const serversdataPaths: PathsModule = {
     post: {
       tags: ['Backups'],
       summary: 'Restaura um backup',
-      description: 'Restaura o servidor a partir do backup informado. Requer a permissão `manage_backups`.',
+      description:
+        'Restaura o servidor a partir do backup informado. Requer a permissão `manage_backups`.',
       operationId: 'restoreServerBackup',
       security: defaultSecurity,
       parameters: [
@@ -233,15 +263,21 @@ export const serversdataPaths: PathsModule = {
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão `manage_backups`.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '404': {
           description: 'Backup não encontrado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     }
@@ -250,7 +286,8 @@ export const serversdataPaths: PathsModule = {
     get: {
       tags: ['Tasks'],
       summary: 'Lista as tarefas agendadas do servidor',
-      description: 'Retorna as tarefas agendadas (cron) do servidor, ordenadas por data de criação. Requer a permissão `manage_scheduled`.',
+      description:
+        'Retorna as tarefas agendadas (cron) do servidor, ordenadas por data de criação. Requer a permissão `manage_scheduled`.',
       operationId: 'listServerTasks',
       security: defaultSecurity,
       parameters: [
@@ -279,22 +316,29 @@ export const serversdataPaths: PathsModule = {
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão `manage_scheduled`.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '404': {
           description: 'Servidor não encontrado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     },
     post: {
       tags: ['Tasks'],
       summary: 'Cria uma tarefa agendada',
-      description: 'Cria uma nova tarefa agendada por expressão cron. `cronExpr` é validada no servidor. Requer a permissão `manage_scheduled`.',
+      description:
+        'Cria uma nova tarefa agendada por expressão cron. `cronExpr` é validada no servidor. Requer a permissão `manage_scheduled`.',
       operationId: 'createServerTask',
       security: defaultSecurity,
       parameters: [
@@ -350,7 +394,11 @@ export const serversdataPaths: PathsModule = {
                 required: ['id', 'nextRunAt'],
                 properties: {
                   id: { type: 'string' },
-                  nextRunAt: { type: 'string', format: 'date-time', description: 'Próxima execução calculada.' }
+                  nextRunAt: {
+                    type: 'string',
+                    format: 'date-time',
+                    description: 'Próxima execução calculada.'
+                  }
                 }
               }
             }
@@ -358,19 +406,27 @@ export const serversdataPaths: PathsModule = {
         },
         '400': {
           description: 'Body inválido ou cron inválido.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão `manage_scheduled`.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '404': {
           description: 'Servidor não encontrado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     }
@@ -379,7 +435,8 @@ export const serversdataPaths: PathsModule = {
     patch: {
       tags: ['Tasks'],
       summary: 'Atualiza uma tarefa agendada',
-      description: 'Atualiza campos de uma tarefa agendada. Todos os campos são opcionais; `cronExpr`, quando enviada, é validada. Requer a permissão `manage_scheduled`.',
+      description:
+        'Atualiza campos de uma tarefa agendada. Todos os campos são opcionais; `cronExpr`, quando enviada, é validada. Requer a permissão `manage_scheduled`.',
       operationId: 'updateServerTask',
       security: defaultSecurity,
       parameters: [
@@ -439,26 +496,35 @@ export const serversdataPaths: PathsModule = {
         },
         '400': {
           description: 'Body inválido ou cron inválido.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão `manage_scheduled`.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '404': {
           description: 'Tarefa não encontrada.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     },
     delete: {
       tags: ['Tasks'],
       summary: 'Remove uma tarefa agendada',
-      description: 'Apaga a tarefa agendada informada. Requer a permissão `manage_scheduled`.',
+      description:
+        'Apaga a tarefa agendada informada. Requer a permissão `manage_scheduled`.',
       operationId: 'deleteServerTask',
       security: defaultSecurity,
       parameters: [
@@ -483,15 +549,21 @@ export const serversdataPaths: PathsModule = {
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão `manage_scheduled`.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '404': {
           description: 'Tarefa não encontrada.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     }
@@ -541,19 +613,27 @@ export const serversdataPaths: PathsModule = {
         },
         '400': {
           description: 'uuid ausente.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão `view_logs`.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '404': {
           description: 'Skin indisponível (o cliente cai para o steve local).',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     }
@@ -609,19 +689,27 @@ export const serversdataPaths: PathsModule = {
         },
         '400': {
           description: 'uuid ausente ou inválido.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '401': {
           description: 'Não autenticado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '403': {
           description: 'Sem permissão `view_logs`.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         },
         '404': {
           description: 'Servidor não encontrado.',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/Error' } }
+          }
         }
       }
     }

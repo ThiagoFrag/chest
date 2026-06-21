@@ -29,7 +29,10 @@ const bodySchema = z.object({
   difficulty: z.enum(['peaceful', 'easy', 'normal', 'hard']).default('normal'),
   motd: z.string().max(120).optional(),
   draslEnabled: z.boolean().default(false),
-  eggSlug: z.string().regex(/^[a-z0-9][a-z0-9-]{1,40}$/).optional(),
+  eggSlug: z
+    .string()
+    .regex(/^[a-z0-9][a-z0-9-]{1,40}$/)
+    .optional(),
   hostId: z.string().trim().min(1).default(LOCAL_HOST_ID)
 });
 

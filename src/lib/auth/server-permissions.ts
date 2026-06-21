@@ -36,11 +36,20 @@ export async function getEffectivePermissions(
   const row = await db()
     .select()
     .from(schema.serverUsers)
-    .where(and(eq(schema.serverUsers.serverId, serverId), eq(schema.serverUsers.userId, user.id)))
+    .where(
+      and(
+        eq(schema.serverUsers.serverId, serverId),
+        eq(schema.serverUsers.userId, user.id)
+      )
+    )
     .get();
 
   if (row) {
-    return { isAdmin: false, isOwner: false, granular: parsePermissions(row.permissions) };
+    return {
+      isAdmin: false,
+      isOwner: false,
+      granular: parsePermissions(row.permissions)
+    };
   }
 
   return {

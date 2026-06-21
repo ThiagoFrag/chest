@@ -1,7 +1,11 @@
 import { json } from '@sveltejs/kit';
 import { z } from 'zod';
 import { requireRole } from '$lib/auth/permissions';
-import { buildInviteUrl, botInviteHint, extractAppIdFromToken } from '$lib/discord/invite-url';
+import {
+  buildInviteUrl,
+  botInviteHint,
+  extractAppIdFromToken
+} from '$lib/discord/invite-url';
 import type { RequestHandler } from './$types';
 
 const bodySchema = z.object({

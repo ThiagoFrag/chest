@@ -52,7 +52,8 @@ export const authaccountPaths: PathsModule = {
     get: {
       tags: ['Auth'],
       summary: 'Consulta o status do TOTP do usuário autenticado',
-      description: 'Retorna se o two-factor (TOTP) está ativo para o usuário da sessão atual.',
+      description:
+        'Retorna se o two-factor (TOTP) está ativo para o usuário da sessão atual.',
       operationId: 'getTotpStatus',
       responses: {
         '200': {
@@ -63,7 +64,10 @@ export const authaccountPaths: PathsModule = {
                 type: 'object',
                 required: ['enabled'],
                 properties: {
-                  enabled: { type: 'boolean', description: 'Indica se o TOTP está ativo.' },
+                  enabled: {
+                    type: 'boolean',
+                    description: 'Indica se o TOTP está ativo.'
+                  },
                   enabledAt: {
                     type: 'string',
                     format: 'date-time',
@@ -170,7 +174,8 @@ export const authaccountPaths: PathsModule = {
                   backupCodes: {
                     type: 'array',
                     items: { type: 'string' },
-                    description: 'Códigos de recuperação gerados (mostrados uma única vez).'
+                    description:
+                      'Códigos de recuperação gerados (mostrados uma única vez).'
                   }
                 }
               }
@@ -300,7 +305,8 @@ export const authaccountPaths: PathsModule = {
     get: {
       tags: ['Users'],
       summary: 'Lista os usuários',
-      description: 'Retorna todos os usuários. Requer o papel `admin` (`requireRole(admin)`).',
+      description:
+        'Retorna todos os usuários. Requer o papel `admin` (`requireRole(admin)`).',
       operationId: 'listUsers',
       responses: {
         '200': {
@@ -379,7 +385,8 @@ export const authaccountPaths: PathsModule = {
           }
         },
         '400': {
-          description: 'Body inválido, id ausente ou tentativa de alterar a própria role.',
+          description:
+            'Body inválido, id ausente ou tentativa de alterar a própria role.',
           ...errorResponse
         },
         '401': {

@@ -10,12 +10,14 @@ export const integrationsMessages: Dict = {
   'integrations.discord.botStatus.notConfiguredHintAfter': 'pra liberar chat bridge.',
   'integrations.discord.botStatus.settings': 'Settings',
   'integrations.discord.botStatus.notConnected': 'bot configurado mas não conectado',
-  'integrations.discord.botStatus.notConnectedHint': 'token inválido ou falha de rede. verifique nas Settings.',
+  'integrations.discord.botStatus.notConnectedHint':
+    'token inválido ou falha de rede. verifique nas Settings.',
   'integrations.discord.botStatus.connectedAs': 'conectado como {username}',
   'integrations.discord.botStatus.guildsCount.one': '{n} servidor acessível',
   'integrations.discord.botStatus.guildsCount.other': '{n} servidores acessíveis',
   'integrations.discord.botStatus.addBot': 'adicionar bot a um servidor',
-  'integrations.discord.botStatus.addBotHint': 'abre OAuth do Discord. precisa ser admin do server.',
+  'integrations.discord.botStatus.addBotHint':
+    'abre OAuth do Discord. precisa ser admin do server.',
   'integrations.discord.channel.title': 'CANAL BRIDGE',
   'integrations.discord.channel.subtitle': 'MC ⇄ Discord bidirecional',
   'integrations.discord.channel.bridgeActive': '✓ bridge ativa',
@@ -25,17 +27,21 @@ export const integrationsMessages: Dict = {
   'integrations.discord.channel.serverLabel': 'servidor Discord',
   'integrations.discord.channel.serverPlaceholder': 'selecione...',
   'integrations.discord.channel.textChannelLabel': 'canal de texto',
-  'integrations.discord.channel.noChannels': 'nenhum canal acessível. o bot precisa permissão "View Channel" + "Send Messages" + "Manage Webhooks".',
+  'integrations.discord.channel.noChannels':
+    'nenhum canal acessível. o bot precisa permissão "View Channel" + "Send Messages" + "Manage Webhooks".',
   'integrations.discord.howItWorks.title': 'COMO FUNCIONA',
   'integrations.discord.howItWorks.mcToDiscord': 'MC → Discord',
-  'integrations.discord.howItWorks.mcToDiscord.chat': 'chat in-game (com avatar skin do player)',
+  'integrations.discord.howItWorks.mcToDiscord.chat':
+    'chat in-game (com avatar skin do player)',
   'integrations.discord.howItWorks.mcToDiscord.events': 'join/leave events',
-  'integrations.discord.howItWorks.mcToDiscord.death': 'morte (estilo embed com emoji 💀)',
+  'integrations.discord.howItWorks.mcToDiscord.death':
+    'morte (estilo embed com emoji 💀)',
   'integrations.discord.howItWorks.discordToMc': 'Discord → MC',
   'integrations.discord.howItWorks.discordToMc.messages': 'mensagens viram',
   'integrations.discord.howItWorks.discordToMc.messagesSuffix': 'no chat',
   'integrations.discord.howItWorks.discordToMc.rcon': 'via RCON tellraw (colorido)',
-  'integrations.discord.howItWorks.discordToMc.selectedOnly': 'apenas canal selecionado, outros ignorados',
+  'integrations.discord.howItWorks.discordToMc.selectedOnly':
+    'apenas canal selecionado, outros ignorados',
   'integrations.discord.alert.saveError': 'erro: {error}',
 
   // SchedulerPanel
@@ -46,7 +52,8 @@ export const integrationsMessages: Dict = {
   'integrations.scheduler.preset.daily4am': 'diário às 4am',
   'integrations.scheduler.preset.daily6am': 'diário às 6am',
   'integrations.scheduler.preset.weeklySunday3am': 'domingo às 3am',
-  'integrations.scheduler.note.wizardHintBefore': 'pra ter agenda, crie o server pelo wizard (botão',
+  'integrations.scheduler.note.wizardHintBefore':
+    'pra ter agenda, crie o server pelo wizard (botão',
   'integrations.scheduler.note.wizardHintButton': '+ novo server',
   'integrations.scheduler.note.wizardHintAfter': ').',
   'integrations.scheduler.list.title': 'TAREFAS',
@@ -78,19 +85,25 @@ export const integrationsMessages: Dict = {
   'integrations.scheduler.form.cancel': 'cancelar',
   'integrations.scheduler.form.create': 'criar',
   'integrations.scheduler.empty.title': 'agende tarefas automáticas',
-  'integrations.scheduler.empty.subtitle': 'backup diário, restart noturno, comandos RCON, etc.',
+  'integrations.scheduler.empty.subtitle':
+    'backup diário, restart noturno, comandos RCON, etc.',
   'integrations.scheduler.empty.new': 'nova tarefa',
   'integrations.scheduler.alert.createError': 'erro: {error}',
 
   // MapPanel
   'integrations.map.header.title': 'MAPA DO MUNDO',
-  'integrations.map.header.subtitle': 'renderização 3D do mundo via BlueMap — vê players ao vivo, biomas, estruturas',
+  'integrations.map.header.subtitle':
+    'renderização 3D do mundo via BlueMap — vê players ao vivo, biomas, estruturas',
   'integrations.map.unmanagedNoticeBefore': 'Este container foi criado fora do Chest. Só',
-  'integrations.map.unmanagedNoticeAfter': 'está disponível (embedded exige que o Chest conheça o loader exato).',
+  'integrations.map.unmanagedNoticeAfter':
+    'está disponível (embedded exige que o Chest conheça o loader exato).',
   'integrations.map.chooseMode.title': 'ESCOLHA O MODO',
-  'integrations.map.chooseMode.supportsBoth': 'Seu loader ({loader}) suporta os dois modos. Embedded é melhor pra dados ao vivo (players), sidecar é independente e funciona offline.',
-  'integrations.map.chooseMode.managedNoEmbedded': 'Loader {loader} não suporta embedded (sem mods/plugins). Sidecar é o caminho — funciona em qualquer mundo.',
-  'integrations.map.chooseMode.unmanaged': 'Sidecar lê /data/world direto do container e renderiza num container separado. Funciona em qualquer mundo.',
+  'integrations.map.chooseMode.supportsBoth':
+    'Seu loader ({loader}) suporta os dois modos. Embedded é melhor pra dados ao vivo (players), sidecar é independente e funciona offline.',
+  'integrations.map.chooseMode.managedNoEmbedded':
+    'Loader {loader} não suporta embedded (sem mods/plugins). Sidecar é o caminho — funciona em qualquer mundo.',
+  'integrations.map.chooseMode.unmanaged':
+    'Sidecar lê /data/world direto do container e renderiza num container separado. Funciona em qualquer mundo.',
   'integrations.map.embedded.title': 'EMBEDDED (mod/plugin)',
   'integrations.map.embedded.pro.live': 'players ao vivo no mapa',
   'integrations.map.embedded.pro.chat': 'chat ao vivo (Paper)',
@@ -112,21 +125,28 @@ export const integrationsMessages: Dict = {
   'integrations.map.installed.sidecar': 'sidecar',
   'integrations.map.installed.embedded': 'embedded',
   'integrations.map.installed.portBefore': 'porta',
-  'integrations.map.installed.reachableBefore': '✓ embutido abaixo · também disponível em',
-  'integrations.map.installed.notReachable': '⚠ servidor ainda não respondeu na porta {port}.',
-  'integrations.map.installed.notReachableSidecar': 'Sidecar pode estar baixando o jar ou renderizando (1-2 min). Refresh em alguns segundos.',
-  'integrations.map.installed.notReachableEmbedded': 'Talvez ainda esteja gerando o mapa (1ª vez demora) ou o server não foi reiniciado.',
+  'integrations.map.installed.reachableBefore':
+    '✓ embutido abaixo · também disponível em',
+  'integrations.map.installed.notReachable':
+    '⚠ servidor ainda não respondeu na porta {port}.',
+  'integrations.map.installed.notReachableSidecar':
+    'Sidecar pode estar baixando o jar ou renderizando (1-2 min). Refresh em alguns segundos.',
+  'integrations.map.installed.notReachableEmbedded':
+    'Talvez ainda esteja gerando o mapa (1ª vez demora) ou o server não foi reiniciado.',
   'integrations.map.fullscreen': 'tela cheia',
   'integrations.map.wipeCache': 'wipe cache do mapa',
   'integrations.map.uninstall': 'desativar',
   'integrations.map.iframeTitle': 'World map',
   'integrations.map.waiting.title': 'aguardando BlueMap responder...',
-  'integrations.map.waiting.sidecar': 'sidecar pode levar 1-2 min na primeira execução (download jar + render inicial). Auto-refresh em 10s.',
-  'integrations.map.waiting.embedded': 'se o server acabou de instalar, reinicie e espere 1-2 min pelo render inicial',
+  'integrations.map.waiting.sidecar':
+    'sidecar pode levar 1-2 min na primeira execução (download jar + render inicial). Auto-refresh em 10s.',
+  'integrations.map.waiting.embedded':
+    'se o server acabou de instalar, reinicie e espere 1-2 min pelo render inicial',
   'integrations.map.refreshNow': 'refresh agora',
   'integrations.map.detectedFiles': 'arquivos detectados no container:',
   'integrations.map.confirm.uninstall': 'Desativar BlueMap?',
-  'integrations.map.confirm.wipeWarning': '\n\n⚠ "wipe" também apaga TODO o cache do mapa renderizado (vai re-renderizar do zero se reinstalar).',
+  'integrations.map.confirm.wipeWarning':
+    '\n\n⚠ "wipe" também apaga TODO o cache do mapa renderizado (vai re-renderizar do zero se reinstalar).',
   'integrations.map.error.generic': 'erro {status}',
   'integrations.map.error.fail': 'falha',
 
@@ -135,17 +155,22 @@ export const integrationsMessages: Dict = {
 
   // ConnectCard
   'integrations.connect.title': 'COMO CONECTAR',
-  'integrations.connect.serverNotRunning': 'server precisa estar rodando pra mostrar endereço',
-  'integrations.connect.version.warning': 'ATENÇÃO — versão exigida no cliente Minecraft:',
-  'integrations.connect.version.hintBefore': 'no launcher (Prism/oficial/etc), escolha perfil',
+  'integrations.connect.serverNotRunning':
+    'server precisa estar rodando pra mostrar endereço',
+  'integrations.connect.version.warning':
+    'ATENÇÃO — versão exigida no cliente Minecraft:',
+  'integrations.connect.version.hintBefore':
+    'no launcher (Prism/oficial/etc), escolha perfil',
   'integrations.connect.version.profile': 'Release {version}',
-  'integrations.connect.version.hintAfter': '. versão diferente = conexão cai com "Failed to decode packet".',
+  'integrations.connect.version.hintAfter':
+    '. versão diferente = conexão cai com "Failed to decode packet".',
   'integrations.connect.version.copyTitle': 'copiar versão',
   'integrations.connect.version.copyFailTitle': 'falha ao copiar — copie manualmente',
   'integrations.connect.direct.title': 'DIRETO (LAN/IPv6)',
   'integrations.connect.copyTitle': 'copiar',
   'integrations.connect.copyFailTitle': 'falha ao copiar — selecione e copie manualmente',
-  'integrations.connect.copyFailMsg': 'não consegui copiar (clipboard bloqueado) — selecione o endereço acima e copie manualmente',
+  'integrations.connect.copyFailMsg':
+    'não consegui copiar (clipboard bloqueado) — selecione o endereço acima e copie manualmente',
   'integrations.connect.direct.hint': 'cole no Minecraft → Multiplayer → Add Server',
   'integrations.connect.direct.configureBefore': 'configure',
   'integrations.connect.direct.configureAfter': 'em',
@@ -160,7 +185,8 @@ export const integrationsMessages: Dict = {
   'integrations.connect.public.exposeNow': 'expor agora na aba REDE →',
 
   // AuthModePanel
-  'integrations.auth.confirm.switch': 'Mudar pra modo "{mode}"? O server vai ser recriado (volume preservado, vai parar e voltar em ~30s).',
+  'integrations.auth.confirm.switch':
+    'Mudar pra modo "{mode}"? O server vai ser recriado (volume preservado, vai parar e voltar em ~30s).',
   'integrations.auth.mode.mojang.label': 'Mojang/Microsoft',
   'integrations.auth.mode.mojang.desc': 'auth oficial. só players com conta paga entram.',
   'integrations.auth.mode.mojang.pro1': '+ seguro contra impostor',
@@ -169,20 +195,24 @@ export const integrationsMessages: Dict = {
   'integrations.auth.mode.mojang.con1': '- só conta paga',
   'integrations.auth.mode.mojang.con2': '- launchers crackados não funcionam',
   'integrations.auth.mode.drasl.label': 'Drasl (self-hosted)',
-  'integrations.auth.mode.drasl.desc': 'auth via seu próprio Drasl. compatível com Prism Launcher, FjordLauncher, HMCL.',
+  'integrations.auth.mode.drasl.desc':
+    'auth via seu próprio Drasl. compatível com Prism Launcher, FjordLauncher, HMCL.',
   'integrations.auth.mode.drasl.pro1': '+ amigos sem Microsoft entram',
   'integrations.auth.mode.drasl.pro2': '+ você controla as contas',
   'integrations.auth.mode.drasl.pro3': '+ skins via Drasl',
-  'integrations.auth.mode.drasl.con1': '- players precisam launcher compatível com authlib-injector',
+  'integrations.auth.mode.drasl.con1':
+    '- players precisam launcher compatível com authlib-injector',
   'integrations.auth.mode.offline.label': 'Offline (cracked)',
-  'integrations.auth.mode.offline.desc': 'qualquer username conecta sem auth. server totalmente aberto.',
+  'integrations.auth.mode.offline.desc':
+    'qualquer username conecta sem auth. server totalmente aberto.',
   'integrations.auth.mode.offline.pro1': '+ qualquer launcher funciona',
   'integrations.auth.mode.offline.pro2': '+ máxima compatibilidade',
   'integrations.auth.mode.offline.con1': '- impostor pode entrar como qualquer nick',
   'integrations.auth.mode.offline.con2': '- sem proteção alguma',
   'integrations.auth.header.title': 'MODO DE AUTENTICAÇÃO',
   'integrations.auth.header.subtitle': 'como o server valida quem é o player que conecta',
-  'integrations.auth.saved': '✓ modo trocado! container recriado. espere ~30s pro server voltar.',
+  'integrations.auth.saved':
+    '✓ modo trocado! container recriado. espere ~30s pro server voltar.',
   'integrations.auth.active': '✓ ATIVO',
   'integrations.auth.recreating': 'recriando...',
   'integrations.auth.activeBtn': 'ativo',
@@ -190,7 +220,8 @@ export const integrationsMessages: Dict = {
   'integrations.auth.draslUrlBefore': 'Drasl URL atual:',
   'integrations.auth.footerBefore': 'trocar de modo',
   'integrations.auth.footerRecreate': 'recria o container',
-  'integrations.auth.footerAfter': '(volume preservado, world e mods intactos). o server fica fora do ar por ~30 segundos durante a troca.',
+  'integrations.auth.footerAfter':
+    '(volume preservado, world e mods intactos). o server fica fora do ar por ~30 segundos durante a troca.',
   'integrations.auth.error.generic': 'erro {status}',
   'integrations.auth.error.fail': 'falha',
 
@@ -207,7 +238,8 @@ export const integrationsMessages: Dict = {
   'integrations.subusers.perm.view_logs': 'logs em tempo real',
   'integrations.subusers.perm.delete': 'deletar server (perigoso)',
   'integrations.subusers.list.title': 'SUBUSUÁRIOS DESTE SERVER',
-  'integrations.subusers.list.subtitle': 'dê acesso granular a este server específico. admins do painel já tem tudo automaticamente.',
+  'integrations.subusers.list.subtitle':
+    'dê acesso granular a este server específico. admins do painel já tem tudo automaticamente.',
   'integrations.subusers.list.empty': 'nenhum subusuário ainda',
   'integrations.subusers.permCount.one': '{n} permissão',
   'integrations.subusers.permCount.other': '{n} permissões',

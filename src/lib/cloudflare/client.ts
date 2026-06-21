@@ -44,7 +44,9 @@ async function call<T>(token: string, path: string, init: RequestInit = {}): Pro
   return data.result;
 }
 
-export async function verifyToken(token: string): Promise<{ valid: boolean; status: string }> {
+export async function verifyToken(
+  token: string
+): Promise<{ valid: boolean; status: string }> {
   const res = await fetch(`${BASE}/user/tokens/verify`, {
     headers: authHeaders(token)
   });
@@ -57,7 +59,10 @@ export async function listZones(token: string): Promise<CFZone[]> {
   return call<CFZone[]>(token, '/zones?per_page=50');
 }
 
-export async function findZoneByName(token: string, name: string): Promise<CFZone | null> {
+export async function findZoneByName(
+  token: string,
+  name: string
+): Promise<CFZone | null> {
   const zones = await call<CFZone[]>(token, `/zones?name=${encodeURIComponent(name)}`);
   return zones[0] ?? null;
 }
@@ -108,7 +113,11 @@ export async function updateDnsRecord(
   });
 }
 
-export async function deleteDnsRecord(token: string, zoneId: string, recordId: string): Promise<void> {
+export async function deleteDnsRecord(
+  token: string,
+  zoneId: string,
+  recordId: string
+): Promise<void> {
   await call<{ id: string }>(token, `/zones/${zoneId}/dns_records/${recordId}`, {
     method: 'DELETE'
   });
@@ -122,7 +131,9 @@ export async function upsertCnameRecord(
   proxied: boolean = false
 ): Promise<CFDnsRecord> {
   const existing = await listDnsRecords(token, zoneId, name);
-  const match = existing.find((r) => r.name === name && (r.type === 'CNAME' || r.type === 'A' || r.type === 'AAAA'));
+  const match = existing.find(
+    (r) => r.name === name && (r.type === 'CNAME' || r.type === 'A' || r.type === 'AAAA')
+  );
   if (match) {
     return updateDnsRecord(token, zoneId, match.id, {
       type: 'CNAME',

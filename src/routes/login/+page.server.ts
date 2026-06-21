@@ -3,10 +3,7 @@ import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db, schema } from '$lib/db';
 import { verifyPassword } from '$lib/auth/password';
-import {
-  createSession,
-  generateSessionToken
-} from '$lib/auth/session';
+import { createSession, generateSessionToken } from '$lib/auth/session';
 import { logAudit } from '$lib/audit';
 import { getSetting } from '$lib/settings';
 import { tServer } from '$lib/i18n/server';
@@ -73,15 +70,32 @@ export const actions: Actions = {
       .get();
 
     if (!user) {
-      await verifyPassword('$argon2id$v=19$m=19456,t=2,p=1$aaaaaaaaaaaaaaaa$bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', password);
-      await logAudit(event, { action: 'auth.login', status: 'fail', details: { username, reason: 'unknown_user' } });
-      return fail(401, { username, error: tServer(locals.locale, 'serverrors.login.invalidCredentials') });
+      await verifyPassword(
+        '$argon2id$v=19$m=19456,t=2,p=1$aaaaaaaaaaaaaaaa$bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+        password
+      );
+      await logAudit(event, {
+        action: 'auth.login',
+        status: 'fail',
+        details: { username, reason: 'unknown_user' }
+      });
+      return fail(401, {
+        username,
+        error: tServer(locals.locale, 'serverrors.login.invalidCredentials')
+      });
     }
 
     const valid = await verifyPassword(user.passwordHash, password);
     if (!valid) {
-      await logAudit(event, { action: 'auth.login', status: 'fail', details: { username, reason: 'wrong_password' } });
-      return fail(401, { username, error: tServer(locals.locale, 'serverrors.login.invalidCredentials') });
+      await logAudit(event, {
+        action: 'auth.login',
+        status: 'fail',
+        details: { username, reason: 'wrong_password' }
+      });
+      return fail(401, {
+        username,
+        error: tServer(locals.locale, 'serverrors.login.invalidCredentials')
+      });
     }
 
     const token = generateSessionToken();
@@ -101,7 +115,11 @@ export const actions: Actions = {
     });
 
     event.locals.user = { ...user, role: user.role };
-    await logAudit(event, { action: 'auth.login', resourceType: 'user', resourceId: user.id });
+    await logAudit(event, {
+      action: 'auth.login',
+      resourceType: 'user',
+      resourceId: user.id
+    });
 
     throw redirect(303, user.totpEnabledAt ? '/login/2fa' : '/servers');
   }

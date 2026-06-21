@@ -71,7 +71,8 @@ export const POST: RequestHandler = async (event) => {
 
   const body = await request.json().catch(() => null);
   const parsed = createSchema.safeParse(body);
-  if (!parsed.success) throw error(400, parsed.error.issues[0]?.message ?? 'body inválido');
+  if (!parsed.success)
+    throw error(400, parsed.error.issues[0]?.message ?? 'body inválido');
 
   if (parsed.data.serverId) {
     const exists = await db()
@@ -85,22 +86,28 @@ export const POST: RequestHandler = async (event) => {
   const secret = generateWebhookSecret();
   const id = newId();
 
-  await db().insert(schema.webhookEndpoints).values({
-    id,
-    name: parsed.data.name,
-    url: parsed.data.url,
-    secret,
-    eventsJson: JSON.stringify(parsed.data.events),
-    serverId: parsed.data.serverId ?? null,
-    enabled: true,
-    createdBy: locals.user!.id
-  });
+  await db()
+    .insert(schema.webhookEndpoints)
+    .values({
+      id,
+      name: parsed.data.name,
+      url: parsed.data.url,
+      secret,
+      eventsJson: JSON.stringify(parsed.data.events),
+      serverId: parsed.data.serverId ?? null,
+      enabled: true,
+      createdBy: locals.user!.id
+    });
 
   await logAudit(event, {
     action: 'webhook.created',
     resourceType: 'webhook',
     resourceId: id,
-    details: { url: parsed.data.url, events: parsed.data.events, serverId: parsed.data.serverId ?? null }
+    details: {
+      url: parsed.data.url,
+      events: parsed.data.events,
+      serverId: parsed.data.serverId ?? null
+    }
   });
 
   return json({ id, secret }, { status: 201 });

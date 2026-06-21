@@ -88,7 +88,9 @@ async function buildRemote(host: HostRow): Promise<Docker> {
     });
   }
 
-  throw new Error(`docker pool: unsupported endpoint "${endpoint}" for host "${host.id}"`);
+  throw new Error(
+    `docker pool: unsupported endpoint "${endpoint}" for host "${host.id}"`
+  );
 }
 
 export async function dockerForHost(hostId: string): Promise<Docker> {

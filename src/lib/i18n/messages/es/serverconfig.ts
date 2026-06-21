@@ -45,7 +45,8 @@ export const serverconfigMessages: Dict = {
   'serverconfig.props.field.viewDistance': 'distancia de vista (chunks)',
   'serverconfig.props.field.simulationDistance': 'distancia de simulación',
   'serverconfig.props.field.networkCompressionThreshold': 'umbral de compresión (bytes)',
-  'serverconfig.props.field.networkCompressionThreshold.help': '-1 desactiva, 256 por defecto',
+  'serverconfig.props.field.networkCompressionThreshold.help':
+    '-1 desactiva, 256 por defecto',
   'serverconfig.props.field.rateLimit': 'límite pkt/s (0 apaga)',
   'serverconfig.props.field.enableQuery': 'protocolo query (GameSpy)',
   'serverconfig.props.field.preventProxyConnections': 'bloquear VPN/proxy',
@@ -58,7 +59,8 @@ export const serverconfigMessages: Dict = {
   'serverconfig.props.field.enforceWhitelist.help': 'aplica a quien ya está en línea',
   'serverconfig.props.field.enforceSecureProfile': 'exigir clave de chat firmada',
   'serverconfig.props.field.broadcastRconToOps': 'mostrar comandos RCON a los OPs',
-  'serverconfig.props.field.broadcastConsoleToOps': 'mostrar comandos de consola a los OPs',
+  'serverconfig.props.field.broadcastConsoleToOps':
+    'mostrar comandos de consola a los OPs',
   'serverconfig.props.field.hideOnlinePlayers': 'ocultar lista de jugadores',
 
   // PropertiesEditor — states / footer
@@ -67,7 +69,8 @@ export const serverconfigMessages: Dict = {
   'serverconfig.props.retry': 'intentar de nuevo',
   'serverconfig.props.changes': '{n} cambios',
   'serverconfig.props.modified': 'modificado',
-  'serverconfig.props.footer.dirty': '{n} propiedad(es) modificada(s). guardar requiere reiniciar el servidor para aplicar.',
+  'serverconfig.props.footer.dirty':
+    '{n} propiedad(es) modificada(s). guardar requiere reiniciar el servidor para aplicar.',
   'serverconfig.props.footer.saved': '✓ ¡guardado!',
   'serverconfig.props.footer.restartNeeded': '⚠ reinicia el servidor para aplicar',
   'serverconfig.props.footer.clean': 'sin cambios',
@@ -89,21 +92,25 @@ export const serverconfigMessages: Dict = {
   'serverconfig.world.seedPlaceholder': '(aleatorio)',
   'serverconfig.world.randomTitle': 'aleatorio',
   'serverconfig.world.saveSeed': 'guardar seed',
-  'serverconfig.world.seedHint': 'aplica en chunks nuevos. para todo el mundo, usa reset abajo.',
-  'serverconfig.world.seedSaved': '¡seed guardada! aplica en la próxima generación de chunks (o reset del mundo).',
+  'serverconfig.world.seedHint':
+    'aplica en chunks nuevos. para todo el mundo, usa reset abajo.',
+  'serverconfig.world.seedSaved':
+    '¡seed guardada! aplica en la próxima generación de chunks (o reset del mundo).',
 
   // WorldPanel — reset
   'serverconfig.world.reset.title': 'RESET MUNDO',
   'serverconfig.world.reset.subtitle': 'borra el mundo, conserva los mods',
   'serverconfig.world.reset.willDelete': 'va a borrar:',
   'serverconfig.world.reset.preserves': 'conserva:',
-  'serverconfig.world.reset.preservesList': 'mods, config, server.properties, whitelist, ops, player data',
+  'serverconfig.world.reset.preservesList':
+    'mods, config, server.properties, whitelist, ops, player data',
   'serverconfig.world.reset.deleteNether': 'borrar nether también',
   'serverconfig.world.reset.deleteEnd': 'borrar end también',
   'serverconfig.world.reset.useNewSeed': 'usar seed nueva',
   'serverconfig.world.reset.confirmLabel': 'escribe RESET para confirmar',
   'serverconfig.world.reset.confirm': 'resetear mundo',
-  'serverconfig.world.reset.done': '¡mundo reseteado! servidor reiniciando con mundo nuevo. mods conservados.',
+  'serverconfig.world.reset.done':
+    '¡mundo reseteado! servidor reiniciando con mundo nuevo. mods conservados.',
   'serverconfig.world.reset.error': 'error: {message}',
 
   // VersionPicker
@@ -162,19 +169,23 @@ export const serverconfigMessages: Dict = {
   'serverconfig.network.access.subtitle': 'cómo conectan los jugadores',
   'serverconfig.network.access.copyTitle': 'copiar',
   'serverconfig.network.access.mode': 'modo:',
-  'serverconfig.network.access.connectHint': 'los jugadores pegan esta dirección en Minecraft para conectar.',
-  'serverconfig.network.access.none': '⚠ el servidor aún no tiene acceso público configurado',
+  'serverconfig.network.access.connectHint':
+    'los jugadores pegan esta dirección en Minecraft para conectar.',
+  'serverconfig.network.access.none':
+    '⚠ el servidor aún no tiene acceso público configurado',
 
   // NetworkPanel — cloudflare
   'serverconfig.network.cf.title': 'EXPONER VÍA CLOUDFLARE',
   'serverconfig.network.cf.subtitle': 'crea un CNAME automático',
   'serverconfig.network.cf.notConfigured': 'Cloudflare no configurado',
-  'serverconfig.network.cf.notConfiguredHint': 'Configura API token, zone ID y CNAME target en',
+  'serverconfig.network.cf.notConfiguredHint':
+    'Configura API token, zone ID y CNAME target en',
   'serverconfig.network.cf.settingsLink': 'Settings',
   'serverconfig.network.cf.toEnable': 'para habilitar.',
   'serverconfig.network.cf.subdomain': 'subdominio',
   'serverconfig.network.cf.subdomainPlaceholder': 'mi-server',
-  'serverconfig.network.cf.subdomainHint': 'solo letras, números y guiones. crea un CNAME apuntando al target configurado.',
+  'serverconfig.network.cf.subdomainHint':
+    'solo letras, números y guiones. crea un CNAME apuntando al target configurado.',
   'serverconfig.network.cf.creatingDns': 'creando DNS...',
   'serverconfig.network.cf.updateDns': 'actualizar DNS',
   'serverconfig.network.cf.expose': 'exponer públicamente',

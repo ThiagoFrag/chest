@@ -32,9 +32,14 @@ function mergePaths(targets: PathsModule[]): PathsModule {
 
 function mergePathItem(a: PathItem, b: PathItem, path: string): PathItem {
   const merged: PathItem = { ...a };
-  for (const [method, op] of Object.entries(b) as [keyof PathItem, PathItem[keyof PathItem]][]) {
+  for (const [method, op] of Object.entries(b) as [
+    keyof PathItem,
+    PathItem[keyof PathItem]
+  ][]) {
     if (merged[method] !== undefined) {
-      throw new Error(`Colisão de método "${String(method)}" no path "${path}" entre módulos de OpenAPI`);
+      throw new Error(
+        `Colisão de método "${String(method)}" no path "${path}" entre módulos de OpenAPI`
+      );
     }
     merged[method] = op as never;
   }

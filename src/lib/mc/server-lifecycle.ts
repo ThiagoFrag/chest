@@ -76,11 +76,7 @@ async function createServerLocked(input: CreateServerInput): Promise<{
   let slug = baseSlug;
   let suffix = 1;
   while (
-    await db()
-      .select()
-      .from(schema.servers)
-      .where(eq(schema.servers.slug, slug))
-      .get()
+    await db().select().from(schema.servers).where(eq(schema.servers.slug, slug)).get()
   ) {
     suffix += 1;
     slug = `${baseSlug}-${suffix}`;
@@ -94,28 +90,26 @@ async function createServerLocked(input: CreateServerInput): Promise<{
   const rconPasswordEncrypted = await encrypt(rconPassword);
   const id = crypto.randomUUID();
 
-  await db()
-    .insert(schema.servers)
-    .values({
-      id,
-      slug,
-      containerName,
-      hostId,
-      displayName: input.displayName,
-      modloaderType: input.modloaderType,
-      mcVersion: input.mcVersion,
-      loaderVersion: input.loaderVersion,
-      memoryMb: input.memoryMb,
-      maxPlayers: input.maxPlayers,
-      difficulty: input.difficulty,
-      motd: input.motd,
-      hostPortHttp: ports.http,
-      hostPortRcon: ports.rcon,
-      dataVolume: volumeName,
-      rconPasswordEncrypted,
-      draslEnabled: input.draslEnabled,
-      status: 'creating'
-    });
+  await db().insert(schema.servers).values({
+    id,
+    slug,
+    containerName,
+    hostId,
+    displayName: input.displayName,
+    modloaderType: input.modloaderType,
+    mcVersion: input.mcVersion,
+    loaderVersion: input.loaderVersion,
+    memoryMb: input.memoryMb,
+    maxPlayers: input.maxPlayers,
+    difficulty: input.difficulty,
+    motd: input.motd,
+    hostPortHttp: ports.http,
+    hostPortRcon: ports.rcon,
+    dataVolume: volumeName,
+    rconPasswordEncrypted,
+    draslEnabled: input.draslEnabled,
+    status: 'creating'
+  });
 
   const d = await dockerForHost(hostId);
 
@@ -126,11 +120,16 @@ async function createServerLocked(input: CreateServerInput): Promise<{
     if (input.draslEnabled) {
       draslUrl = await getSetting('drasl.url');
       if (!draslUrl) {
-        throw new Error('drasl.url não configurado em Settings. Configure antes de criar server com Drasl.');
+        throw new Error(
+          'drasl.url não configurado em Settings. Configure antes de criar server com Drasl.'
+        );
       }
     }
 
-    await d.createVolume({ Name: volumeName, Labels: { 'forja.managed': 'true', 'forja.slug': slug } });
+    await d.createVolume({
+      Name: volumeName,
+      Labels: { 'forja.managed': 'true', 'forja.slug': slug }
+    });
 
     const env = buildEnv(input, rconPassword, draslUrl);
     const container = await d.createContainer({
@@ -192,8 +191,14 @@ async function createServerLocked(input: CreateServerInput): Promise<{
     return { id, slug, containerName, hostPort: ports.http };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    await d.getContainer(containerName).remove({ force: true }).catch(() => undefined);
-    await d.getVolume(volumeName).remove().catch(() => undefined);
+    await d
+      .getContainer(containerName)
+      .remove({ force: true })
+      .catch(() => undefined);
+    await d
+      .getVolume(volumeName)
+      .remove()
+      .catch(() => undefined);
     await db()
       .update(schema.servers)
       .set({ status: 'failed', statusMessage: msg, updatedAt: new Date() })
@@ -202,7 +207,11 @@ async function createServerLocked(input: CreateServerInput): Promise<{
   }
 }
 
-function buildEnv(input: CreateServerInput, rconPassword: string, draslUrl: string | null): string[] {
+function buildEnv(
+  input: CreateServerInput,
+  rconPassword: string,
+  draslUrl: string | null
+): string[] {
   const env: Record<string, string> = {
     EULA: 'TRUE',
     TYPE: input.modloaderType,
@@ -220,8 +229,10 @@ function buildEnv(input: CreateServerInput, rconPassword: string, draslUrl: stri
   if (input.loaderVersion) {
     if (input.modloaderType === 'FABRIC') env.FABRIC_LOADER_VERSION = input.loaderVersion;
     else if (input.modloaderType === 'FORGE') env.FORGE_VERSION = input.loaderVersion;
-    else if (input.modloaderType === 'NEOFORGE') env.NEOFORGE_VERSION = input.loaderVersion;
-    else if (input.modloaderType === 'QUILT') env.QUILT_LOADER_VERSION = input.loaderVersion;
+    else if (input.modloaderType === 'NEOFORGE')
+      env.NEOFORGE_VERSION = input.loaderVersion;
+    else if (input.modloaderType === 'QUILT')
+      env.QUILT_LOADER_VERSION = input.loaderVersion;
   }
 
   if (input.motd) env.MOTD = input.motd;

@@ -18,13 +18,15 @@ export const authMessages: Dict = {
   'auth.twofa.heading': 'verificação 2FA',
   'auth.twofa.codeLabel': 'código do autenticador',
   'auth.twofa.placeholder': '123456 ou backup',
-  'auth.twofa.hintBefore': 'digite o código de 6 dígitos do app (Google Authenticator, Authy, Aegis) ou um backup code (formato',
+  'auth.twofa.hintBefore':
+    'digite o código de 6 dígitos do app (Google Authenticator, Authy, Aegis) ou um backup code (formato',
   'auth.twofa.hintAfter': ').',
   'auth.twofa.submit': 'verificar',
   'auth.twofa.logout': 'sair e tentar com outra conta',
   'auth.twofa.invalidCode': 'código inválido',
   'auth.twofa.genericError': 'falha',
-  'auth.twofa.backupUsed': 'código de backup consumido. lembre-se de gerar novos se precisar.',
+  'auth.twofa.backupUsed':
+    'código de backup consumido. lembre-se de gerar novos se precisar.',
 
   'auth.invite.pageTitle': 'Chest · Convite',
   'auth.invite.invited': 'você foi convidado!',

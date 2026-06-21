@@ -26,17 +26,19 @@ export async function logAudit(event: RequestEvent, input: AuditInput): Promise<
         : null;
 
   try {
-    await db().insert(schema.auditEvents).values({
-      userId: user?.id ?? null,
-      username: user?.username ?? null,
-      action: input.action,
-      resourceType: input.resourceType ?? null,
-      resourceId: input.resourceId ?? null,
-      ipAddress: ip,
-      userAgent,
-      details,
-      status: input.status ?? 'ok'
-    });
+    await db()
+      .insert(schema.auditEvents)
+      .values({
+        userId: user?.id ?? null,
+        username: user?.username ?? null,
+        action: input.action,
+        resourceType: input.resourceType ?? null,
+        resourceId: input.resourceId ?? null,
+        ipAddress: ip,
+        userAgent,
+        details,
+        status: input.status ?? 'ok'
+      });
   } catch (err) {
     console.error('[audit] failed to log:', err);
   }
@@ -56,7 +58,8 @@ export async function queryAudit(q: AuditQuery = {}) {
   if (q.action) conditions.push(like(schema.auditEvents.action, `%${q.action}%`));
   if (q.username) conditions.push(eq(schema.auditEvents.username, q.username));
   if (q.status) conditions.push(eq(schema.auditEvents.status, q.status));
-  if (q.sinceTimestamp) conditions.push(gte(schema.auditEvents.timestamp, new Date(q.sinceTimestamp * 1000)));
+  if (q.sinceTimestamp)
+    conditions.push(gte(schema.auditEvents.timestamp, new Date(q.sinceTimestamp * 1000)));
 
   const where = conditions.length > 0 ? and(...conditions) : undefined;
 
@@ -74,7 +77,8 @@ export async function countAudit(q: AuditQuery = {}): Promise<number> {
   if (q.action) conditions.push(like(schema.auditEvents.action, `%${q.action}%`));
   if (q.username) conditions.push(eq(schema.auditEvents.username, q.username));
   if (q.status) conditions.push(eq(schema.auditEvents.status, q.status));
-  if (q.sinceTimestamp) conditions.push(gte(schema.auditEvents.timestamp, new Date(q.sinceTimestamp * 1000)));
+  if (q.sinceTimestamp)
+    conditions.push(gte(schema.auditEvents.timestamp, new Date(q.sinceTimestamp * 1000)));
 
   const where = conditions.length > 0 ? and(...conditions) : undefined;
   const rows = await db()

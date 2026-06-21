@@ -1,13 +1,13 @@
-import { stat, readdir, mkdir, unlink, readFile } from "node:fs/promises";
-import { createReadStream, createWriteStream } from "node:fs";
-import { Readable } from "node:stream";
-import path from "node:path";
-import { pipeline } from "node:stream/promises";
+import { stat, readdir, mkdir, unlink, readFile } from 'node:fs/promises';
+import { createReadStream, createWriteStream } from 'node:fs';
+import { Readable } from 'node:stream';
+import path from 'node:path';
+import { pipeline } from 'node:stream/promises';
 
 export interface BackupObject {
-  key: string;          // unique identifier (filename)
+  key: string; // unique identifier (filename)
   sizeBytes: number;
-  createdAt: number;    // unix ts
+  createdAt: number; // unix ts
 }
 
 export interface BackupStorage {
@@ -31,7 +31,7 @@ export interface BackupStorage {
 }
 
 export class LocalStorage implements BackupStorage {
-  readonly driver = "local";
+  readonly driver = 'local';
   constructor(private dir: string) {}
 
   async put(key: string, stream: NodeJS.ReadableStream): Promise<{ sizeBytes: number }> {
@@ -70,7 +70,7 @@ export class LocalStorage implements BackupStorage {
       await mkdir(this.dir, { recursive: true });
       return { ok: true, message: `local: ${this.dir} writable` };
     } catch (err) {
-      return { ok: false, message: err instanceof Error ? err.message : "unknown" };
+      return { ok: false, message: err instanceof Error ? err.message : 'unknown' };
     }
   }
 }
